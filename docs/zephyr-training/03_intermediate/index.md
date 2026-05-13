@@ -28,5 +28,5 @@ You understand Kconfig, devicetree, and GPIO. Now build the things that go into 
 Basic is about understanding Zephyr's building blocks. Intermediate is about **composing** them: a thread that wakes on a timer, fetches an I2C sensor, updates a BLE characteristic, then suspends the sensor and sleeps. Real firmware does all of that at once.
 
 :::info
-The I2C + BLE interaction on ESP32 has a known conflict — the radio and I2C share the clock tree. The [Power Management](power-management) page documents the workaround from a real build.
+The I2C + BLE interaction on ESP32 has a known conflict — the radio and I2C share the clock tree. The [Power Management](./power-management) page documents the workaround from a real build.
 :::

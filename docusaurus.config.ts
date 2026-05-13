@@ -11,7 +11,6 @@ const config: Config = {
 
   url: 'https://huunghiaspkt.github.io',
   baseUrl: '/',
-  trailingSlash: false,
 
   organizationName: 'huunghiaspkt',
   projectName: 'huunghiaspkt.github.io',

@@ -33,5 +33,5 @@ application code  →  what the firmware does
 These three files are the skeleton of every Zephyr project. Master them here, apply them forever.
 
 :::info
-Devicetree is the part most engineers find confusing. The [Common Mistakes](common-mistakes) page was written from real debugging sessions — read it before you need it.
+Devicetree is the part most engineers find confusing. The [Common Mistakes](./common-mistakes) page was written from real debugging sessions — read it before you need it.
 :::
