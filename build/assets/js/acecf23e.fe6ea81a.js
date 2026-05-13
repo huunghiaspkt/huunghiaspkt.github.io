@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkbranding_scaffold=self.webpackChunkbranding_scaffold||[]).push([["3220"],{1912(a){a.exports=JSON.parse('{"blogBasePath":"/blog","blogTitle":"Build Diary","authorsListPath":"/blog/authors"}')}}]);
