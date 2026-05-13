@@ -11,3 +11,7 @@ build/
 # Environment
 .env
 .env.local
+
+# Claude
+CLAUDE.md
+.claude/
