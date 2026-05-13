@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480">
+  <rect width="800" height="480" fill="#fafafa" stroke="#d0d0d0" stroke-width="1"/>
+  <rect x="0" y="440" width="800" height="40" fill="#f0f0f0" stroke="#ccc" stroke-width="1"/>
+  <text x="16" y="466" font-family="monospace" font-size="13" fill="#333">SHT31 Sensor Board  |  Sheet 2: MCU and Sensor</text>
+  <text x="680" y="466" font-family="monospace" font-size="12" fill="#666">Rev A  |  Altium</text>
+
+  <!-- ESP32-WROOM IC -->
+  <rect x="220" y="100" width="200" height="260" rx="4" fill="white" stroke="#2c3e50" stroke-width="2.5"/>
+  <text x="320" y="132" text-anchor="middle" font-family="monospace" font-size="13" fill="#2c3e50" font-weight="bold">U1</text>
+  <text x="320" y="150" text-anchor="middle" font-family="monospace" font-size="12" fill="#2980b9">ESP32-WROOM</text>
+  <text x="320" y="168" text-anchor="middle" font-family="monospace" font-size="11" fill="#666">LGA-38</text>
+
+  <!-- nRF pin labels left side -->
+  <text x="216" y="225" text-anchor="end" font-family="monospace" font-size="11" fill="#555">GPIO21/SDA</text>
+  <line x1="180" y1="220" x2="220" y2="220" stroke="#333" stroke-width="1.5"/>
+  <text x="216" y="255" text-anchor="end" font-family="monospace" font-size="11" fill="#555">GPIO22/SCL</text>
+  <line x1="180" y1="250" x2="220" y2="250" stroke="#333" stroke-width="1.5"/>
+  <text x="216" y="285" text-anchor="end" font-family="monospace" font-size="11" fill="#555">GPIO2/LED</text>
+  <line x1="180" y1="280" x2="220" y2="280" stroke="#27ae60" stroke-width="1.5"/>
+
+  <!-- nRF pin labels right side -->
+  <text x="424" y="225" font-family="monospace" font-size="11" fill="#555">TXD0</text>
+  <line x1="420" y1="220" x2="480" y2="220" stroke="#333" stroke-width="1.5"/>
+  <text x="424" y="255" font-family="monospace" font-size="11" fill="#555">RXD0</text>
+  <line x1="420" y1="250" x2="480" y2="250" stroke="#333" stroke-width="1.5"/>
+  <!-- VDD pin -->
+  <text x="424" y="180" font-family="monospace" font-size="11" fill="#27ae60">VDD(3V3)</text>
+  <line x1="420" y1="175" x2="480" y2="175" stroke="#27ae60" stroke-width="2"/>
+
+  <!-- SHT31 -->
+  <rect x="540" y="170" width="130" height="120" rx="4" fill="white" stroke="#8e44ad" stroke-width="2"/>
+  <text x="605" y="202" text-anchor="middle" font-family="monospace" font-size="13" fill="#8e44ad" font-weight="bold">U2</text>
+  <text x="605" y="222" text-anchor="middle" font-family="monospace" font-size="12" fill="#8e44ad">SHT31-DIS</text>
+  <text x="605" y="240" text-anchor="middle" font-family="monospace" font-size="11" fill="#666">DFN-8</text>
+  <text x="605" y="258" text-anchor="middle" font-family="monospace" font-size="10" fill="#666">addr: 0x44</text>
+  <text x="605" y="275" text-anchor="middle" font-family="monospace" font-size="10" fill="#666">(ADDR→GND)</text>
+
+  <!-- I2C lines connecting nRF to SHT31 -->
+  <!-- SDA: GPIO21 → SHT31 SDA -->
+  <line x1="180" y1="220" x2="110" y2="220" stroke="#e74c3c" stroke-width="1.5"/>
+  <line x1="110" y1="220" x2="110" y2="230" stroke="#e74c3c" stroke-width="1.5"/>
+  <line x1="110" y1="230" x2="110" y2="230" stroke="#e74c3c" stroke-width="1.5"/>
+  <!-- Horizontal I2C bus to SHT31 -->
+  <line x1="490" y1="220" x2="540" y2="220" stroke="#e74c3c" stroke-width="1.5"/>
+  <text x="505" y="215" font-family="monospace" font-size="10" fill="#e74c3c">SDA</text>
+  <line x1="490" y1="250" x2="540" y2="250" stroke="#3498db" stroke-width="1.5"/>
+  <text x="505" y="245" font-family="monospace" font-size="10" fill="#3498db">SCL</text>
+
+  <!-- Pull-up resistors R1, R2 -->
+  <rect x="490" y="100" width="50" height="35" rx="3" fill="white" stroke="#666" stroke-width="1.5"/>
+  <text x="515" y="117" text-anchor="middle" font-family="monospace" font-size="11" fill="#555">R1</text>
+  <text x="515" y="129" text-anchor="middle" font-family="monospace" font-size="10" fill="#666">4.7kΩ</text>
+  <rect x="555" y="100" width="50" height="35" rx="3" fill="white" stroke="#666" stroke-width="1.5"/>
+  <text x="580" y="117" text-anchor="middle" font-family="monospace" font-size="11" fill="#555">R2</text>
+  <text x="580" y="129" text-anchor="middle" font-family="monospace" font-size="10" fill="#666">4.7kΩ</text>
+
+  <!-- Pull-up to 3V3 -->
+  <line x1="515" y1="100" x2="515" y2="80" stroke="#27ae60" stroke-width="1.5"/>
+  <line x1="580" y1="100" x2="580" y2="80" stroke="#27ae60" stroke-width="1.5"/>
+  <line x1="515" y1="80" x2="580" y2="80" stroke="#27ae60" stroke-width="1.5"/>
+  <line x1="548" y1="80" x2="548" y2="60" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="548" y="52" text-anchor="middle" font-family="monospace" font-size="12" fill="#27ae60" font-weight="bold">3V3</text>
+
+  <!-- Pull-up to I2C lines -->
+  <line x1="515" y1="135" x2="515" y2="220" stroke="#e74c3c" stroke-width="1"/>
+  <line x1="580" y1="135" x2="580" y2="250" stroke="#3498db" stroke-width="1"/>
+
+  <!-- Decoupling caps on SHT31 -->
+  <rect x="680" y="200" width="50" height="40" rx="3" fill="white" stroke="#666" stroke-width="1.5"/>
+  <text x="705" y="218" text-anchor="middle" font-family="monospace" font-size="11" fill="#555">C10</text>
+  <text x="705" y="232" text-anchor="middle" font-family="monospace" font-size="10" fill="#666">100nF</text>
+  <line x1="670" y1="210" x2="680" y2="210" stroke="#27ae60" stroke-width="1.5"/>
+  <line x1="670" y1="210" x2="670" y2="175" stroke="#27ae60" stroke-width="1.5"/>
+  <line x1="670" y1="175" x2="605" y2="175" stroke="#27ae60" stroke-width="1.5"/>
+  <line x1="605" y1="175" x2="605" y2="170" stroke="#27ae60" stroke-width="1.5"/>
+
+  <!-- SWD debug header -->
+  <rect x="500" y="310" width="80" height="70" rx="4" fill="white" stroke="#95a5a6" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="540" y="335" text-anchor="middle" font-family="monospace" font-size="11" fill="#7f8c8d">J2</text>
+  <text x="540" y="352" text-anchor="middle" font-family="monospace" font-size="10" fill="#7f8c8d">SWD</text>
+  <text x="540" y="368" text-anchor="middle" font-family="monospace" font-size="10" fill="#7f8c8d">USB UART</text>
+</svg>

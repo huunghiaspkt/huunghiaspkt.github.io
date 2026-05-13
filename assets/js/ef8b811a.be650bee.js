@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkbranding_scaffold=self.webpackChunkbranding_scaffold||[]).push([["8416"],{6600(u){u.exports=JSON.parse('{"authors":[{"name":"Huu Nghia","title":"Embedded Firmware Engineer","url":"https://github.com/huunghiaspkt","imageURL":"https://github.com/huunghiaspkt.png","key":"huunghia","page":null,"count":0}]}')}}]);
