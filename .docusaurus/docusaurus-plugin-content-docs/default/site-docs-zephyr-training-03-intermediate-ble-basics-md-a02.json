@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/intermediate/ble-basics",
+  "title": "BLE Basics",
+  "description": "Set up BLE advertising on ESP32, connect from a phone, and expose sensor data as a GATT characteristic.",
+  "source": "@site/docs/zephyr-training/03_intermediate/ble-basics.md",
+  "sourceDirName": "zephyr-training/03_intermediate",
+  "slug": "/zephyr-training/intermediate/ble-basics",
+  "permalink": "/docs/zephyr-training/intermediate/ble-basics",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "sidebar_position": 5,
+    "description": "Set up BLE advertising on ESP32, connect from a phone, and expose sensor data as a GATT characteristic."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Threads",
+    "permalink": "/docs/zephyr-training/intermediate/threads"
+  },
+  "next": {
+    "title": "Zephyr Real Product",
+    "permalink": "/docs/zephyr-training/real-product/"
+  }
+}

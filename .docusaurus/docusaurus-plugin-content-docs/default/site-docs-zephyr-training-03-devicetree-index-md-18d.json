@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/devicetree/index",
+  "title": "Devicetree",
+  "description": "What devicetree is, why Zephyr uses it, and the three-layer model you need to understand.",
+  "source": "@site/docs/zephyr-training/03_devicetree/index.md",
+  "sourceDirName": "zephyr-training/03_devicetree",
+  "slug": "/zephyr-training/devicetree/",
+  "permalink": "/docs/zephyr-training/devicetree/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "description": "What devicetree is, why Zephyr uses it, and the three-layer model you need to understand."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "The Build System",
+    "permalink": "/docs/zephyr-training/hello-world/build-system"
+  },
+  "next": {
+    "title": "Writing Overlays",
+    "permalink": "/docs/zephyr-training/devicetree/writing-overlays"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "zephyr-training/what-is-zephyr/index",
+  "title": "What is Zephyr?",
+  "description": "Tổng quan về Zephyr RTOS — Zephyr là gì, tại sao quan trọng và cấu trúc hệ thống.",
+  "source": "@site/i18n/vi/docusaurus-plugin-content-docs/current/zephyr-training/01_what-is-zephyr/index.md",
+  "sourceDirName": "zephyr-training/01_what-is-zephyr",
+  "slug": "/zephyr-training/what-is-zephyr/",
+  "permalink": "/vi/docs/zephyr-training/what-is-zephyr/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "description": "Tổng quan về Zephyr RTOS — Zephyr là gì, tại sao quan trọng và cấu trúc hệ thống."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "next": {
+    "title": "West",
+    "permalink": "/vi/docs/zephyr-training/what-is-zephyr/west"
+  }
+}

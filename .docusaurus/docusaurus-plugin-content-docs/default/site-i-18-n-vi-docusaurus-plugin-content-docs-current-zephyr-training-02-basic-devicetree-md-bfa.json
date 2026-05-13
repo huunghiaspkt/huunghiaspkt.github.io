@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/basic/devicetree",
+  "title": "Devicetree",
+  "description": "Devicetree là gì, tại sao Zephyr dùng nó và mô hình ba lớp cần nắm.",
+  "source": "@site/i18n/vi/docusaurus-plugin-content-docs/current/zephyr-training/02_basic/devicetree.md",
+  "sourceDirName": "zephyr-training/02_basic",
+  "slug": "/zephyr-training/basic/devicetree",
+  "permalink": "/vi/docs/zephyr-training/basic/devicetree",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "description": "Devicetree là gì, tại sao Zephyr dùng nó và mô hình ba lớp cần nắm."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Zephyr Basic",
+    "permalink": "/vi/docs/zephyr-training/basic/"
+  },
+  "next": {
+    "title": "Writing Overlays",
+    "permalink": "/vi/docs/zephyr-training/basic/overlays"
+  }
+}

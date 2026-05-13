@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/how-to-start/west",
+  "title": "West",
+  "description": "Learn about west, the Zephyr meta-tool for workspace management and building.",
+  "source": "@site/docs/zephyr-training/01_how-to-start/west.md",
+  "sourceDirName": "zephyr-training/01_how-to-start",
+  "slug": "/zephyr-training/how-to-start/west",
+  "permalink": "/docs/zephyr-training/how-to-start/west",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "description": "Learn about west, the Zephyr meta-tool for workspace management and building."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Hello World",
+    "permalink": "/docs/zephyr-training/how-to-start/hello-world"
+  },
+  "next": {
+    "title": "The Build System",
+    "permalink": "/docs/zephyr-training/how-to-start/build-system"
+  }
+}

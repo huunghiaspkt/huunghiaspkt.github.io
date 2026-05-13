@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/how-to-start/environment",
+  "title": "Environment Setup",
+  "description": "Cài đặt west, Zephyr SDK và thiết lập VS Code cho lập trình nhúng.",
+  "source": "@site/i18n/vi/docusaurus-plugin-content-docs/current/zephyr-training/01_how-to-start/environment.md",
+  "sourceDirName": "zephyr-training/01_how-to-start",
+  "slug": "/zephyr-training/how-to-start/environment",
+  "permalink": "/vi/docs/zephyr-training/how-to-start/environment",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "description": "Cài đặt west, Zephyr SDK và thiết lập VS Code cho lập trình nhúng."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "What is Zephyr?",
+    "permalink": "/vi/docs/zephyr-training/how-to-start/what-is-zephyr"
+  },
+  "next": {
+    "title": "Hello World",
+    "permalink": "/vi/docs/zephyr-training/how-to-start/hello-world"
+  }
+}

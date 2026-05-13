@@ -1,0 +1,22 @@
+{
+  "id": "zephyr/writing-a-driver",
+  "title": "Writing a Zephyr Driver",
+  "description": "Using a minimal thermistor ADC driver as the example.",
+  "source": "@site/docs/zephyr/writing-a-driver.md",
+  "sourceDirName": "zephyr",
+  "slug": "/zephyr/writing-a-driver",
+  "permalink": "/docs/zephyr/writing-a-driver",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Writing a Zephyr Driver",
+    "sidebar_label": "Writing a Driver"
+  },
+  "sidebar": "zephyrNotesSidebar",
+  "previous": {
+    "title": "Devicetree Primer",
+    "permalink": "/docs/zephyr/devicetree-primer"
+  }
+}

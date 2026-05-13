@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/basic/gpio",
+  "title": "GPIO",
+  "description": "Read buttons and blink LEDs with Zephyr's GPIO API — the hardware \"Hello World\".",
+  "source": "@site/docs/zephyr-training/02_basic/gpio.md",
+  "sourceDirName": "zephyr-training/02_basic",
+  "slug": "/zephyr-training/basic/gpio",
+  "permalink": "/docs/zephyr-training/basic/gpio",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "sidebar_position": 5,
+    "description": "Read buttons and blink LEDs with Zephyr's GPIO API — the hardware \"Hello World\"."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Kconfig",
+    "permalink": "/docs/zephyr-training/basic/kconfig"
+  },
+  "next": {
+    "title": "Zephyr Intermediate",
+    "permalink": "/docs/zephyr-training/intermediate/"
+  }
+}

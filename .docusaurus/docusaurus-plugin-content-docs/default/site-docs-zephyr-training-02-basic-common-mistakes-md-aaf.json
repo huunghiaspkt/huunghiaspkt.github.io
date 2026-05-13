@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/basic/common-mistakes",
+  "title": "Common Mistakes",
+  "description": "The most common devicetree mistakes and how to fix them fast.",
+  "source": "@site/docs/zephyr-training/02_basic/common-mistakes.md",
+  "sourceDirName": "zephyr-training/02_basic",
+  "slug": "/zephyr-training/basic/common-mistakes",
+  "permalink": "/docs/zephyr-training/basic/common-mistakes",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "description": "The most common devicetree mistakes and how to fix them fast."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Writing Overlays",
+    "permalink": "/docs/zephyr-training/basic/overlays"
+  },
+  "next": {
+    "title": "Kconfig",
+    "permalink": "/docs/zephyr-training/basic/kconfig"
+  }
+}

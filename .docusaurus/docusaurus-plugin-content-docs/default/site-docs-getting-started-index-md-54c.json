@@ -1,0 +1,18 @@
+{
+  "id": "getting-started/index",
+  "title": "Introduction",
+  "description": "Welcome to my documentation site.",
+  "source": "@site/docs/getting-started/index.md",
+  "sourceDirName": "getting-started",
+  "slug": "/getting-started",
+  "permalink": "/docs/getting-started",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Introduction",
+    "sidebar_label": "Introduction",
+    "slug": "/getting-started"
+  }
+}

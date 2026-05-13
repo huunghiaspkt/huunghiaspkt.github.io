@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/hello-world/build-system",
+  "title": "The Build System",
+  "description": "Cách build system CMake + Ninja của Zephyr hoạt động và các flag build thường dùng hàng ngày.",
+  "source": "@site/i18n/vi/docusaurus-plugin-content-docs/current/zephyr-training/02_hello-world/build-system.md",
+  "sourceDirName": "zephyr-training/02_hello-world",
+  "slug": "/zephyr-training/hello-world/build-system",
+  "permalink": "/vi/docs/zephyr-training/hello-world/build-system",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "description": "Cách build system CMake + Ninja của Zephyr hoạt động và các flag build thường dùng hàng ngày."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Hello World",
+    "permalink": "/vi/docs/zephyr-training/hello-world/"
+  },
+  "next": {
+    "title": "Devicetree",
+    "permalink": "/vi/docs/zephyr-training/devicetree/"
+  }
+}

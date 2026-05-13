@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/intermediate/binding-yaml",
+  "title": "DTS Binding YAML",
+  "description": "Write a DTS binding YAML file to define what properties your devicetree node accepts.",
+  "source": "@site/docs/zephyr-training/03_intermediate/binding-yaml.md",
+  "sourceDirName": "zephyr-training/03_intermediate",
+  "slug": "/zephyr-training/intermediate/binding-yaml",
+  "permalink": "/docs/zephyr-training/intermediate/binding-yaml",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "description": "Write a DTS binding YAML file to define what properties your devicetree node accepts."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Writing Drivers",
+    "permalink": "/docs/zephyr-training/intermediate/writing-drivers"
+  },
+  "next": {
+    "title": "Sensor Power Management",
+    "permalink": "/docs/zephyr-training/intermediate/power-management"
+  }
+}

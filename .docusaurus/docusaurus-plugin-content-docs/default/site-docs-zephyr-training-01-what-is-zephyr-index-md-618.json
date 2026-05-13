@@ -1,0 +1,23 @@
+{
+  "id": "zephyr-training/what-is-zephyr/index",
+  "title": "What is Zephyr?",
+  "description": "An overview of the Zephyr RTOS — what it is, why it matters, and how it's structured.",
+  "source": "@site/docs/zephyr-training/01_what-is-zephyr/index.md",
+  "sourceDirName": "zephyr-training/01_what-is-zephyr",
+  "slug": "/zephyr-training/what-is-zephyr/",
+  "permalink": "/docs/zephyr-training/what-is-zephyr/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "description": "An overview of the Zephyr RTOS — what it is, why it matters, and how it's structured."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "next": {
+    "title": "West",
+    "permalink": "/docs/zephyr-training/what-is-zephyr/west"
+  }
+}

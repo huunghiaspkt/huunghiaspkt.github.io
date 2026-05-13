@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/devicetree/writing-overlays",
+  "title": "Writing Overlays",
+  "description": "Cách viết devicetree overlay — cú pháp, tham chiếu node, property và thiết bị con.",
+  "source": "@site/i18n/vi/docusaurus-plugin-content-docs/current/zephyr-training/03_devicetree/writing-overlays.md",
+  "sourceDirName": "zephyr-training/03_devicetree",
+  "slug": "/zephyr-training/devicetree/writing-overlays",
+  "permalink": "/vi/docs/zephyr-training/devicetree/writing-overlays",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "description": "Cách viết devicetree overlay — cú pháp, tham chiếu node, property và thiết bị con."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Devicetree",
+    "permalink": "/vi/docs/zephyr-training/devicetree/"
+  },
+  "next": {
+    "title": "Common Mistakes",
+    "permalink": "/vi/docs/zephyr-training/devicetree/common-mistakes"
+  }
+}

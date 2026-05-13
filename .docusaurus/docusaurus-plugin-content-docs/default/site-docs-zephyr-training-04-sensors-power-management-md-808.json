@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/sensors/power-management",
+  "title": "Sensor Power Management",
+  "description": "Suspend and resume sensors between readings using Zephyr's runtime power management API.",
+  "source": "@site/docs/zephyr-training/04_sensors/power-management.md",
+  "sourceDirName": "zephyr-training/04_sensors",
+  "slug": "/zephyr-training/sensors/power-management",
+  "permalink": "/docs/zephyr-training/sensors/power-management",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "description": "Suspend and resume sensors between readings using Zephyr's runtime power management API."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Sensors",
+    "permalink": "/docs/zephyr-training/sensors/"
+  },
+  "next": {
+    "title": "Writing Drivers",
+    "permalink": "/docs/zephyr-training/writing-drivers/"
+  }
+}

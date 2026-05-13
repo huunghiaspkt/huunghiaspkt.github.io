@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/how-to-start/west",
+  "title": "West",
+  "description": "Tìm hiểu về west — công cụ meta của Zephyr để quản lý workspace và build.",
+  "source": "@site/i18n/vi/docusaurus-plugin-content-docs/current/zephyr-training/01_how-to-start/west.md",
+  "sourceDirName": "zephyr-training/01_how-to-start",
+  "slug": "/zephyr-training/how-to-start/west",
+  "permalink": "/vi/docs/zephyr-training/how-to-start/west",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "description": "Tìm hiểu về west — công cụ meta của Zephyr để quản lý workspace và build."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Hello World",
+    "permalink": "/vi/docs/zephyr-training/how-to-start/hello-world"
+  },
+  "next": {
+    "title": "The Build System",
+    "permalink": "/vi/docs/zephyr-training/how-to-start/build-system"
+  }
+}

@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="560" viewBox="0 0 800 560">
+  <rect width="800" height="560" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+  <rect x="0" y="520" width="800" height="40" fill="#111" stroke="#333" stroke-width="1"/>
+  <text x="16" y="546" font-family="monospace" font-size="13" fill="#aaa">SHT31 Sensor Board  |  PCB Top View (L1 Signal + L2 GND)</text>
+  <text x="640" y="546" font-family="monospace" font-size="12" fill="#666">50×35mm  |  4L ENIG</text>
+
+  <!-- Board outline -->
+  <rect x="120" y="40" width="560" height="390" rx="8" fill="#1a472a" stroke="#2e7d32" stroke-width="2.5"/>
+
+  <!-- PCB title -->
+  <text x="400" y="30" text-anchor="middle" font-family="monospace" font-size="14" fill="#81c784" font-weight="bold">Top Copper + Silkscreen</text>
+
+  <!-- ESP32-WROOM QFN pad array (simplified) -->
+  <rect x="270" y="140" width="110" height="110" fill="#b8860b" stroke="#ffd700" stroke-width="2"/>
+  <text x="325" y="185" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff" font-weight="bold">U1</text>
+  <text x="325" y="202" text-anchor="middle" font-family="monospace" font-size="10" fill="#ffd700">ESP32-WROOM</text>
+  <text x="325" y="218" text-anchor="middle" font-family="monospace" font-size="10" fill="#ffd700">LGA-38</text>
+  <!-- QFN pin pads along edges -->
+  <rect x="258" y="148" width="8" height="4" fill="#ffd700"/>
+  <rect x="258" y="160" width="8" height="4" fill="#ffd700"/>
+  <rect x="258" y="172" width="8" height="4" fill="#ffd700"/>
+  <rect x="258" y="184" width="8" height="4" fill="#ffd700"/>
+  <rect x="258" y="196" width="8" height="4" fill="#ffd700"/>
+  <rect x="258" y="208" width="8" height="4" fill="#ffd700"/>
+  <rect x="258" y="220" width="8" height="4" fill="#ffd700"/>
+  <rect x="382" y="148" width="8" height="4" fill="#ffd700"/>
+  <rect x="382" y="160" width="8" height="4" fill="#ffd700"/>
+  <rect x="382" y="172" width="8" height="4" fill="#ffd700"/>
+  <rect x="382" y="184" width="8" height="4" fill="#ffd700"/>
+  <rect x="382" y="196" width="8" height="4" fill="#ffd700"/>
+  <rect x="382" y="208" width="8" height="4" fill="#ffd700"/>
+  <rect x="382" y="220" width="8" height="4" fill="#ffd700"/>
+  <!-- top/bottom pads -->
+  <rect x="277" y="128" width="4" height="8" fill="#ffd700"/>
+  <rect x="291" y="128" width="4" height="8" fill="#ffd700"/>
+  <rect x="305" y="128" width="4" height="8" fill="#ffd700"/>
+  <rect x="319" y="128" width="4" height="8" fill="#ffd700"/>
+  <rect x="333" y="128" width="4" height="8" fill="#ffd700"/>
+  <rect x="347" y="128" width="4" height="8" fill="#ffd700"/>
+  <rect x="361" y="128" width="4" height="8" fill="#ffd700"/>
+  <rect x="277" y="252" width="4" height="8" fill="#ffd700"/>
+  <rect x="291" y="252" width="4" height="8" fill="#ffd700"/>
+  <rect x="305" y="252" width="4" height="8" fill="#ffd700"/>
+  <rect x="319" y="252" width="4" height="8" fill="#ffd700"/>
+  <rect x="333" y="252" width="4" height="8" fill="#ffd700"/>
+
+  <!-- SHT31 DFN-8 (board edge, right side) -->
+  <rect x="520" y="170" width="60" height="50" fill="#b8860b" stroke="#ffd700" stroke-width="1.5"/>
+  <text x="550" y="194" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">U2</text>
+  <text x="550" y="210" text-anchor="middle" font-family="monospace" font-size="10" fill="#ffd700">SHT31</text>
+  <rect x="508" y="178" width="8" height="4" fill="#ffd700"/>
+  <rect x="508" y="188" width="8" height="4" fill="#ffd700"/>
+  <rect x="508" y="198" width="8" height="4" fill="#ffd700"/>
+  <rect x="508" y="208" width="8" height="4" fill="#ffd700"/>
+  <rect x="580" y="178" width="8" height="4" fill="#ffd700"/>
+  <rect x="580" y="188" width="8" height="4" fill="#ffd700"/>
+
+  <!-- LDO U3 SOT-223 -->
+  <rect x="200" y="300" width="55" height="45" fill="#b8860b" stroke="#ffd700" stroke-width="1.5"/>
+  <text x="228" y="320" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">U3</text>
+  <text x="228" y="336" text-anchor="middle" font-family="monospace" font-size="10" fill="#ffd700">TLV1117</text>
+
+  <!-- USB-C connector J1 -->
+  <rect x="130" y="190" width="40" height="70" rx="4" fill="#888" stroke="#aaa" stroke-width="2"/>
+  <text x="150" y="222" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">J1</text>
+  <text x="150" y="238" text-anchor="middle" font-family="monospace" font-size="10" fill="#ddd">USB-C</text>
+
+  <!-- Antenna keepout -->
+  <rect x="390" y="60" width="110" height="70" fill="none" stroke="#ef5350" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="445" y="92" text-anchor="middle" font-family="monospace" font-size="10" fill="#ef5350">ANTENNA</text>
+  <text x="445" y="107" text-anchor="middle" font-family="monospace" font-size="10" fill="#ef5350">KEEPOUT</text>
+
+  <!-- Some decoupling caps (0402) -->
+  <rect x="262" y="310" width="14" height="8" fill="#b8860b" stroke="#ffd700" stroke-width="1"/>
+  <text x="269" y="330" text-anchor="middle" font-family="monospace" font-size="9" fill="#81c784">C1</text>
+  <rect x="284" y="310" width="14" height="8" fill="#b8860b" stroke="#ffd700" stroke-width="1"/>
+  <text x="291" y="330" text-anchor="middle" font-family="monospace" font-size="9" fill="#81c784">C2</text>
+  <rect x="306" y="310" width="14" height="8" fill="#b8860b" stroke="#ffd700" stroke-width="1"/>
+  <text x="313" y="330" text-anchor="middle" font-family="monospace" font-size="9" fill="#81c784">C3</text>
+
+  <!-- Pull-up resistors R1, R2 (0402) -->
+  <rect x="440" y="140" width="14" height="8" fill="#b8860b" stroke="#ffd700" stroke-width="1"/>
+  <text x="447" y="158" text-anchor="middle" font-family="monospace" font-size="9" fill="#81c784">R1</text>
+  <rect x="462" y="140" width="14" height="8" fill="#b8860b" stroke="#ffd700" stroke-width="1"/>
+  <text x="469" y="158" text-anchor="middle" font-family="monospace" font-size="9" fill="#81c784">R2</text>
+
+  <!-- Routing traces (simplified) -->
+  <!-- 3V3 power trace -->
+  <polyline points="255,320 240,320 240,290 440,290 440,210 520,210" fill="none" stroke="#27ae60" stroke-width="2.5"/>
+  <!-- I2C traces -->
+  <polyline points="380,190 480,190 480,183 520,183" fill="none" stroke="#e74c3c" stroke-width="1.5"/>
+  <polyline points="380,200 470,200 470,188 520,188" fill="none" stroke="#3498db" stroke-width="1.5"/>
+
+  <!-- Dimension arrows -->
+  <line x1="120" y1="450" x2="680" y2="450" stroke="#888" stroke-width="1" marker-end="url(#arr)"/>
+  <line x1="680" y1="450" x2="120" y2="450" stroke="#888" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="400" y="470" text-anchor="middle" font-family="monospace" font-size="12" fill="#aaa">50 mm</text>
+  <line x1="100" y1="40" x2="100" y2="430" stroke="#888" stroke-width="1"/>
+  <text x="82" y="240" text-anchor="middle" font-family="monospace" font-size="12" fill="#aaa" transform="rotate(-90,82,240)">35 mm</text>
+
+  <!-- Layer legend -->
+  <rect x="600" y="330" width="150" height="80" rx="4" fill="#111" stroke="#444" stroke-width="1"/>
+  <text x="615" y="350" font-family="monospace" font-size="11" fill="#aaa">L1: Signal</text>
+  <rect x="730" y="341" width="12" height="8" fill="#27ae60"/>
+  <text x="615" y="368" font-family="monospace" font-size="11" fill="#aaa">L2: GND</text>
+  <rect x="730" y="359" width="12" height="8" fill="#666"/>
+  <text x="615" y="386" font-family="monospace" font-size="11" fill="#aaa">Pads: ENIG</text>
+  <rect x="730" y="377" width="12" height="8" fill="#ffd700"/>
+  <text x="615" y="404" font-family="monospace" font-size="11" fill="#aaa">Silk: White</text>
+</svg>

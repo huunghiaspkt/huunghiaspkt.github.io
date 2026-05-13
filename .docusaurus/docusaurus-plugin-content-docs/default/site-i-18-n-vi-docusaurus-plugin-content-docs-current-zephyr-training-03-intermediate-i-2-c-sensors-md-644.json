@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/intermediate/i2c-sensors",
+  "title": "Sensors",
+  "description": "Dùng sensor API của Zephyr để đọc sensor I2C — fetch, channel_get và quản lý nguồn.",
+  "source": "@site/i18n/vi/docusaurus-plugin-content-docs/current/zephyr-training/03_intermediate/i2c-sensors.md",
+  "sourceDirName": "zephyr-training/03_intermediate",
+  "slug": "/zephyr-training/intermediate/i2c-sensors",
+  "permalink": "/vi/docs/zephyr-training/intermediate/i2c-sensors",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "description": "Dùng sensor API của Zephyr để đọc sensor I2C — fetch, channel_get và quản lý nguồn."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Zephyr Intermediate",
+    "permalink": "/vi/docs/zephyr-training/intermediate/"
+  },
+  "next": {
+    "title": "Writing Drivers",
+    "permalink": "/vi/docs/zephyr-training/intermediate/writing-drivers"
+  }
+}

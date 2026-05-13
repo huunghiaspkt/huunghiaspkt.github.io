@@ -1,0 +1,53 @@
+{
+  "permalink": "/blog/2024/01/08/sht31-first-smoke",
+  "source": "@site/blog/2024-01-08-sht31-first-smoke.md",
+  "title": "SHT31 Board: First Smoke and What I Learned",
+  "description": "Day 8 of the SHT31 sensor board build. Applied power for the first time — and watched smoke come out of U3.",
+  "date": "2024-01-08T00:00:00.000Z",
+  "tags": [
+    {
+      "inline": true,
+      "label": "hardware",
+      "permalink": "/blog/tags/hardware"
+    },
+    {
+      "inline": true,
+      "label": "nrf52840",
+      "permalink": "/blog/tags/nrf-52840"
+    },
+    {
+      "inline": true,
+      "label": "altium",
+      "permalink": "/blog/tags/altium"
+    },
+    {
+      "inline": true,
+      "label": "lessons",
+      "permalink": "/blog/tags/lessons"
+    }
+  ],
+  "readingTime": 1.18,
+  "hasTruncateMarker": true,
+  "authors": [
+    {
+      "name": "Huu Nghia",
+      "title": "Embedded Firmware Engineer",
+      "url": "https://github.com/huunghiaspkt",
+      "imageURL": "https://github.com/huunghiaspkt.png",
+      "key": "huunghia",
+      "page": null
+    }
+  ],
+  "frontMatter": {
+    "title": "SHT31 Board: First Smoke and What I Learned",
+    "date": "2024-01-08T00:00:00.000Z",
+    "authors": "huunghia",
+    "tags": [
+      "hardware",
+      "nrf52840",
+      "altium",
+      "lessons"
+    ]
+  },
+  "unlisted": false
+}

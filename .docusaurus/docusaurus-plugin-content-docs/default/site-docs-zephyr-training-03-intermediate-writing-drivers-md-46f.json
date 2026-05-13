@@ -1,0 +1,27 @@
+{
+  "id": "zephyr-training/intermediate/writing-drivers",
+  "title": "Writing Drivers",
+  "description": "When to write a custom Zephyr driver and what the driver skeleton looks like.",
+  "source": "@site/docs/zephyr-training/03_intermediate/writing-drivers.md",
+  "sourceDirName": "zephyr-training/03_intermediate",
+  "slug": "/zephyr-training/intermediate/writing-drivers",
+  "permalink": "/docs/zephyr-training/intermediate/writing-drivers",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "description": "When to write a custom Zephyr driver and what the driver skeleton looks like."
+  },
+  "sidebar": "zephyrTrainingSidebar",
+  "previous": {
+    "title": "Sensors",
+    "permalink": "/docs/zephyr-training/intermediate/i2c-sensors"
+  },
+  "next": {
+    "title": "DTS Binding YAML",
+    "permalink": "/docs/zephyr-training/intermediate/binding-yaml"
+  }
+}

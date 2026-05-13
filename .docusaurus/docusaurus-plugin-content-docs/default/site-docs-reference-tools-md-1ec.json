@@ -1,0 +1,18 @@
+{
+  "id": "reference/tools",
+  "title": "Tools",
+  "description": "The tools I use for every project, with setup notes.",
+  "source": "@site/docs/reference/tools.md",
+  "sourceDirName": "reference",
+  "slug": "/reference/tools",
+  "permalink": "/docs/reference/tools",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Tools",
+    "sidebar_label": "Tools & Environment"
+  },
+  "sidebar": "referenceSidebar"
+}

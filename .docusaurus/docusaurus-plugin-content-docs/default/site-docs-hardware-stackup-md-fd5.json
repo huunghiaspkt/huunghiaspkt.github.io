@@ -1,0 +1,22 @@
+{
+  "id": "hardware/stackup",
+  "title": "PCB Stackup Reference",
+  "description": "Standard stackup configurations I use with JLCPCB.",
+  "source": "@site/docs/hardware/stackup.md",
+  "sourceDirName": "hardware",
+  "slug": "/hardware/stackup",
+  "permalink": "/docs/hardware/stackup",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "PCB Stackup Reference",
+    "sidebar_label": "Stackup Reference"
+  },
+  "sidebar": "hardwareSidebar",
+  "previous": {
+    "title": "Altium Export Workflow",
+    "permalink": "/docs/hardware/altium-workflow"
+  }
+}
