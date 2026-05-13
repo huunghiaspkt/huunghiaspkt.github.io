@@ -28,11 +28,11 @@ For the full list of supported boards, see **[docs.zephyrproject.org/latest/boar
 
 | Page | What you'll do |
 |---|---|
-| [What is Zephyr?](what-is-zephyr) | Short intro — what it is, why it exists, who uses it |
-| [Environment Setup](environment) | Install west, the Zephyr SDK, and VS Code tooling |
-| [Hello World](hello-world) | Build and flash your first Zephyr application |
-| [West Basics](west) | The commands you'll use every single day |
-| [Build System](build-system) | What happens inside `west build` and how to read errors |
+| [What is Zephyr?](./what-is-zephyr) | Short intro — what it is, why it exists, who uses it |
+| [Environment Setup](./environment) | Install west, the Zephyr SDK, and VS Code tooling |
+| [Hello World](./hello-world) | Build and flash your first Zephyr application |
+| [West Basics](./west) | The commands you'll use every single day |
+| [Build System](./build-system) | What happens inside `west build` and how to read errors |
 
 ## Time estimate
 

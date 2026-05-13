@@ -16,11 +16,11 @@ You can build and flash a Hello World. Now learn the three systems that underpin
 
 | Page | What you'll learn |
 |---|---|
-| [Kconfig](kconfig) | Enable/disable drivers and features, read `.config`, avoid dependency traps |
-| [Devicetree](devicetree) | The three-layer model, node references, how hardware gets described |
-| [Writing Overlays](overlays) | Add sensors and peripherals to your application |
-| [GPIO](gpio) | Read buttons, blink LEDs, handle interrupts |
-| [Common Mistakes](common-mistakes) | The 6 errors that waste the most time — with exact fixes |
+| [Kconfig](./kconfig) | Enable/disable drivers and features, read `.config`, avoid dependency traps |
+| [Devicetree](./devicetree) | The three-layer model, node references, how hardware gets described |
+| [Writing Overlays](./overlays) | Add sensors and peripherals to your application |
+| [GPIO](./gpio) | Read buttons, blink LEDs, handle interrupts |
+| [Common Mistakes](./common-mistakes) | The 6 errors that waste the most time — with exact fixes |
 
 ## Core mental model
 

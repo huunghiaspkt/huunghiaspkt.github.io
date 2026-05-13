@@ -9,19 +9,19 @@ You understand Kconfig, devicetree, and GPIO. Now build the things that go into 
 
 ## Prerequisites
 
-- Comfortable with [Zephyr Basic](/docs/zephyr-training/basic)
+- Comfortable with [Zephyr Basic](/docs/zephyr-training/basic/)
 - Know how to write an overlay and enable drivers in `prj.conf`
 
 ## What's in this section
 
 | Page | What you'll learn |
 |---|---|
-| [I2C Sensors](i2c-sensors) | Fetch temperature, humidity, accelerometer data using the sensor API |
-| [Power Management](power-management) | Suspend peripherals between readings, cut idle current |
-| [Threads](threads) | Create threads, share data safely, avoid race conditions |
-| [BLE Basics](ble-basics) | Advertise, connect, and expose data as a GATT characteristic |
-| [Writing Drivers](writing-drivers) | Build a driver for a peripheral that has no in-tree support |
-| [DTS Binding YAML](binding-yaml) | Define what properties your custom driver's DTS node accepts |
+| [I2C Sensors](./i2c-sensors) | Fetch temperature, humidity, accelerometer data using the sensor API |
+| [Power Management](./power-management) | Suspend peripherals between readings, cut idle current |
+| [Threads](./threads) | Create threads, share data safely, avoid race conditions |
+| [BLE Basics](./ble-basics) | Advertise, connect, and expose data as a GATT characteristic |
+| [Writing Drivers](./writing-drivers) | Build a driver for a peripheral that has no in-tree support |
+| [DTS Binding YAML](./binding-yaml) | Define what properties your custom driver's DTS node accepts |
 
 ## The shift at this level
 

@@ -16,8 +16,8 @@ Intermediate taught you how to write features. Real Product teaches you how to *
 
 | Page | What you'll learn |
 |---|---|
-| [Custom Board](custom-board) | Create a board definition for your own PCB — no dev kit as crutch |
-| [Watchdog](watchdog) | Hardware and software watchdogs — never ship without them |
+| [Custom Board](./custom-board) | Create a board definition for your own PCB — no dev kit as crutch |
+| [Watchdog](./watchdog) | Hardware and software watchdogs — never ship without them |
 | OTA with MCUboot *(coming soon)* | Over-the-air firmware updates: dual-bank flash, signing, recovery |
 | NVS Storage *(coming soon)* | Persist configuration across reboots safely |
 | Production Kconfig *(coming soon)* | Strip debug overhead, harden for field deployment |
