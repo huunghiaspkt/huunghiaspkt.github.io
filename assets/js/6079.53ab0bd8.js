@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkbranding_scaffold=self.webpackChunkbranding_scaffold||[]).push([["6079"],{6402(e,c,a){a.d(c,{createArchitectureServices:()=>r.S});var r=a(5016);a(9302)}}]);
