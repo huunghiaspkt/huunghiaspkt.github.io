@@ -9,6 +9,10 @@ const config: Config = {
 
   future: { v4: true },
 
+  markdown: {
+    mermaid: true,
+  },
+
   url: 'https://huunghiaspkt.github.io',
   baseUrl: '/',
 
@@ -28,6 +32,7 @@ const config: Config = {
   ],
 
   themes: [
+    '@docusaurus/theme-mermaid',
     [
       require.resolve('@easyops-cn/docusaurus-search-local'),
       {
