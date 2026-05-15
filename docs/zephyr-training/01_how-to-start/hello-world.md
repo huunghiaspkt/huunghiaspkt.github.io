@@ -1,22 +1,140 @@
 ---
 sidebar_position: 3
-
-description: Understand the structure of a Zephyr application and build your first Hello World.
+description: Copy the Hello World sample from the Zephyr tree, build it, and run it on your board.
 ---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Hello World
 
-Every Zephyr application has the same three-file structure. Once you understand it, every project you encounter will feel familiar.
+The fastest way to get started is to use the sample that already ships with Zephyr.
+You'll copy it out of the Zephyr tree, build it, and flash it to your board.
 
-## The minimal project
+:::note[Workspace location]
+Your Zephyr workspace can be anywhere on your machine. Throughout this guide we use `/your/workspace/path` as a placeholder — replace it with wherever you put your workspace (e.g. `/home/john/zephyr_ws` on Linux, `/Users/john/zephyr_ws` on macOS, or `D:\projects\zephyr_ws` on Windows).
+:::
+
+<br/>
+
+---
+
+## Step 1 — Open your terminal
+
+<Tabs groupId="os">
+<TabItem value="linux" label="🐧 Linux" default>
+
+Open your preferred terminal emulator — **GNOME Terminal**, **Konsole**, **Alacritty**, or any other.
+
+Activate your virtual environment:
+
+```bash
+source /your/workspace/path/.venv/bin/activate
+```
+
+</TabItem>
+<TabItem value="macos" label="🍎 macOS">
+
+Open **Terminal** (`/Applications/Utilities/Terminal.app`) or **iTerm2** if you have it installed.
+
+Activate your virtual environment:
+
+```bash
+source /your/workspace/path/.venv/bin/activate
+```
+
+</TabItem>
+<TabItem value="windows" label="🪟 Windows">
+
+Use **PowerShell** — not cmd.exe. Open it by pressing `Win + X` and selecting **Terminal** or **Windows PowerShell**.
+
+Activate your virtual environment:
+
+```powershell
+D:\your\workspace\path\.venv\Scripts\Activate.ps1
+```
+
+</TabItem>
+</Tabs>
+
+<br/>
+
+---
+
+## Step 2 — Copy the sample
+
+Zephyr ships with a `samples/` folder full of ready-to-build examples. The Hello World sample lives at:
 
 ```
-my_app/
-├── CMakeLists.txt    # Build system entry point
-├── prj.conf          # Kconfig configuration
+/your/workspace/path/zephyr/samples/hello_world/
+```
+
+Copy it into a `devzone/` folder — this is where you'll keep all your personal projects, separate from the Zephyr source tree:
+
+<Tabs groupId="os">
+<TabItem value="linux" label="🐧 Linux" default>
+
+```bash
+mkdir -p /your/workspace/path/devzone
+cp -r /your/workspace/path/zephyr/samples/hello_world /your/workspace/path/devzone/hello_world
+```
+
+**Example** (if your workspace is at `/home/john/zephyr_ws`):
+```bash
+mkdir -p /home/john/zephyr_ws/devzone
+cp -r /home/john/zephyr_ws/zephyr/samples/hello_world /home/john/zephyr_ws/devzone/hello_world
+```
+
+</TabItem>
+<TabItem value="macos" label="🍎 macOS">
+
+```bash
+mkdir -p /your/workspace/path/devzone
+cp -r /your/workspace/path/zephyr/samples/hello_world /your/workspace/path/devzone/hello_world
+```
+
+**Example** (if your workspace is at `/Users/john/zephyr_ws`):
+```bash
+mkdir -p /Users/john/zephyr_ws/devzone
+cp -r /Users/john/zephyr_ws/zephyr/samples/hello_world /Users/john/zephyr_ws/devzone/hello_world
+```
+
+</TabItem>
+<TabItem value="windows" label="🪟 Windows">
+
+```powershell
+New-Item -ItemType Directory -Force -Path "D:\your\workspace\path\devzone"
+Copy-Item -Recurse "D:\your\workspace\path\zephyr\samples\hello_world" "D:\your\workspace\path\devzone\hello_world"
+```
+
+**Example** (if your workspace is at `D:\projects\zephyr_ws`):
+```powershell
+New-Item -ItemType Directory -Force -Path "D:\projects\zephyr_ws\devzone"
+Copy-Item -Recurse "D:\projects\zephyr_ws\zephyr\samples\hello_world" "D:\projects\zephyr_ws\devzone\hello_world"
+```
+
+</TabItem>
+</Tabs>
+
+:::tip[Why copy instead of build in place?]
+Building directly inside the Zephyr tree works, but keeping your apps in a separate `devzone/` folder keeps things clean and lets you track your own projects in a separate git repo.
+:::
+
+Your `devzone/hello_world/` folder should now look like this:
+
+```
+devzone/hello_world/
+├── CMakeLists.txt
+├── prj.conf
 └── src/
-    └── main.c        # Application code
+    └── main.c
 ```
+
+<br/>
+
+---
+
+## Step 3 — Look at the files
 
 ### CMakeLists.txt
 
@@ -28,65 +146,103 @@ project(hello_world)
 target_sources(app PRIVATE src/main.c)
 ```
 
-The `find_package(Zephyr ...)` line is what connects your application to the Zephyr build system. West sets the `ZEPHYR_BASE` environment variable automatically.
+The `find_package(Zephyr ...)` line connects your app to the Zephyr build system.
+West sets `ZEPHYR_BASE` automatically — you don't need to set it yourself.
 
 ### prj.conf
 
 ```kconfig title="prj.conf"
-# Enable USB console for Hello World output
-CONFIG_USB_DEVICE_STACK=y
-CONFIG_USB_CDC_ACM=y
-CONFIG_UART_LINE_CTRL=y
-
-# Logging
-CONFIG_LOG=y
+# Nothing needed for Hello World
+# Add CONFIG_* symbols here to enable drivers and subsystems
 ```
 
-### main.c
+### src/main.c
 
 ```c title="src/main.c"
-#include <zephyr/kernel.h>
-#include <zephyr/logging/log.h>
-
-LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
+#include <stdio.h>
 
 int main(void)
 {
-    LOG_INF("Hello, Zephyr!");
-
-    while (1) {
-        k_sleep(K_SECONDS(1));
-        LOG_INF("tick");
-    }
-
+    printf("Hello World! %s\n", CONFIG_BOARD);
     return 0;
 }
 ```
 
-## Build and run
+`CONFIG_BOARD` expands to the board name you pass with `-b` — so building for `esp32_devkitc_wroom` prints `Hello World! esp32_devkitc_wroom`.
+
+<br/>
+
+---
+
+## Step 4 — Build and flash
+
+Navigate to your copied sample and build it. Replace `<your-board>` with your board ID (e.g. `esp32_devkitc_wroom`, `nrf52840dk/nrf52840`):
+
+<Tabs groupId="os">
+<TabItem value="linux" label="🐧 Linux" default>
 
 ```bash
-# Build for the ESP32 DK
-west build -b esp32_devkitc_wroom .
-
-# Flash to the board
+cd /your/workspace/path/devzone/hello_world
+west build -b <your-board> .
 west flash
-
-# Open the debug console (RTT)
-west rtt
 ```
 
-Expected output:
-```
-*** Booting Zephyr OS build v3.7.0 ***
-[00:00:00.006,000] <inf> main: Hello, Zephyr!
-[00:00:01.006,000] <inf> main: tick
-[00:00:02.006,000] <inf> main: tick
+</TabItem>
+<TabItem value="macos" label="🍎 macOS">
+
+```bash
+cd /your/workspace/path/devzone/hello_world
+west build -b <your-board> .
+west flash
 ```
 
-:::tip
-The timestamp `[00:00:00.006,000]` is in `seconds.milliseconds,microseconds` format. Zephyr's logging system uses the system uptime clock.
+</TabItem>
+<TabItem value="windows" label="🪟 Windows">
+
+```powershell
+cd D:\your\workspace\path\devzone\hello_world
+west build -b <your-board> .
+west flash
+```
+
+</TabItem>
+</Tabs>
+
+Expected output on the serial console:
+
+```
+*** Booting Zephyr OS build v4.4.0 ***
+Hello World! esp32_devkitc_wroom
+```
+
+<br/>
+
+---
+
+## Step 5 — Read the output with Serial Monitor
+
+After flashing, open **Serial Monitor** in VS Code to see the output from your board:
+
+1. Go to `Terminal → New Terminal` in VS Code
+2. The **Serial Monitor** tab will appear at the bottom panel
+3. Select your board's port (e.g. `/dev/ttyUSB0` on Linux, `/dev/cu.usbserial-*` on macOS, `COM3` on Windows)
+4. Set the baud rate to **115200**
+5. Click **Start Monitoring**
+
+You should see:
+
+```
+*** Booting Zephyr OS build v4.4.0 ***
+Hello World! esp32_devkitc_wroom
+```
+
+:::tip[Serial Monitor not set up yet?]
+Follow the [Serial Monitor setup guide](./environment#serial-console--vs-code-setup) in the Environment Setup page first.
 :::
+
+<br/>
+
+---
 
 ## What `west build` actually does
 
@@ -94,8 +250,14 @@ The timestamp `[00:00:00.006,000]` is in `seconds.milliseconds,microseconds` for
 2. Merges all Kconfig files into `build/zephyr/.config`
 3. Compiles the final devicetree into `build/zephyr/zephyr.dts`
 4. Compiles all source files and links `zephyr.elf`
-5. Produces `zephyr.hex` (ready for flashing)
+5. Produces `zephyr.bin` / `zephyr.hex` ready for flashing
 
 :::info
-The build directory (`build/`) is reusable. Run `west build` again after changing `main.c` and it does an incremental rebuild — only changed files are recompiled.
+The `build/` directory is reusable. Run `west build` again after changing `main.c` and only changed files are recompiled. Use `west build -p always` to force a clean rebuild.
+:::
+
+<br/>
+
+:::info[Official reference]
+[docs.zephyrproject.org — Hello World sample](https://docs.zephyrproject.org/latest/samples/hello_world/README.html)
 :::
