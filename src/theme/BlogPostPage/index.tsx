@@ -29,7 +29,7 @@ function GiscusComments() {
   );
 }
 
-export default function BlogPostPageWrapper(props: Props): JSX.Element {
+export default function BlogPostPageWrapper(props: Props): React.JSX.Element {
   return (
     <>
       <BlogPostPage {...props} />
