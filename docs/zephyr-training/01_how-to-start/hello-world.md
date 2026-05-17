@@ -168,7 +168,7 @@ int main(void)
 }
 ```
 
-`CONFIG_BOARD` expands to the board name you pass with `-b` — so building for `esp32_devkitc_wroom` prints `Hello World! esp32_devkitc_wroom`.
+`CONFIG_BOARD` expands to the board name you pass with `-b` — so building for `esp32s3_devkitc` prints `Hello World! esp32s3_devkitc`.
 
 <br/>
 
@@ -176,7 +176,7 @@ int main(void)
 
 ## Step 4 — Build and flash
 
-Navigate to your copied sample and build it. Replace `<your-board>` with your board ID (e.g. `esp32_devkitc_wroom`, `nrf52840dk/nrf52840`):
+Navigate to your copied sample and build it. Replace `<your-board>` with your board ID (e.g. `esp32s3_devkitc/esp32s3/procpu`, `nrf52840dk/nrf52840`):
 
 <Tabs groupId="os">
 <TabItem value="linux" label="🐧 Linux" default>
@@ -212,7 +212,7 @@ Expected output on the serial console:
 
 ```
 *** Booting Zephyr OS build v4.4.0 ***
-Hello World! esp32_devkitc_wroom
+Hello World! esp32s3_devkitc
 ```
 
 <br/>
@@ -233,7 +233,7 @@ You should see:
 
 ```
 *** Booting Zephyr OS build v4.4.0 ***
-Hello World! esp32_devkitc_wroom
+Hello World! esp32s3_devkitc
 ```
 
 :::tip[Serial Monitor not set up yet?]

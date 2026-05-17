@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 6
 description: When to write a custom Zephyr driver and what the driver skeleton looks like.
 ---
 
@@ -8,9 +8,6 @@ description: When to write a custom Zephyr driver and what the driver skeleton l
 Zephyr has 200+ in-tree sensor drivers. Before writing your own, check:
 
 ```bash
-# Search by compatible string
-ls zephyr/drivers/sensor/ | grep -i sht
-
 # Search in bindings
 ls zephyr/dts/bindings/sensor/ | grep -i sensirion
 ```
@@ -22,7 +19,11 @@ If your sensor isn't there, you have two options:
 
 This module covers option 2: an out-of-tree driver that integrates cleanly with Zephyr's driver model.
 
-## When you need a custom driver
+<br/>
+
+---
+
+## When you need a custom driver?
 
 Write a driver when:
 - The sensor has no in-tree support
@@ -32,6 +33,10 @@ Write a driver when:
 Don't write a driver when:
 - An in-tree driver exists — use it even if it exposes more than you need
 - You just need to add I2C address support — submit a one-line patch upstream
+
+<br/>
+
+---
 
 ## Driver anatomy
 
@@ -50,6 +55,10 @@ dts/bindings/sensor/
 The next page covers the **DTS binding YAML** — this is where you define what properties your DTS node accepts.
 
 The page after that covers the **driver implementation** — the C file that implements the Zephyr sensor API using `DT_INST_FOREACH_STATUS_OKAY`.
+
+<br/>
+
+---
 
 ## The driver model contract
 

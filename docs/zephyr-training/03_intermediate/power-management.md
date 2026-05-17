@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 8
 description: Suspend and resume sensors between readings using Zephyr's runtime power management API.
 ---
 
@@ -8,6 +8,10 @@ description: Suspend and resume sensors between readings using Zephyr's runtime 
 The SHT31 draws ~1.5 mA during measurement and ~2 µA in sleep. On a 225 mAh CR2032 coin cell, this difference is the gap between 14 days and years of runtime.
 
 Zephyr's runtime power management (PM) lets you suspend a device between uses with a single function call — if the driver implements it.
+
+<br/>
+
+---
 
 ## Enabling runtime PM
 
@@ -19,6 +23,10 @@ CONFIG_PM_DEVICE=y
 ```
 
 `CONFIG_PM_DEVICE=y` enables the per-device suspend/resume interface.
+
+<br/>
+
+---
 
 ## Suspending and resuming
 
@@ -54,6 +62,10 @@ int main(void)
 }
 ```
 
+<br/>
+
+---
+
 ## Does the driver support PM?
 
 Not all Zephyr drivers implement PM. Check:
@@ -76,7 +88,11 @@ if (ret && ret != -ENOTSUP) {
 ```
 :::
 
-## What PM actually does to the SHT31
+<br/>
+
+---
+
+## What does PM actually do to the SHT31?
 
 When you call `PM_DEVICE_ACTION_SUSPEND` on the SHT31:
 1. The Zephyr driver sends the sensor's "periodic mode stop" command over I2C
@@ -85,6 +101,10 @@ When you call `PM_DEVICE_ACTION_SUSPEND` on the SHT31:
 When you call `PM_DEVICE_ACTION_RESUME`:
 1. The driver sends a soft reset or wakeup sequence
 2. Wait at least 1 ms before issuing a measurement command
+
+<br/>
+
+---
 
 ## BLE + I2C conflict during PM
 

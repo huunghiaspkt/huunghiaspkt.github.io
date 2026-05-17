@@ -1,11 +1,15 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 description: Write a DTS binding YAML file to define what properties your devicetree node accepts.
 ---
 
 # DTS Binding YAML
 
 The binding YAML file defines what properties a DTS node with your `compatible` string can have. Zephyr validates every node against its binding at build time.
+
+<br/>
+
+---
 
 ## Minimal binding
 
@@ -32,6 +36,10 @@ properties:
     description: Steinhart-Hart B parameter for the NTC
 ```
 
+<br/>
+
+---
+
 ## `include` — inherit from base bindings
 
 `include: [base.yaml]` provides standard properties (`status`, `compatible`, `label`). You always need this.
@@ -41,6 +49,10 @@ properties:
 - `spi-device.yaml` — SPI devices
 - `adc-device.yaml` — ADC channels
 - `gpio.yaml` — GPIO pins
+
+<br/>
+
+---
 
 ## Property types
 
@@ -52,13 +64,21 @@ properties:
 | `phandle-array` | `io-channels: phandle-array` | `io-channels = <&adc0 2>;` |
 | `array` | `gpios: array` | `gpios = <&gpio0 13 0>;` |
 
+<br/>
+
+---
+
 ## `required: true`
 
 Mark a property as required if the driver cannot function without it. Zephyr will emit a build error if the DTS node omits a required property.
 
+<br/>
+
+---
+
 ## Using the binding in DTS
 
-```dts title="boards/esp32_devkitc_wroom.overlay"
+```dts title="boards/esp32s3_devkitc_esp32s3_procpu.overlay"
 / {
     my_thermistor: thermistor {
         compatible = "vendor,my-sensor";
@@ -68,6 +88,10 @@ Mark a property as required if the driver cannot function without it. Zephyr wil
     };
 };
 ```
+
+<br/>
+
+---
 
 ## Accessing properties in the driver
 
@@ -91,11 +115,15 @@ static const struct my_config my_cfg_0 = {
 DTS uses hyphens in property names (`ntc-b-param`). The C macros use underscores (`ntc_b_param`). Zephyr converts automatically in `DT_INST_PROP`.
 :::
 
+<br/>
+
+---
+
 ## Validating your binding
 
 ```bash
 # Build your project — DTS validation runs at build time
-west build -b esp32_devkitc_wroom .
+west build -b esp32s3_devkitc/esp32s3/procpu .
 
 # Check for binding validation errors in the build output
 # They look like: "dt-validation: property 'pullup-uohm' is missing"

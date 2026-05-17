@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 10
 description: Set up BLE advertising on ESP32, connect from a phone, and expose sensor data as a GATT characteristic.
 ---
 
@@ -8,6 +8,10 @@ description: Set up BLE advertising on ESP32, connect from a phone, and expose s
 Zephyr has a full BLE stack (based on Bluetooth Mesh / HCI). On ESP32, it's first-class: Espressif uses Zephyr as the basis for nRF Connect SDK.
 
 This page covers the minimum viable BLE peripheral: advertise, accept a connection, and serve sensor data via a custom GATT characteristic.
+
+<br/>
+
+---
 
 ## Kconfig
 
@@ -18,6 +22,10 @@ CONFIG_BT_DEVICE_NAME="EmbeddedFun-01"
 CONFIG_BT_DEVICE_APPEARANCE=768    # "Generic Sensor"
 CONFIG_BT_MAX_CONN=1
 ```
+
+<br/>
+
+---
 
 ## Advertising
 
@@ -38,6 +46,10 @@ int main(void)
     /* ... */
 }
 ```
+
+<br/>
+
+---
 
 ## Custom GATT service
 
@@ -76,6 +88,10 @@ void ble_update_temperature(float temp)
 }
 ```
 
+<br/>
+
+---
+
 ## Testing with nRF Connect
 
 1. Flash your firmware
@@ -83,6 +99,10 @@ void ble_update_temperature(float temp)
 3. Scan — find `EmbeddedFun-01`
 4. Connect → expand the custom service → read the characteristic
 5. Enable notifications → see values update in real time
+
+<br/>
+
+---
 
 ## Connection callbacks
 

@@ -16,11 +16,11 @@ You can build and flash a Hello World. Now learn the three systems that underpin
 
 | Page | What you'll learn |
 |---|---|
-| [Kconfig](./kconfig) | Enable/disable drivers and features, read `.config`, avoid dependency traps |
-| [Devicetree](./devicetree) | The three-layer model, node references, how hardware gets described |
+| [How to Find the API You Need](./finding-apis) | Quick lookup: GPIO, I2C, SPI, UART, ADC, PWM, threads, timers, semaphores |
+| [Meet the ESP32-S3-DevKitC](./esp32s3-board) | The board used for all examples — specs and board target |
 | [Writing Overlays](./overlays) | Add sensors and peripherals to your application |
-| [GPIO](./gpio) | Read buttons, blink LEDs, handle interrupts |
-| [Common Mistakes](./common-mistakes) | The 6 errors that waste the most time — with exact fixes |
+| [WS2812 RGB LED](./ws2812) | Drive the built-in RGB LED using the Zephyr LED strip API |
+| [Threads](./threads) | Run Hello World and WS2812 concurrently — your first multi-threaded firmware |
 
 ## Core mental model
 

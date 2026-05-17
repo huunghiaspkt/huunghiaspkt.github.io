@@ -1,40 +1,15 @@
 ---
-sidebar_position: 4
-description: Create Zephyr threads, share data safely with semaphores and mutexes, and use work queues.
+sidebar_position: 9
+description: Share data safely between Zephyr threads — semaphores, mutexes, message queues, and work queues.
 ---
 
-# Threads
+# Thread Synchronization
 
-Zephyr is a preemptive RTOS. Threads run concurrently, each with its own stack. Understanding threading is what separates "firmware that works on the bench" from "firmware that works in the field."
+Thread creation basics are covered in [Threads (Basic)](../basic/threads). This page focuses on what comes next: **safely sharing data and signaling between threads**.
 
-## Creating a thread
+<br/>
 
-```c
-#include <zephyr/kernel.h>
-
-#define STACK_SIZE 1024
-#define PRIORITY   5
-
-K_THREAD_STACK_DEFINE(my_stack, STACK_SIZE);
-static struct k_thread my_thread_data;
-
-void my_thread_fn(void *arg1, void *arg2, void *arg3)
-{
-    while (1) {
-        printk("Thread running\n");
-        k_sleep(K_SECONDS(1));
-    }
-}
-
-int main(void)
-{
-    k_thread_create(&my_thread_data, my_stack,
-                    K_THREAD_STACK_SIZEOF(my_stack),
-                    my_thread_fn, NULL, NULL, NULL,
-                    PRIORITY, 0, K_NO_WAIT);
-    return 0;
-}
-```
+---
 
 ## Semaphores — signaling between threads
 
@@ -60,6 +35,10 @@ void ble_thread(void *a, void *b, void *c)
     }
 }
 ```
+
+<br/>
+
+---
 
 ## Mutexes — protecting shared data
 
@@ -90,6 +69,10 @@ void reader_thread(void *a, void *b, void *c)
 }
 ```
 
+<br/>
+
+---
+
 ## Message queues — passing data between threads
 
 Safer than shared variables — no mutex needed:
@@ -110,6 +93,10 @@ k_msgq_put(&sensor_msgq, &msg, K_NO_WAIT);
 struct sensor_msg rx;
 k_msgq_get(&sensor_msgq, &rx, K_FOREVER);
 ```
+
+<br/>
+
+---
 
 ## Work queues — deferring work from interrupts
 
@@ -140,6 +127,10 @@ int main(void)
 :::warning
 **Stack overflow** is the most common threading bug in Zephyr. If your board resets or behaves strangely, increase `STACK_SIZE`. Enable `CONFIG_THREAD_ANALYZER=y` to measure actual stack usage.
 :::
+
+<br/>
+
+---
 
 ## Thread priorities
 

@@ -33,7 +33,7 @@ After `west build`, everything lands in the `build/zephyr/` directory:
 After a build, check how much flash and RAM your firmware uses:
 
 ```bash
-west build -b esp32_devkitc_wroom . && \
+west build -b esp32s3_devkitc/esp32s3/procpu . && \
   cat build/zephyr/zephyr.stat
 ```
 
@@ -67,15 +67,15 @@ Example output:
 west build --pristine
 
 # Build with a custom overlay file
-west build -b esp32_devkitc_wroom . -- \
-  -DDTC_OVERLAY_FILE=boards/esp32_devkitc_wroom.overlay
+west build -b esp32s3_devkitc/esp32s3/procpu . -- \
+  -DDTC_OVERLAY_FILE=boards/esp32s3_devkitc_esp32s3_procpu.overlay
 
 # Override a Kconfig value without editing prj.conf
-west build -b esp32_devkitc_wroom . -- \
+west build -b esp32s3_devkitc/esp32s3/procpu . -- \
   -DCONFIG_LOG_DEFAULT_LEVEL=4
 
 # Build with verbose output (see every compiler command)
-west build -b esp32_devkitc_wroom . -- -DCMAKE_VERBOSE_MAKEFILE=ON
+west build -b esp32s3_devkitc/esp32s3/procpu . -- -DCMAKE_VERBOSE_MAKEFILE=ON
 ```
 
 :::note

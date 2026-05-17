@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 7
 description: Using Zephyr's sensor API to read I2C sensors — fetch, channel_get, and power management.
 ---
 
@@ -10,6 +10,10 @@ Zephyr's sensor API provides a uniform interface for every sensor, regardless of
 1. Get the device
 2. Call `sensor_sample_fetch()`
 3. Call `sensor_channel_get()` for each measurement
+
+<br/>
+
+---
 
 ## The sensor API
 
@@ -44,6 +48,10 @@ int main(void)
 }
 ```
 
+<br/>
+
+---
+
 ## `struct sensor_value` format
 
 Sensor values use a fixed-point format to avoid floating point:
@@ -66,6 +74,10 @@ double temp_c = sensor_value_to_double(&temp);
 `sensor_value_to_double()` is provided by Zephyr. Don't compute `val1 + val2 / 1e6` manually — the sign handling is subtle when values are negative.
 :::
 
+<br/>
+
+---
+
 ## Supported sensor channels
 
 | Channel constant | Meaning |
@@ -78,6 +90,10 @@ double temp_c = sensor_value_to_double(&temp);
 | `SENSOR_CHAN_LIGHT` | Ambient light (lux) |
 
 Not every sensor supports every channel. If a channel isn't supported, `sensor_channel_get()` returns `-ENOTSUP`.
+
+<br/>
+
+---
 
 ## Next: power management
 

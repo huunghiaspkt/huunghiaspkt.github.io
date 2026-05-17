@@ -21,10 +21,10 @@ boards/arm/my_board/
 
 ## Step 1: Create the DTS
 
-Start by copying the closest upstream board (`esp32_devkitc_wroom`) and modifying it:
+Start by copying the closest upstream board (`esp32s3_devkitc`) and modifying it:
 
 ```bash
-cp -r zephyr/boards/nordic/esp32_devkitc_wroom/esp32_devkitc_wroom.dts \
+cp -r zephyr/boards/espressif/esp32s3_devkitc/esp32s3_devkitc.dts \
       boards/arm/my_board/my_board.dts
 ```
 
@@ -35,7 +35,7 @@ Edit the DTS to match your schematic:
 
 ```dts title="boards/arm/my_board/my_board.dts"
 /dts-v1/;
-#include <espressif/esp32.dtsi>
+#include <espressif/esp32s3.dtsi>
 #include "my_board-pinctrl.dtsi"
 
 / {

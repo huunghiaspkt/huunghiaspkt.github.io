@@ -22,7 +22,7 @@ There are three DTS inputs that Zephyr merges at build time:
 
 ```
 SoC DTS            Board DTS              Your overlay
-(esp32.dtsi) +  (esp32_devkitc_wroom.dts) + (boards/esp32_devkitc_wroom.overlay)
+(esp32s3.dtsi) +  (esp32s3_devkitc.dts) + (boards/esp32s3_devkitc_esp32s3_procpu.overlay)
      |                     |                          |
      +---------------------+--------------------------+
                            |
@@ -30,14 +30,14 @@ SoC DTS            Board DTS              Your overlay
 ```
 
 - **SoC DTS**: defines all peripherals on the chip (`i2c0`, `spi1`, `uart0`, etc.) with vendor defaults. You never edit this.
-- **Board DTS**: enables the peripherals the board uses and maps them to physical pins. The DK files live in `boards/arm/esp32_devkitc_wroom/` in the Zephyr repo.
+- **Board DTS**: enables the peripherals the board uses and maps them to physical pins. The DK files live in `boards/espressif/esp32s3_devkitc/` in the Zephyr repo.
 - **Your overlay**: overrides and additions specific to your application. This is what you write.
 
 ---
 
 ## A minimal I2C sensor overlay
 
-```dts title="boards/esp32_devkitc_wroom.overlay"
+```dts title="boards/esp32s3_devkitc_esp32s3_procpu.overlay"
 &i2c0 {
     status = "okay";
     clock-frequency = <I2C_BITRATE_STANDARD>;
@@ -124,7 +124,7 @@ form: `0x44`. Zephyr's I2C drivers shift the address themselves.
 ## Checking what the build sees
 
 ```bash
-west build -b esp32_devkitc_wroom -- -DOVERLAY_CONFIG=overlay.conf
+west build -b esp32s3_devkitc/esp32s3/procpu -- -DOVERLAY_CONFIG=overlay.conf
 cat build/zephyr/zephyr.dts   # merged final DTS
 ```
 

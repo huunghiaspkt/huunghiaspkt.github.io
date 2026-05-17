@@ -1,11 +1,13 @@
 ---
-sidebar_position: 3
+sidebar_position: 11
 description: The most common devicetree mistakes and how to fix them fast.
 ---
 
 # Common Mistakes
 
 These are the errors that waste the most time when starting with Zephyr devicetree. Every one of them produces a confusing build error or a silent runtime failure.
+
+<br/>
 
 ---
 
@@ -34,6 +36,8 @@ These are the errors that waste the most time when starting with Zephyr devicetr
 };
 ```
 
+<br/>
+
 ---
 
 ## 2. Wrong CONFIG_ symbol for the driver
@@ -54,6 +58,8 @@ Then check the `Kconfig` file in that driver directory for the symbol name.
 The error looks like a DTS problem but it's actually a Kconfig problem. If `DEVICE_DT_GET` compiles but the device isn't ready at runtime, your driver isn't compiled.
 :::
 
+<br/>
+
 ---
 
 ## 3. 8-bit I2C address instead of 7-bit
@@ -69,6 +75,8 @@ mysensor@88 { reg = <0x88>; }
 /* Correct — 0x44 is the 7-bit address (0x88 >> 1) */
 mysensor@44 { reg = <0x44>; }
 ```
+
+<br/>
 
 ---
 
@@ -86,6 +94,8 @@ mysensor@44 { reg = <0x45>; }
 mysensor@44 { reg = <0x44>; }
 ```
 
+<br/>
+
 ---
 
 ## 5. Overlay file name doesn't match board name
@@ -96,13 +106,15 @@ mysensor@44 { reg = <0x44>; }
 
 ```bash
 # Board name:
-west build -b esp32_devkitc_wroom .
+west build -b esp32s3_devkitc/esp32s3/procpu .
 
 # Overlay must be at:
-boards/esp32_devkitc_wroom.overlay
+boards/esp32s3_devkitc_esp32s3_procpu.overlay
 ```
 
 **Debug:** Run `cat build/zephyr/zephyr.dts | grep mysensor` after build. If nothing appears, your overlay wasn't picked up.
+
+<br/>
 
 ---
 
@@ -130,6 +142,8 @@ boards/esp32_devkitc_wroom.overlay
 ```
 
 Check `dts/bindings/pwm/nordic,nrf-pwm.yaml` for the required properties.
+
+<br/>
 
 ---
 

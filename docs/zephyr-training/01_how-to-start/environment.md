@@ -157,10 +157,6 @@ source /your/workspace/path/.venv/bin/activate
 pip install west
 ```
 
-:::tip
-Add `source /your/workspace/path/.venv/bin/activate` to your `~/.bashrc` or `~/.zshrc` so west is active in every terminal session.
-:::
-
 </TabItem>
 <TabItem value="macos" label="🍎 macOS">
 
@@ -169,10 +165,6 @@ python3 -m venv /your/workspace/path/.venv
 source /your/workspace/path/.venv/bin/activate
 pip install west
 ```
-
-:::tip
-Add `source /your/workspace/path/.venv/bin/activate` to your `~/.zprofile` so west is active in every terminal session.
-:::
 
 </TabItem>
 <TabItem value="windows" label="🪟 Windows">
@@ -188,6 +180,15 @@ pip install west
 
 </TabItem>
 </Tabs>
+
+:::note[Activate the virtual environment every session]
+The virtual environment is **not** activated automatically. Every time you open a new terminal and want to work with your Zephyr workspace, run the activate command first:
+
+- **Linux / macOS:** `source /your/workspace/path/.venv/bin/activate`
+- **Windows (PowerShell):** `D:\your\workspace\path\.venv\Scripts\Activate.ps1`
+
+Your prompt will show `(.venv)` when the environment is active.
+:::
 
 Verify west is installed:
 
@@ -264,7 +265,7 @@ west sdk install
 
 ## Step 5 — Verify the installation
 
-Build the `blinky` sample for your board. Replace `<your-board>` with your actual board name (e.g. `esp32_devkitc_wroom`, `nrf52840dk/nrf52840`):
+Build the `blinky` sample for your board. Replace `<your-board>` with your actual board name (e.g. `esp32s3_devkitc/esp32s3/procpu`, `nrf52840dk/nrf52840`):
 
 ```bash
 cd /your/workspace/path/zephyr
@@ -272,59 +273,6 @@ west build -p always -b <your-board> samples/basic/blinky
 ```
 
 If the build completes without errors, your environment is ready.
-
-```bash
-west boards | wc -l   # should return 1000+
-```
-
-<br/>
-
----
-
-## West essentials
-
-The commands you'll use every day:
-
-```bash
-# Build for a target board
-west build -b esp32_devkitc_wroom app/
-
-# Flash to connected hardware
-west flash
-
-# List all supported boards
-west boards
-
-# Filter boards by name
-west boards | grep nrf52
-
-# Build with a devicetree overlay
-west build -b esp32_devkitc_wroom app/ -- \
-  -DDTC_OVERLAY_FILE=boards/esp32_devkitc_wroom.overlay
-
-# Inspect the final merged devicetree
-cat build/zephyr/zephyr.dts
-```
-
-West figures out which compiler, linker, and programmer to use based on the board you specify — you never need to set `PATH` or pick a toolchain manually.
-
-<br/>
-
----
-
-## Updating Zephyr
-
-```bash
-# Pull all modules to the versions pinned in the manifest
-west update
-
-# Switch to a different Zephyr release
-west update --mr v4.4.0
-```
-
-:::warning
-After running `west update`, always rebuild from scratch. Cached build artifacts from the old Zephyr version will cause subtle build failures.
-:::
 
 <br/>
 

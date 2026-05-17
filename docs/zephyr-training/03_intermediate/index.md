@@ -5,23 +5,26 @@ description: Build real firmware features — I2C sensors, SPI, threads, BLE, an
 
 # Zephyr Intermediate
 
-You understand Kconfig, devicetree, and GPIO. Now build the things that go into real products: multi-peripheral firmware, RTOS threading, BLE connectivity, and battery-friendly power management.
+You know how to build and flash firmware. Now learn the configuration and hardware description systems that underpin every real Zephyr application, then move into multi-peripheral firmware, RTOS threading, BLE, and power management.
 
 ## Prerequisites
 
-- Comfortable with [Zephyr Basic](/docs/zephyr-training/basic/)
-- Know how to write an overlay and enable drivers in `prj.conf`
+- Completed [Zephyr Basic](/docs/zephyr-training/basic/) — working west build, GPIO, and overlay basics
 
 ## What's in this section
 
 | Page | What you'll learn |
 |---|---|
+| [How Zephyr Fits Together](./zephyr-layers) | How overlay, binding, Kconfig, and driver connect — the full picture |
+| [Devicetree](./devicetree) | Layer 1 — the three-layer DTS model, node references, how hardware gets described |
+| [DTS Binding YAML](./binding-yaml) | Layer 2 — define what properties your DTS node accepts |
+| [Kconfig](./kconfig) | Layer 3 — enable/disable drivers and features, read `.config` |
+| [Writing Drivers](./writing-drivers) | Layer 4 — build a driver and connect it to its compatible string |
 | [I2C Sensors](./i2c-sensors) | Fetch temperature, humidity, accelerometer data using the sensor API |
 | [Power Management](./power-management) | Suspend peripherals between readings, cut idle current |
-| [Threads](./threads) | Create threads, share data safely, avoid race conditions |
+| [Thread Synchronization](./threads) | Semaphores, mutexes, message queues, and work queues |
 | [BLE Basics](./ble-basics) | Advertise, connect, and expose data as a GATT characteristic |
-| [Writing Drivers](./writing-drivers) | Build a driver for a peripheral that has no in-tree support |
-| [DTS Binding YAML](./binding-yaml) | Define what properties your custom driver's DTS node accepts |
+| [Common Mistakes](./common-mistakes) | The errors that waste the most time — with exact fixes |
 
 ## The shift at this level
 
