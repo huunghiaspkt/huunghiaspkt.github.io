@@ -5,27 +5,55 @@ description: How overlay, binding, driver, and Kconfig connect — the complete 
 
 # How Zephyr Fits Together
 
-In Basic, you wrote this in the overlay:
+In Basic, you turned on a WS2812 LED. Three text fragments did all the work:
 
-```dts
+```dts title="overlay"
 compatible = "worldsemi,ws2812-i2s";
 ```
 
-You added this to `prj.conf`:
-
-```kconfig
+```kconfig title="prj.conf"
 CONFIG_LED_STRIP=y
 ```
 
-And you called this in your application:
-
-```c
+```c title="src/main.c"
 led_strip_update_rgb(strip, pixels, STRIP_NUM_PIXELS);
 ```
 
-It worked. But **why** did it work? How does a string in a text file end up calling the right C function on the right hardware pin?
+It worked. But **why** did it work? How does a string in a text file end up calling the right C function on the right hardware pin? Those three lines touched four separate Zephyr subsystems, but you didn't have to think about how they connected.
 
-This page answers that question before you go deeper into each layer.
+This page answers that question.
+
+The mechanism is the same for every Zephyr driver — WS2812, button GPIO, USB CDC, anything. To walk through it in detail we'll switch examples to the **Bosch BME280**, the most common temperature / humidity / pressure sensor in real projects. The shape is identical to the WS2812 chain you already built; the BME280 just gives us a richer, more representative driver to dissect.
+
+<br/>
+
+---
+
+## The same chain, on BME280
+
+A BME280 on I2C needs three text files and zero hand-written driver code — exactly like WS2812:
+
+```dts title="myapp.overlay"
+&i2c0 {
+    status = "okay";
+    bme280: bme280@76 {
+        compatible = "bosch,bme280";
+        reg = <0x76>;
+    };
+};
+```
+
+```kconfig title="prj.conf"
+CONFIG_I2C=y
+CONFIG_SENSOR=y
+```
+
+```c title="src/main.c"
+const struct device *bme = DEVICE_DT_GET(DT_NODELABEL(bme280));
+sensor_sample_fetch(bme);
+```
+
+Now: how does `"bosch,bme280"` end up calling the right I2C reads on the BME280 chip?
 
 <br/>
 
@@ -37,30 +65,30 @@ Zephyr uses four layers that work together at build time and runtime:
 
 ```mermaid
 graph TD
-    A["📄 Overlay / Devicetree
+    A["📄 Devicetree (SoC + board + overlay)
     ─────────────────────
-    compatible = worldsemi,ws2812-i2s
-    reg, chain-length, color-mapping..."]
+    compatible = bosch,bme280
+    reg = 0x76, status = okay"]
 
     B["📋 Binding YAML
     ─────────────────────
-    worldsemi,ws2812-i2s.yaml
+    bosch,bme280-i2c.yaml
     validates properties, links to driver"]
 
     C["⚙️ Kconfig
     ─────────────────────
-    CONFIG_LED_STRIP=y
+    CONFIG_BME280=y (auto)
     compiles the driver into firmware"]
 
     D["🔧 Driver
     ─────────────────────
-    ws2812_i2s.c
-    actual hardware control code"]
+    bme280.c
+    actual I2C register reads/writes"]
 
     E["💻 Your Application
     ─────────────────────
-    led_strip_update_rgb()
-    device_is_ready()"]
+    sensor_sample_fetch()
+    sensor_channel_get()"]
 
     A --> B
     B --> D
@@ -74,21 +102,25 @@ Each layer has one job. Together they form an unbroken chain from hardware descr
 
 ---
 
-## Layer 1 — Overlay: describe the hardware
+## Layer 1 — Devicetree: describe the hardware
 
-The overlay answers the question: **what hardware exists on this board?**
+The devicetree answers the question: **what hardware exists on this board?**
+
+It is assembled at build time from three files: the SoC's base DTS, the board's DTS, and your application's **overlay** — your slice on top, where you describe what you wired up:
 
 ```dts title="boards/esp32s3_devkitc_esp32s3_procpu.overlay"
-i2s_led: &i2s0 {
-    led_strip: ws2812@0 {
-        compatible = "worldsemi,ws2812-i2s";
-        chain-length = <1>;
-        color-mapping = <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>;
+&i2c0 {
+    status = "okay";
+    clock-frequency = <I2C_BITRATE_FAST>;
+
+    bme280: bme280@76 {
+        compatible = "bosch,bme280";
+        reg = <0x76>;
     };
 };
 ```
 
-This is a **hardware description**, not code. It says: "there is a WS2812 device, it sits on I2S0, it has one LED, it uses GRB color order." No C, no logic — just facts about the board.
+This is a **hardware description**, not code. It says: "there is a BME280 device, it sits on `i2c0`, its 7-bit address is `0x76`." No C, no logic — just facts about the board.
 
 The `compatible` string is the key. It is the link to the next layer.
 
@@ -103,19 +135,28 @@ The binding answers: **what properties is this node allowed to have, and what do
 Zephyr finds the binding by looking up the `compatible` string:
 
 ```
-compatible = "worldsemi,ws2812-i2s"
+compatible = "bosch,bme280"
           ↓
-zephyr/dts/bindings/led_strip/worldsemi,ws2812-i2s.yaml
+zephyr/dts/bindings/sensor/bosch,bme280-i2c.yaml
 ```
 
-The binding YAML defines:
-- Which properties are **required** (build error if missing)
-- Which are **optional**
-- What **type** each property is (`int`, `array`, `string`...)
-- Which **C header** contains the constants (`LED_COLOR_ID_GREEN`, etc.)
+The actual file is tiny:
 
-If your overlay has a typo — `chan-length` instead of `chain-length` — the binding catches it at build time and tells you exactly what went wrong.
+```yaml title="bosch,bme280-i2c.yaml"
+description: BME280 integrated environmental sensor
 
+compatible: "bosch,bme280"
+
+include: [sensor-device.yaml, i2c-device.yaml]
+```
+
+It declares no custom properties at all. Everything comes from the two `include:` files:
+- `i2c-device.yaml` provides `reg` (the I2C address) and validates the unit address.
+- `sensor-device.yaml` marks this as a sensor for the build system, so the sensor API works on it.
+
+There's also a `bosch,bme280-spi.yaml` — same `compatible`, but `include: [sensor-device.yaml, spi-device.yaml]`. Zephyr picks the right binding based on which bus the BME280 sits on.
+
+If your overlay misspells `reg` or omits a required field, the binding catches it at build time and tells you exactly what went wrong.
 
 <br/>
 
@@ -123,15 +164,23 @@ If your overlay has a typo — `chan-length` instead of `chain-length` — the b
 
 ## Layer 3 — Kconfig: compile the driver
 
-The driver only exists in firmware if Kconfig says so. `CONFIG_LED_STRIP=y` tells the build system to compile the LED strip driver code into your binary.
+The driver only exists in firmware if Kconfig says so. The BME280 driver auto-enables itself the moment a matching DTS node appears:
 
-```kconfig title="prj.conf"
-CONFIG_LED_STRIP=y
+```kconfig title="drivers/sensor/bosch/bme280/Kconfig"
+menuconfig BME280
+    bool "BME280/BMP280 sensor"
+    default y
+    depends on DT_HAS_BOSCH_BME280_ENABLED
+    select I2C if $(dt_compat_on_bus,$(DT_COMPAT_BOSCH_BME280),i2c)
+    select SPI if $(dt_compat_on_bus,$(DT_COMPAT_BOSCH_BME280),spi)
 ```
 
-Without this line, the driver source file is **never compiled** — it takes zero flash space and zero RAM. With it, the driver is built and linked.
+Three things to notice:
+- **`depends on DT_HAS_BOSCH_BME280_ENABLED`** — this symbol is auto-generated when Zephyr sees `compatible = "bosch,bme280"` somewhere in the merged tree. **The overlay triggers the Kconfig.**
+- **`default y`** — once the dependency is met, `BME280` is on. You don't write `CONFIG_BME280=y` yourself.
+- **`select I2C if … on-bus i2c`** — the driver pulls in the I2C subsystem only if your BME280 is actually on an I2C bus. If you wire it via SPI, it pulls in SPI instead.
 
-This is how Zephyr keeps firmware lean: every subsystem is opt-in. A bare `prj.conf` produces minimal firmware. You grow it by enabling exactly what you need.
+This is how `CONFIG_SENSOR=y` in `prj.conf` is enough to bring up the BME280 — every other knob resolves automatically from the overlay.
 
 :::warning[Both are required]
 The overlay describes the hardware. Kconfig compiles the driver. **You need both.** Miss either one and you get no device.
@@ -145,23 +194,23 @@ The overlay describes the hardware. Kconfig compiles the driver. **You need both
 
 The driver answers: **how do you talk to this hardware?**
 
-This is where the `compatible` string actually selects the driver. At the top of `ws2812_i2s.c`:
+This is where the `compatible` string actually selects the driver. At the top of `bme280.c`:
 
 ```c
-#define DT_DRV_COMPAT worldsemi_ws2812_i2s
+#define DT_DRV_COMPAT bosch_bme280
 ```
 
-This one line tells Zephyr: "this driver handles all DTS nodes with `compatible = "worldsemi,ws2812-i2s"`." The comma becomes an underscore, hyphens become underscores — that is the only translation.
+This one line tells Zephyr: "this driver handles all DTS nodes with `compatible = "bosch,bme280"`." The comma becomes an underscore, hyphens become underscores — that is the only translation.
 
 At build time, Zephyr uses this to:
 
-1. Read your overlay properties (`chain-length`, `color-mapping`, etc.) and pass them to the driver
+1. Read your overlay properties (`reg`, plus everything from the includes) and pass them to the driver
 2. Create a `struct device` instance for the node
 3. Call the driver's `init()` function at boot — before your `main()` runs
 
 By the time your `main()` runs, the device is already initialized. `device_is_ready()` confirms it.
 
-Your application never calls the driver directly — it calls the **LED strip API** (`led_strip_update_rgb`), and Zephyr dispatches to the correct driver underneath. This is why the same application code works on SPI-based, I2S-based, or GPIO-based WS2812 strips — only the overlay and driver change.
+Your application never calls the driver directly — it calls the **sensor API** (`sensor_sample_fetch`, `sensor_channel_get`), and Zephyr dispatches to the BME280 driver underneath. This is why the same application code works on a BME280, a SHT31, or a LIS2DH — only the overlay and driver change.
 
 <br/>
 
@@ -169,15 +218,15 @@ Your application never calls the driver directly — it calls the **LED strip AP
 
 ## The full picture — one example, four layers
 
-| Layer | File | Role in WS2812 |
+| Layer | File | Role in BME280 |
 |---|---|---|
-| Overlay | `boards/esp32s3_devkitc_esp32s3_procpu.overlay` | Says the LED exists on I2S0, GPIO48, 1 pixel, GRB |
-| Binding | `dts/bindings/led_strip/worldsemi,ws2812-i2s.yaml` | Validates `chain-length`, `color-mapping`, links to driver |
-| Kconfig | `prj.conf` → `CONFIG_LED_STRIP=y` | Compiles the WS2812 I2S driver into firmware |
-| Driver | `drivers/led_strip/ws2812_i2s.c` | Sends pixel data over I2S + DMA at runtime |
+| Devicetree | `myapp.overlay` (your slice of the full DTS) | Says the BME280 exists on `i2c0`, address `0x76` |
+| Binding | `dts/bindings/sensor/bosch,bme280-i2c.yaml` | Pulls in `i2c-device.yaml` + `sensor-device.yaml` — no custom properties |
+| Kconfig | `drivers/sensor/bosch/bme280/Kconfig` | Auto-enables `CONFIG_BME280` and `select`s I2C from the overlay |
+| Driver | `drivers/sensor/bosch/bme280/bme280.c` | Reads BME280 calibration + measurement registers over I2C |
 
-**Build time:** Overlay + Binding + Kconfig → validated, compiled firmware  
-**Runtime:** `device_is_ready()` + `led_strip_update_rgb()` → pixels on screen
+**Build time:** Overlay + Binding + Kconfig → validated, compiled firmware
+**Runtime:** `device_is_ready()` + `sensor_sample_fetch()` → temperature, humidity, pressure
 
 <br/>
 
@@ -189,9 +238,9 @@ Each of the following pages focuses on one layer, in order:
 
 | Layer | Page | What you'll learn |
 |---|---|---|
-| 1 — Overlay | **[Devicetree](./devicetree)** | The three-layer DTS model — SoC, board, and your overlay |
+| 1 — Devicetree | **[Devicetree](./devicetree)** | The three-layer DTS model — SoC, board, and your overlay |
 | 2 — Binding | **[DTS Binding YAML](./binding-yaml)** | How to write and read binding YAML files |
 | 3 — Kconfig | **[Kconfig](./kconfig)** | How to find the right `CONFIG_` symbol and understand dependencies |
 | 4 — Driver | **[Writing Drivers](./writing-drivers)** | How `DT_DRV_COMPAT` ties a driver to its compatible string |
 
-By the end of this section, every line in that WS2812 overlay will make complete sense.
+By the end of this section, every line in that BME280 overlay will make complete sense.

@@ -1,9 +1,11 @@
 ---
-sidebar_position: 7
-description: Using Zephyr's sensor API to read I2C sensors — fetch, channel_get, and power management.
+sidebar_position: 6
+description: Read the BME280 — and any Zephyr sensor — through the uniform sensor_sample_fetch / sensor_channel_get API.
 ---
 
 # Sensors
+
+The previous four pages described, validated, and compiled the BME280 driver into your firmware — through the [overlay](./devicetree), the [binding](./binding-yaml), and [Kconfig](./kconfig). This page reads from it.
 
 Zephyr's sensor API provides a uniform interface for every sensor, regardless of interface (I2C, SPI) or manufacturer. If a driver exists in the Zephyr tree, reading a sensor is always the same three steps:
 
@@ -15,38 +17,43 @@ Zephyr's sensor API provides a uniform interface for every sensor, regardless of
 
 ---
 
-## The sensor API
+## The sensor API — reading the BME280
 
 ```c
 #include <zephyr/drivers/sensor.h>
 
 /* Step 1: get the device (resolved at compile time from DTS) */
-static const struct device *sht31 = DEVICE_DT_GET(DT_NODELABEL(sht31));
+static const struct device *bme280 = DEVICE_DT_GET(DT_NODELABEL(bme280));
 
 int main(void)
 {
-    struct sensor_value temp, hum;
+    struct sensor_value temp, press, hum;
 
-    if (!device_is_ready(sht31)) {
-        LOG_ERR("SHT31 not ready");
+    if (!device_is_ready(bme280)) {
+        LOG_ERR("BME280 not ready");
         return -ENODEV;
     }
 
     while (1) {
         /* Step 2: trigger a measurement */
-        sensor_sample_fetch(sht31);
+        sensor_sample_fetch(bme280);
 
         /* Step 3: read the measured values */
-        sensor_channel_get(sht31, SENSOR_CHAN_AMBIENT_TEMP, &temp);
-        sensor_channel_get(sht31, SENSOR_CHAN_HUMIDITY, &hum);
+        sensor_channel_get(bme280, SENSOR_CHAN_AMBIENT_TEMP, &temp);
+        sensor_channel_get(bme280, SENSOR_CHAN_PRESS,        &press);
+        sensor_channel_get(bme280, SENSOR_CHAN_HUMIDITY,     &hum);
 
-        LOG_INF("T: %d.%06d C  RH: %d.%06d %%",
-                temp.val1, temp.val2, hum.val1, hum.val2);
+        LOG_INF("T: %d.%06d C  P: %d.%06d kPa  RH: %d.%06d %%",
+                temp.val1, temp.val2,
+                press.val1, press.val2,
+                hum.val1, hum.val2);
 
         k_sleep(K_SECONDS(10));
     }
 }
 ```
+
+That's the whole app. The overlay says "BME280 is on `i2c0` at `0x76`," the Kconfig pulled in the driver, the binding validated the node — and now `sensor_sample_fetch` knows how to talk to it.
 
 <br/>
 
@@ -80,6 +87,8 @@ double temp_c = sensor_value_to_double(&temp);
 
 ## Supported sensor channels
 
+The BME280 supports temperature, pressure, and humidity. Other sensors fill in different channels from the same standard list:
+
 | Channel constant | Meaning |
 |---|---|
 | `SENSOR_CHAN_AMBIENT_TEMP` | Temperature (°C) |
@@ -91,10 +100,12 @@ double temp_c = sensor_value_to_double(&temp);
 
 Not every sensor supports every channel. If a channel isn't supported, `sensor_channel_get()` returns `-ENOTSUP`.
 
+The power of this design: swap the BME280 for an SHT31 or an LIS2DH in the overlay, change `CONFIG_BME280=y` to `CONFIG_SHT3XD=y`, and the rest of the application code is unchanged.
+
 <br/>
 
 ---
 
-## Next: power management
+## Next: keep the BME280 powered only when you need it
 
-For battery-powered designs, you don't want the sensor running continuously between readings. The next page covers `pm_device_action_run()` to suspend the sensor between measurements and cut idle current.
+Reading the sensor once every 10 seconds and leaving it powered the other 9.99 seconds wastes ~50× more energy than necessary. The next page — [Power Management](./power-management) — wraps these fetches with `pm_device_action_run()` so the BME280 sleeps between measurements.
