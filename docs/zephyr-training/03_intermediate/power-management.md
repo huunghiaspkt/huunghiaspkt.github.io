@@ -121,6 +121,8 @@ The example above does manual suspend/resume. For multi-threaded code, Zephyr's 
 CONFIG_PM_DEVICE_RUNTIME=y
 ```
 
+<br/>
+
 ```c
 pm_device_runtime_get(bme280);   /* +1 ref, wakes if needed */
 sensor_sample_fetch(bme280);

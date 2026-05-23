@@ -25,6 +25,8 @@ Per-build:
 west build -b esp32s3_devkitc --sysbuild
 ```
 
+<br/>
+
 Or make it the default for this checkout:
 
 ```bash
@@ -46,6 +48,8 @@ Create `sysbuild.conf` in your application root:
 ```kconfig
 SB_CONFIG_BOOTLOADER_MCUBOOT=y
 ```
+
+<br/>
 
 Then:
 

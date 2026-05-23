@@ -40,6 +40,8 @@ In `sysbuild.conf`:
 SB_CONFIG_BOOTLOADER_MCUBOOT=y
 ```
 
+<br/>
+
 In your application `prj.conf`:
 
 ```kconfig

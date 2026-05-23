@@ -272,6 +272,8 @@ Zephyr ref-counts the requests. If three different threads call `sample_fetch` s
 DT_INST_FOREACH_STATUS_OKAY(CUSTOM_BME280_DEFINE)
 ```
 
+<br/>
+
 And in `prj.conf`:
 
 ```kconfig

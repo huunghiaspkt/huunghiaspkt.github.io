@@ -69,6 +69,8 @@ int main(void)
 }
 ```
 
+<br/>
+
 To fade the LED:
 
 ```c

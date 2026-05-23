@@ -10,10 +10,13 @@ In Basic, you turned on a WS2812 LED. Three text fragments did all the work:
 ```dts title="overlay"
 compatible = "worldsemi,ws2812-i2s";
 ```
+<br/>
 
 ```kconfig title="prj.conf"
 CONFIG_LED_STRIP=y
 ```
+
+<br/>
 
 ```c title="src/main.c"
 led_strip_update_rgb(strip, pixels, STRIP_NUM_PIXELS);
@@ -42,11 +45,13 @@ A BME280 on I2C needs three text files and zero hand-written driver code — exa
     };
 };
 ```
-
+<br/>
 ```kconfig title="prj.conf"
 CONFIG_I2C=y
 CONFIG_SENSOR=y
 ```
+
+<br/>
 
 ```c title="src/main.c"
 const struct device *bme = DEVICE_DT_GET(DT_NODELABEL(bme280));
@@ -139,6 +144,8 @@ compatible = "bosch,bme280"
           ↓
 zephyr/dts/bindings/sensor/bosch,bme280-i2c.yaml
 ```
+
+<br/>
 
 The actual file is tiny:
 

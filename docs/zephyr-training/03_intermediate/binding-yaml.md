@@ -102,6 +102,8 @@ properties:
     description: FIFO watermark level in frame count. Valid range: 1 – 15.
 ```
 
+<br/>
+
 The matching overlay node:
 
 ```dts title="myapp.overlay"
@@ -234,6 +236,9 @@ int-gpios:
   type: phandle-array
   description: Interrupt pin.
 ```
+
+<br/>
+
 DTS:
 ```dts
 int-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;   /* controller, pin, flags */
@@ -263,9 +268,15 @@ BMP581 only uses two types (`int` and `phandle-array`) — typical for a sensor 
 properties:
   hw-flow-control: { type: boolean }
 ```
+
+<br/>
+
 ```dts
 hw-flow-control;                       /* present = true; omit = false */
 ```
+
+<br/>
+
 ```c
 bool flow = DT_INST_PROP(0, hw_flow_control);
 ```
@@ -277,9 +288,15 @@ properties:
     type: string
     enum: ["none", "odd", "even", "mark", "space"]
 ```
+
+<br/>
+
 ```dts
 parity = "even";
 ```
+
+<br/>
+
 ```c
 const char *s = DT_INST_PROP(0, parity);
 int idx = DT_INST_ENUM_IDX(0, parity);              /* 2 for "even" */
@@ -293,9 +310,15 @@ properties:
     type: array
     required: true
 ```
+
+<br/>
+
 ```dts
 color-mapping = <0 1 2>;
 ```
+
+<br/>
+
 ```c
 size_t count = DT_INST_PROP_LEN(0, color_mapping);
 uint32_t first = DT_INST_PROP_BY_IDX(0, color_mapping, 0);
@@ -306,9 +329,15 @@ uint32_t first = DT_INST_PROP_BY_IDX(0, color_mapping, 0);
 properties:
   dma-names: { type: string-array }
 ```
+
+<br/>
+
 ```dts
 dma-names = "tx", "rx";
 ```
+
+<br/>
+
 ```c
 const char *first = DT_INST_PROP_BY_IDX(0, dma_names, 0);   /* "tx" */
 ```
@@ -318,9 +347,15 @@ const char *first = DT_INST_PROP_BY_IDX(0, dma_names, 0);   /* "tx" */
 properties:
   mac-address: { type: uint8-array }
 ```
+
+<br/>
+
 ```dts
 mac-address = [de ad be ef 00 01];
 ```
+
+<br/>
+
 ```c
 static const uint8_t mac[] = DT_INST_PROP(0, mac_address);
 ```
@@ -331,10 +366,16 @@ properties:
   parent-bus: { type: phandle }
   shared:     { type: phandles }
 ```
+
+<br/>
+
 ```dts
 parent-bus = <&i2c0>;
 shared     = <&sram0 &flash0>;
 ```
+
+<br/>
+
 ```c
 const struct device *p =
     DEVICE_DT_GET(DT_INST_PHANDLE(0, parent_bus));
@@ -345,9 +386,15 @@ const struct device *p =
 properties:
   zephyr,console: { type: path }
 ```
+
+<br/>
+
 ```dts
 zephyr,console = &uart0;
 ```
+
+<br/>
+
 ```c
 const struct device *con = DEVICE_DT_GET(DT_CHOSEN(zephyr_console));
 ```
@@ -390,6 +437,8 @@ child-binding:
       type: string
 ```
 
+<br/>
+
 Then in DTS:
 
 ```dts
@@ -416,6 +465,8 @@ compatible: "bosch,bme280"
 include: [sensor-device.yaml, i2c-device.yaml]
                               /*    ↑ contributes on-bus: i2c */
 ```
+
+<br/>
 
 ```yaml title="bosch,bme280-spi.yaml"
 compatible: "bosch,bme280"
