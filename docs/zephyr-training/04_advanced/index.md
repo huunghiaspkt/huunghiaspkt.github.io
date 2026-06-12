@@ -3,9 +3,9 @@ sidebar_position: 1
 description: Production-grade Zephyr patterns — custom boards, OTA updates, watchdogs, NVS storage, and shipping firmware.
 ---
 
-# Zephyr Real Product
+# Zephyr Advanced
 
-Intermediate taught you how to write features. Real Product teaches you how to **ship them**. The gap between "it works on the dev kit" and "it works in production on 1000 units" is bigger than most engineers expect.
+Intermediate taught you how to write features. Advanced teaches you how to **ship them**. The gap between "it works on the dev kit" and "it works in production on 1000 units" is bigger than most engineers expect.
 
 ## Prerequisites
 
@@ -17,7 +17,9 @@ Intermediate taught you how to write features. Real Product teaches you how to *
 | Page | What you'll learn |
 |---|---|
 | [Custom Board](./custom-board) | Create a board definition for your own PCB — no dev kit as crutch |
+| [WiFi Shell](./wifi_shell) | Scan, connect, and ping over the console — WiFi diagnostics with zero app code |
 | [Watchdog](./watchdog) | Hardware and software watchdogs — never ship without them |
+| Custom Shell *(coming soon)* | Author your own shell commands — `SHELL_CMD_REGISTER`, sub-commands, arg validation |
 | OTA with MCUboot *(coming soon)* | Over-the-air firmware updates: dual-bank flash, signing, recovery |
 | NVS Storage *(coming soon)* | Persist configuration across reboots safely |
 | Production Kconfig *(coming soon)* | Strip debug overhead, harden for field deployment |
