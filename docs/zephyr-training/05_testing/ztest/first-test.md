@@ -10,6 +10,10 @@ You've got the model — [ztest writes the checks, Twister runs them](./concepts
 
 No hardware. The whole thing runs on your laptop in seconds.
 
+:::tip[Grab the sample]
+The complete, runnable project is on GitHub — [`05_ztest/ztest_calc`](https://github.com/huunghiaspkt/efzephyr-samples/tree/main/05_ztest/ztest_calc). Clone it and run, or build the four files below yourself.
+:::
+
 <br/>
 
 ---

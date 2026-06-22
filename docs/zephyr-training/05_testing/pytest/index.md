@@ -9,6 +9,10 @@ description: Test Zephyr firmware from the host in Python with Twister's pytest 
 
 That's the **pytest harness**: you write the test in **Python**, on your PC, and it drives the running firmware. Same Twister, same `native_sim` — ztest and pytest are just two harnesses Twister can pick from to decide pass/fail. The only change is who renders the verdict: a Python `assert`, not a C one.
 
+:::tip[Grab the sample]
+The complete, runnable project is on GitHub — [`05_ztest/pytest_calc`](https://github.com/huunghiaspkt/efzephyr-samples/tree/main/05_ztest/pytest_calc).
+:::
+
 <br/>
 
 ---
