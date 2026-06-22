@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-description: Test Zephyr firmware on your PC with no hardware — why it pays off, and the two ways to do it: ztest (C, in-firmware) and pytest (Python, host-driven).
+description: "Test Zephyr firmware on your PC with no hardware — why it pays off, and the two ways to do it: ztest (C, in-firmware) and pytest (Python, host-driven)."
 ---
 
 # Testing Zephyr Firmware
