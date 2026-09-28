@@ -131,7 +131,10 @@ exit $Failed
 
 
 def blocks(os_name: str):
-    """Yield (label, code) for every block an OS_NAME reader runs, in page order."""
+    """Yield (label, code, skip_reason) for every block an OS_NAME reader runs, in page order.
+
+    A <BoardTab ... unsupported="reason"> yields (label, None, reason): that board lacks the hardware.
+    """
     step, tab, board, n = "Intro", None, None, 0
     lines = PAGE.read_text().splitlines()
     i = 0
@@ -143,7 +146,10 @@ def blocks(os_name: str):
             tab = m.group(1)
         if re.match(r"\s*</Tabs>", line):
             tab = None
-        if m := re.match(r'\s*<BoardTab value="([\w-]+)"', line):
+        if m := re.match(r'\s*<BoardTab value="([\w-]+)" unsupported="([^"]*)"', line):
+            n += 1   # the board lacks the hardware: report the step as skipped
+            yield f"{step} [{n}] ({m.group(1)})", None, f"not supported on this board: {m.group(2)}"
+        elif m := re.match(r'\s*<BoardTab value="([\w-]+)"', line):
             board = m.group(1)
         if re.match(r"\s*</BoardTabs>", line):
             board = None
@@ -159,7 +165,7 @@ def blocks(os_name: str):
                 wanted = lang == "bash" and tab in (None, os_name)
             if wanted:
                 n += 1
-                yield f"{step} [{n}]" + (f" ({board})" if board else ""), "\n".join(body)
+                yield f"{step} [{n}]" + (f" ({board})" if board else ""), "\n".join(body), None
         i += 1
 
 
@@ -176,8 +182,8 @@ def main():
     os_name, ws = sys.argv[1], sys.argv[2]
     windows = os_name == "windows"
     out = ["\ufeff" + PS_HEADER if windows else BASH_HEADER]   # BOM: PowerShell 5.1 reads UTF-8
-    for label, code in blocks(os_name):
-        why = next((w for sec, w in SKIP.items() if label.startswith(sec)), None)
+    for label, code, unsupported in blocks(os_name):
+        why = unsupported or next((w for sec, w in SKIP.items() if label.startswith(sec)), None)
         if why:
             out.append(f"Skip-Block {ps_quote(label)} {ps_quote(why)}\n" if windows else
                        f"skip_block {bash_quote(label)} {bash_quote(why)}\n")
