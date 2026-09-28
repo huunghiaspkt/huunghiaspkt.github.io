@@ -104,7 +104,7 @@ Open **PowerShell as Administrator** and install all required tools in one comma
 ```powershell
 winget install Kitware.CMake Ninja-build.Ninja `
   oss-winget.gperf Python.Python.3.12 `
-  Git.Git oss-winget.dtc wget.wget 7zip.7zip `
+  Git.Git oss-winget.dtc wget 7zip.7zip `
   --accept-source-agreements --accept-package-agreements
 ```
 
@@ -206,7 +206,6 @@ This step clones the [EmbeddedFun fork of Zephyr](https://github.com/huunghiaspk
 west init -m https://github.com/huunghiaspkt/zephyr --mr main /your/workspace/path
 cd /your/workspace/path
 west update
-west zephyr-export
 ```
 
 :::note
@@ -244,9 +243,10 @@ python -m pip install @((west packages pip) -split ' ')
 </TabItem>
 </Tabs>
 
-Fetch the Espressif binary blobs — the Wi-Fi, Bluetooth and RF libraries every ESP32 build needs. This needs the Python packages you just installed, so it comes after them:
+Register the workspace with CMake and fetch the Espressif binary blobs — the Wi-Fi, Bluetooth and RF libraries every ESP32 build needs. Both need the Python packages you just installed, so they come after them:
 
 ```bash
+west zephyr-export
 west blobs fetch hal_espressif
 ```
 

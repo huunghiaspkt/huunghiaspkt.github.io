@@ -38,6 +38,11 @@ jobs:
       - name: Let apt answer yes (test harness)
         run: echo 'APT::Get::Assume-Yes "true";' | sudo tee /etc/apt/apt.conf.d/90assume-yes
 
+      # Test harness: west sdk install queries the GitHub API; shared CI IPs hit the anonymous
+      # rate limit. sdk.py honours ~/.netrc, so authenticate with the job token.
+      - name: Authenticate GitHub API calls (test harness)
+        run: printf 'machine api.github.com\nlogin x-access-token\npassword %s\n' "${{ github.token }}" > ~/.netrc && chmod 600 ~/.netrc
+
       - name: Extract the Linux steps from the page
         run: python3 docs-test/extract.py linux "$HOME/efz-ws" > "$RUNNER_TEMP/env-test.sh"
 
@@ -53,6 +58,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Test harness: west sdk install queries the GitHub API; shared CI IPs hit the anonymous
+      # rate limit. sdk.py honours ~/.netrc, so authenticate with the job token.
+      - name: Authenticate GitHub API calls (test harness)
+        run: printf 'machine api.github.com\nlogin x-access-token\npassword %s\n' "${{ github.token }}" > ~/.netrc && chmod 600 ~/.netrc
+
       - name: Extract the macOS steps from the page
         run: python3 docs-test/extract.py macos "$HOME/efz-ws" > "$RUNNER_TEMP/env-test.sh"
 
@@ -67,6 +77,12 @@ jobs:
       PYTHONUTF8: 1   # step names contain non-ASCII characters
     steps:
       - uses: actions/checkout@v4
+
+      # Test harness: west sdk install queries the GitHub API; shared CI IPs hit the anonymous
+      # rate limit. sdk.py honours ~/_netrc, so authenticate with the job token.
+      - name: Authenticate GitHub API calls (test harness)
+        shell: bash
+        run: printf 'machine api.github.com\nlogin x-access-token\npassword %s\n' "${{ github.token }}" | tee ~/.netrc > ~/_netrc
 
       - name: Extract the Windows steps from the page
         shell: bash
