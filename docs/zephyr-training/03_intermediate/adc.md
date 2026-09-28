@@ -1,5 +1,5 @@
 ---
-sidebar_position: 15
+sidebar_position: 16
 description: Read analog voltages with Zephyr's ADC API — battery monitoring, sensor inputs, io-channels.
 ---
 

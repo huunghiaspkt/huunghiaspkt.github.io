@@ -1,5 +1,5 @@
 ---
-sidebar_position: 12
+sidebar_position: 13
 description: The most common devicetree mistakes and how to fix them fast.
 ---
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 description: Write a DTS binding YAML file to define what properties your devicetree node accepts.
 ---
 
@@ -11,23 +11,35 @@ The binding YAML file defines what properties a DTS node with your `compatible` 
 
 ---
 
-## The BME280 binding — the running example
+## The SHT30 binding — the running example
 
-The previous page showed the BME280 overlay. This is the binding it's validated against — the real file from the Zephyr tree:
+The previous page showed the SHT30 node — in the EFZ-ESP32S3 board devicetree, or in a DevKitC overlay. This is the binding it's validated against — the real file from the Zephyr tree:
 
-```yaml title="dts/bindings/sensor/bosch,bme280-i2c.yaml"
-description: BME280 integrated environmental sensor
+```yaml title="dts/bindings/sensor/sensirion,sht3xd.yaml"
+description: Sensirion Humidity SHT3x-DIS humidity and temperature sensor
 
-compatible: "bosch,bme280"
+compatible: "sensirion,sht3xd"
 
 include: [sensor-device.yaml, i2c-device.yaml]
+
+properties:
+  alert-gpios:
+    type: phandle-array
+    description: |
+      ALERT pin.
+
+      This pin signals active high when produced by the sensor.  The
+      property value should ensure the flags properly describe the
+      signal that is presented to the driver.
 ```
 
-Six lines, no custom properties. Everything you need to validate the BME280 overlay comes from the two `include:` files:
+Almost everything you need to validate the SHT30 node comes from the two `include:` files:
 - `i2c-device.yaml` provides `reg` (the I2C address) and the unit-address rules.
 - `sensor-device.yaml` marks this node as a Zephyr sensor so the sensor API works on it.
 
-There's also `bosch,bme280-spi.yaml` — same `compatible`, includes `spi-device.yaml` instead. Zephyr picks the right binding by looking at the parent bus (see `bus` and `on-bus` below).
+The one property the binding adds itself, `alert-gpios`, is optional. Neither board wires the SHT30's ALERT pin, so our node doesn't set it.
+
+The SHT30 only speaks I2C, so this is its only binding. Sensors that speak both I2C and SPI get one binding file per bus — you'll see how Zephyr chooses between them in [`bus` and `on-bus`](#bus-and-on-bus--automatic-bus-matching) below.
 
 This minimal style is the norm for hardware that fits an existing Zephyr abstraction. Bindings get longer only when the device has properties Zephyr doesn't already know how to handle — current-thresholds, gain settings, calibration coefficients.
 
@@ -37,20 +49,18 @@ This minimal style is the norm for hardware that fits an existing Zephyr abstrac
 
 ## A richer binding — the BMP581 barometer
 
-BME280 covers the simplest case. Most drivers also need config knobs — sample rates, oversampling, interrupt polarity — and that's where the `properties:` section earns its keep. The same Bosch family has a much richer sibling: the **BMP581 barometer**. Its binding exposes about a dozen knobs and is one of the longer sensor bindings in the Zephyr tree.
+The SHT30 covers the simple case. Most drivers also need config knobs — sample rates, oversampling, interrupt polarity — and that's where the `properties:` section earns its keep. A good example is Bosch's **BMP581 barometer**. Its binding exposes about a dozen knobs and is one of the longer sensor bindings in the Zephyr tree.
 
-The full file lives at `dts/bindings/sensor/bosch,bmp581.yaml` in your Zephyr checkout. Below is the same file with the long enum lists collapsed for readability — the structure is exact:
+The properties live in `dts/bindings/sensor/bosch,bmp581-common.yaml` in your Zephyr checkout. Below is that file with the long enum lists collapsed and descriptions shortened for readability — the structure is exact:
 
-```yaml title="dts/bindings/sensor/bosch,bmp581.yaml (real, enum lists abbreviated)"
+```yaml title="dts/bindings/sensor/bosch,bmp581-common.yaml (real, abbreviated)"
 description: |
     The BMP581 is a Barometric pressure sensor.
 
     When setting the sensor DTS properties, make sure to include
     bmp581.h and use the macros defined there.
 
-compatible: "bosch,bmp581"
-
-include: [sensor-device.yaml, i2c-device.yaml]
+include: [sensor-device.yaml]
 
 properties:
   int-gpios:
@@ -99,7 +109,17 @@ properties:
 
   fifo-watermark:
     type: int
-    description: FIFO watermark level in frame count. Valid range: 1 – 15.
+    description: FIFO watermark level in frame count.
+    min: 1
+    max: 15
+
+  int-active-low:
+    type: boolean
+    description: Configure the INT pin as active low. Defaults to active high.
+
+  int-open-drain:
+    type: boolean
+    description: Configure the INT pin as open-drain. Defaults to push-pull.
 ```
 
 <br/>
@@ -122,10 +142,10 @@ The matching overlay node:
 };
 ```
 
-The driver opens its source file with `#define DT_DRV_COMPAT bosch_bmp581`. Between BME280's six-line binding and BMP581's full grammar, you've now seen every top-level construct a binding YAML can use. The rest of this page is a reference to that grammar.
+The driver opens its source file with `#define DT_DRV_COMPAT bosch_bmp581`. Between the SHT30's short binding and BMP581's full grammar, you've now seen every top-level construct a binding YAML can use. The rest of this page is a reference to that grammar.
 
 :::info
-Unlike BME280 (which splits into `-i2c.yaml` and `-spi.yaml`), BMP581 lives in a single binding file. This older single-file style is still common in the Zephyr tree.
+Notice there's no `compatible:` in that file. The BMP581 talks I2C, SPI and I3C, so its binding is split: `-common.yaml` holds the shared properties, and three tiny per-bus files (`bosch,bmp581-i2c.yaml`, `-spi.yaml`, `-i3c.yaml`) each declare `compatible: "bosch,bmp581"` and include the common file. The SHT30, being I2C-only, keeps everything in one file.
 :::
 
 <br/>
@@ -134,14 +154,14 @@ Unlike BME280 (which splits into `-i2c.yaml` and `-spi.yaml`), BMP581 lives in a
 
 ## Top-level binding keys
 
-Between BME280 and BMP581 you've seen the four keys that show up in almost every binding:
+Between the SHT30 and the BMP581 you've seen the four keys that show up in almost every binding:
 
-| Key | BME280 | BMP581 | Purpose |
+| Key | SHT30 | BMP581 | Purpose |
 |---|---|---|---|
 | `description` | ✅ | ✅ | Free-form text about the hardware. Shows up in the generated docs. |
-| `compatible` | ✅ | ✅ | The `"vendor,device"` string this binding matches. **Required.** |
+| `compatible` | ✅ | ✅ (per-bus files) | The `"vendor,device"` string this binding matches. **Required.** |
 | `include` | ✅ | ✅ | Pull in other bindings (composition — see below). |
-| `properties` | — | ✅ | Map of property name → schema. Empty in BME280; the bulk of BMP581. |
+| `properties` | ✅ | ✅ | Map of property name → schema. One optional entry in the SHT30; the bulk of BMP581. |
 
 A few more keys exist for specialized cases (`child-binding`, `bus`, `on-bus`, `title`) — they're covered further down the page where they earn their keep.
 
@@ -153,7 +173,7 @@ The next sections walk through each of the four keys above, starting with `inclu
 
 ## `include` — inherit from base bindings
 
-BME280's binding is six lines because `i2c-device.yaml` does most of the work. `include:` is how a binding inherits property schemas from a standard set of base files:
+The SHT30's binding is short because `i2c-device.yaml` does most of the work. `include:` is how a binding inherits property schemas from a standard set of base files:
 
 | Include | Adds |
 |---|---|
@@ -178,7 +198,7 @@ include:
 
 ## Property definition keys
 
-When a binding *does* declare custom properties (BME280 doesn't, but most sensors with config knobs do), each entry inside the `properties:` map can use these keys:
+When a binding declares custom properties (the SHT30 declares just one, most sensors with config knobs declare many), each entry inside the `properties:` map can use these keys:
 
 | Key | What it does |
 |---|---|
@@ -192,7 +212,7 @@ When a binding *does* declare custom properties (BME280 doesn't, but most sensor
 | `specifier-space` | Custom name for `phandle-array` cells (e.g. `pwm` → `#pwm-cells`). |
 | `min` / `max` | Range constraints for `int` and array lengths. |
 
-Look at the BMP581 binding above and you'll see most of these in use: `type:` on every property, `default:` on `odr`, `enum:` listing the ODR/OSR/IIR options, `description:` on the human-readable fields.
+Look at the BMP581 binding above and you'll see most of these in use: `type:` on every property, `default:` on `odr`, `enum:` listing the ODR/OSR/IIR options, `min:`/`max:` on `fifo-watermark`, `description:` on the human-readable fields.
 
 <br/>
 
@@ -259,11 +279,11 @@ The high-level `*_DT_SPEC_GET` macros (`GPIO_DT_SPEC_GET`, `SPI_DT_SPEC_GET`, `A
 
 <br/>
 
-### Types BMP581 doesn't exercise
+### The other types
 
-BMP581 only uses two types (`int` and `phandle-array`) — typical for a sensor that's mostly configured by numeric knobs and one interrupt line. The remaining types are common elsewhere in Zephyr; they follow the same declare-assign-read pattern.
+BMP581 uses three types — `int`, `phandle-array`, and `boolean` — typical for a sensor that's mostly configured by numeric knobs and one interrupt line. The remaining types are common elsewhere in Zephyr; they all follow the same declare-assign-read pattern.
 
-**`boolean`** — presence-only flag (no `= true` in DTS). Common for interrupt polarity or feature toggles on bigger drivers:
+**`boolean`** — presence-only flag (no `= true` in DTS). BMP581's `int-active-low` and `int-open-drain` are booleans; UARTs use one for flow control:
 ```yaml
 properties:
   hw-flow-control: { type: boolean }
@@ -450,7 +470,7 @@ pwmleds {
 };
 ```
 
-Each child is validated against the `child-binding:` schema — no need for a separate binding file. BME280 doesn't use this pattern (it's a single device, not a parent of identical children).
+Each child is validated against the `child-binding:` schema — no need for a separate binding file. The SHT30 doesn't use this pattern (it's a single device, not a parent of identical children).
 
 <br/>
 
@@ -458,23 +478,27 @@ Each child is validated against the `child-binding:` schema — no need for a se
 
 ## `bus` and `on-bus` — automatic bus matching
 
-When a binding declares `bus: i2c`, every child node automatically inherits `on-bus: i2c`. **This is exactly how BME280 ends up with two bindings for one `compatible`:**
+Two keys work as a pair. A **controller** binding declares which bus it provides — `i2c-controller.yaml` says `bus: i2c`, `spi-controller.yaml` says `bus: spi`. A **device** binding declares which bus it sits on — `i2c-device.yaml` contributes `on-bus: i2c`, `spi-device.yaml` contributes `on-bus: spi`. A device binding only matches a node whose parent provides that bus.
 
-```yaml title="bosch,bme280-i2c.yaml"
-compatible: "bosch,bme280"
-include: [sensor-device.yaml, i2c-device.yaml]
-                              /*    ↑ contributes on-bus: i2c */
+For the SHT30 that's a safety net: its binding includes `i2c-device.yaml`, so an `sht3xd` node placed under `&spi2` matches nothing and the build tells you so.
+
+For a sensor that speaks several buses, it's how one `compatible` gets several bindings. **This is exactly how the BMP581 is split:**
+
+```yaml title="bosch,bmp581-i2c.yaml"
+compatible: "bosch,bmp581"
+include: ["i2c-device.yaml", "bosch,bmp581-common.yaml"]
+          #  ↑ contributes on-bus: i2c
 ```
 
 <br/>
 
-```yaml title="bosch,bme280-spi.yaml"
-compatible: "bosch,bme280"
-include: [sensor-device.yaml, spi-device.yaml]
-                              /*    ↑ contributes on-bus: spi */
+```yaml title="bosch,bmp581-spi.yaml"
+compatible: "bosch,bmp581"
+include: ["spi-device.yaml", "bosch,bmp581-common.yaml"]
+          #  ↑ contributes on-bus: spi
 ```
 
-Zephyr inspects the parent bus of the BME280 node in your overlay. If the parent is `&i2c0`, it picks the I2C binding; if `&spi2`, it picks the SPI one. Same `compatible`, different schema and (usually) different driver source file.
+Zephyr inspects the parent bus of the BMP581 node in your devicetree. If the parent is `&i2c0`, it picks the I2C binding; if `&spi2`, the SPI one (and `bosch,bmp581-i3c.yaml` covers I3C). Same `compatible`, same shared properties, different bus schema.
 
 <br/>
 
@@ -482,18 +506,46 @@ Zephyr inspects the parent bus of the BME280 node in your overlay. If the parent
 
 ## Using the binding in DTS
 
-The BME280 overlay from the previous page validates cleanly against `bosch,bme280-i2c.yaml`:
+The SHT30 node validates cleanly against `sensirion,sht3xd.yaml`. Where it's written depends on your board:
 
-```dts title="boards/esp32s3_devkitc_esp32s3_procpu.overlay"
+<BoardTabs>
+<BoardTab value="esp32s3_devkitc">
+
+You add the sensor yourself, so the node goes in your app's overlay:
+
+```dts title="boards/esp32s3_devkitc_procpu.overlay"
 &i2c0 {
     status = "okay";
+    clock-frequency = <I2C_BITRATE_STANDARD>;
 
-    bme280: bme280@76 {
-        compatible = "bosch,bme280";   /* picks bosch,bme280-i2c.yaml */
-        reg = <0x76>;                  /* required by i2c-device.yaml */
+    sht30: sht3xd@44 {
+        compatible = "sensirion,sht3xd";   /* matches sensirion,sht3xd.yaml */
+        reg = <0x44>;                      /* required by i2c-device.yaml */
     };
 };
 ```
+
+</BoardTab>
+<BoardTab value="efz_esp32s3">
+
+The SHT30 is soldered on, so the node already lives in the board devicetree — no overlay needed:
+
+```dts title="zephyr/boards/embeddedfun/efz_esp32s3/efz_esp32s3_procpu.dts (excerpt)"
+&i2c0 {
+    status = "okay";
+    clock-frequency = <I2C_BITRATE_FAST>;
+    pinctrl-0 = <&i2c0_default>;
+    pinctrl-names = "default";
+
+    sht30: sht3xd@44 {
+        compatible = "sensirion,sht3xd";   /* matches sensirion,sht3xd.yaml */
+        reg = <0x44>;                      /* required by i2c-device.yaml */
+    };
+};
+```
+
+</BoardTab>
+</BoardTabs>
 
 The build catches anything the binding rejects — wrong-type `reg`, missing required properties, unknown extra properties — with the file and line number.
 
@@ -503,23 +555,24 @@ The build catches anything the binding rejects — wrong-type `reg`, missing req
 
 ## Accessing properties in the driver
 
-The BME280 driver reads its DTS via standard macros. With `DT_DRV_COMPAT bosch_bme280` at the top:
+The SHT3x driver reads its DTS via standard macros. With `#define DT_DRV_COMPAT sensirion_sht3xd` at the top of `drivers/sensor/sensirion/sht3xd/sht3xd.c`:
 
 ```c
-struct bme280_config {
-    union {
-        const struct i2c_dt_spec i2c;   /* via i2c-device.yaml include */
-        const struct spi_dt_spec spi;
-    } bus;
+struct sht3xd_config {
+    struct i2c_dt_spec bus;                  /* via i2c-device.yaml include */
+#ifdef CONFIG_SHT3XD_TRIGGER
+    struct gpio_dt_spec alert_gpio;          /* the optional alert-gpios */
+#endif
 };
 
-/* I2C-variant config — one struct per matching DTS node */
-static const struct bme280_config bme280_cfg_0 = {
-    .bus.i2c = I2C_DT_SPEC_INST_GET(0),
+/* one config struct per matching DTS node */
+static const struct sht3xd_config sht3xd0_cfg_##inst = {
+    .bus = I2C_DT_SPEC_INST_GET(inst),
+    SHT3XD_TRIGGER_INIT(inst)                /* GPIO_DT_SPEC_INST_GET(inst, alert_gpios) */
 };
 ```
 
-The `I2C_DT_SPEC_INST_GET(0)` macro bundles the I2C controller pointer and the slave address (`0x76`) into one struct — that's all the driver needs to talk to the device.
+That's an excerpt from the driver's `SHT3XD_DEFINE(inst)` macro, which runs once per enabled node. `I2C_DT_SPEC_INST_GET(inst)` bundles the I2C controller pointer and the slave address (`0x44`) into one struct — that's all the driver needs to talk to the device.
 
 :::tip
 DTS uses hyphens in property names (`clock-frequency`). The C macros use underscores (`clock_frequency`). Zephyr converts automatically in `DT_INST_PROP`.

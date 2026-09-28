@@ -194,12 +194,29 @@ CONFIG_LED_STRIP_LOG_LEVEL_DBG=y
 
 ## Build and flash
 
+<BoardTabs>
+<BoardTab value="esp32s3_devkitc">
+
 ```bash
 west build -b esp32s3_devkitc/esp32s3/procpu .
 west flash
 ```
 
+</BoardTab>
+<BoardTab value="efz_esp32s3">
+
+```bash
+west build -b efz_esp32s3/esp32s3/procpu .
+west flash
+```
+
+</BoardTab>
+</BoardTabs>
+
 ## Expected output
+
+<BoardTabs>
+<BoardTab value="esp32s3_devkitc">
 
 ```
 *** Booting Zephyr OS build v4.4.0 ***
@@ -210,6 +227,22 @@ Hello EmbeddedFun from esp32s3_devkitc/esp32s3/procpu count=1
 Hello EmbeddedFun from esp32s3_devkitc/esp32s3/procpu count=2
 ...
 ```
+
+</BoardTab>
+<BoardTab value="efz_esp32s3">
+
+```
+*** Booting Zephyr OS build v4.4.0 ***
+Hello EmbeddedFun from efz_esp32s3/esp32s3/procpu count=0
+[00:00:00.312] <inf> main: Found LED strip device ws2812@0
+[00:00:00.312] <inf> main: Displaying pattern on strip
+Hello EmbeddedFun from efz_esp32s3/esp32s3/procpu count=1
+Hello EmbeddedFun from efz_esp32s3/esp32s3/procpu count=2
+...
+```
+
+</BoardTab>
+</BoardTabs>
 
 `hello_thread` starts before `main()` so `count=0` appears first. The LED log lines appear once `main()` creates `ws2812_thread`. After that, both run in parallel indefinitely — the board name printed alongside the count confirms which board the firmware is running on.
 

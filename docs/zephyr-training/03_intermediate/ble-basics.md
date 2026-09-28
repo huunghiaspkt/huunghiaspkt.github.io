@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 description: Set up BLE advertising on ESP32, connect from a phone, and expose sensor data as a GATT characteristic.
 ---
 

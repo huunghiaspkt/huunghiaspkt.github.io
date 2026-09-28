@@ -5,7 +5,7 @@ description: How to write devicetree overlays — syntax, node references, prope
 
 # Writing Overlays
 
-When you flash Hello World, the board's hardware is already partially described — the ESP32-S3-DevKitC ships with a `.dts` file that Espressif and the Zephyr community maintain. It defines the chip peripherals, the pins, the clocks.
+When you flash Hello World, the board's hardware is already partially described — every board ships with a `.dts` file (upstream Zephyr for the ESP32-S3-DevKitC, the [EmbeddedFun fork](/docs/zephyr-training/how-to-start/environment) for the EFZ-ESP32S3). It defines the chip peripherals, the pins, the clocks.
 
 But it does not know about **your application**. It does not know that you want I2S0 to drive an LED strip, or that you need I2C0 at a specific frequency with a sensor at address 0x44. An overlay is your answer to that gap — a file where you describe exactly what your application needs on top of the board's base hardware. Without it, Zephyr has no way to know which peripherals to enable or which drivers to instantiate.
 
@@ -17,7 +17,10 @@ But it does not know about **your application**. It does not know that you want 
 
 ## Where does the overlay file live?
 
-Your devicetree overlay file lives at:
+Your devicetree overlay file lives in `boards/`, named after your board:
+
+<BoardTabs>
+<BoardTab value="esp32s3_devkitc">
 
 ```
 devzone/hello_world/
@@ -29,7 +32,25 @@ devzone/hello_world/
     └── main.c
 ```
 
-The filename combines the board name and qualifiers, with `/` replaced by `_`. For `esp32s3_devkitc/esp32s3/procpu`, the overlay is `boards/esp32s3_devkitc_esp32s3_procpu.overlay`.
+</BoardTab>
+<BoardTab value="efz_esp32s3">
+
+```
+devzone/hello_world/
+├── boards/
+│   └── efz_esp32s3_esp32s3_procpu.overlay
+├── CMakeLists.txt
+├── prj.conf
+└── src/
+    └── main.c
+```
+
+</BoardTab>
+</BoardTabs>
+
+The filename combines the board name and qualifiers, with `/` replaced by `_`. For `esp32s3_devkitc/esp32s3/procpu`, the overlay is `boards/esp32s3_devkitc_esp32s3_procpu.overlay`; for `efz_esp32s3/esp32s3/procpu`, it's `boards/efz_esp32s3_esp32s3_procpu.overlay`.
+
+A project can hold overlays for several boards side by side — West only picks the one matching the `-b` you build for.
 
 :::tip
 West finds the overlay automatically by matching the board name. You don't need to pass `-DDTC_OVERLAY_FILE=` unless you want a non-standard name.
@@ -37,7 +58,12 @@ West finds the overlay automatically by matching the board name. You don't need 
 
 ## Real board example — WS2812 RGB LED
 
-The ESP32-S3-DevKitC has one addressable RGB LED driven by GPIO48 via I2S. This is the overlay from the official Zephyr LED strip sample:
+Both boards have one addressable WS2812 RGB LED, driven via I2S — on GPIO48 on the DevKitC, GPIO21 on the EFZ-ESP32S3. The overlays are identical except for that one pin:
+
+<BoardTabs>
+<BoardTab value="esp32s3_devkitc">
+
+This is the overlay from the official Zephyr LED strip sample:
 
 ```dts title="boards/esp32s3_devkitc_esp32s3_procpu.overlay"
 /*
@@ -56,7 +82,7 @@ The ESP32-S3-DevKitC has one addressable RGB LED driven by GPIO48 via I2S. This 
 
 &i2s0_default {
 	group1 {
-		pinmux = <I2S0_O_SD_GPIO38>;
+		pinmux = <I2S0_O_SD_GPIO48>;
 	};
 };
 
@@ -83,6 +109,52 @@ i2s_led: &i2s0 {
 };
 ```
 
+</BoardTab>
+<BoardTab value="efz_esp32s3">
+
+The same overlay, with the data line moved to GPIO21 where the EFZ-ESP32S3's WS2812B sits:
+
+```dts title="boards/efz_esp32s3_esp32s3_procpu.overlay"
+#include <zephyr/dt-bindings/led/led.h>
+
+/ {
+	aliases {
+		led-strip = &led_strip;
+	};
+};
+
+&i2s0_default {
+	group1 {
+		pinmux = <I2S0_O_SD_GPIO21>;
+	};
+};
+
+i2s_led: &i2s0 {
+	status = "okay";
+
+	dmas = <&dma 3>;
+	dma-names = "tx";
+
+	led_strip: ws2812@0 {
+		compatible = "worldsemi,ws2812-i2s";
+
+		reg = <0>;
+		chain-length = <1>;
+		color-mapping = <LED_COLOR_ID_GREEN
+				 LED_COLOR_ID_RED
+				 LED_COLOR_ID_BLUE>;
+		reset-delay = <500>;
+	};
+};
+
+&dma {
+	status = "okay";
+};
+```
+
+</BoardTab>
+</BoardTabs>
+
 ---
 
 ```kconfig title="prj.conf"
@@ -92,7 +164,7 @@ CONFIG_LED_STRIP_LOG_LEVEL_DBG=y
 ```
 
 What this overlay demonstrates:
-- **`&i2s0_default`** — sets the pinmux so I2S0's output maps to GPIO48
+- **`&i2s0_default`** — sets the pinmux so I2S0's output maps to the LED's pin (GPIO48 on the DevKitC, GPIO21 on the EFZ-ESP32S3)
 - **`i2s_led: &i2s0`** — opens the existing I2S0 node and assigns it the label `i2s_led`
 - **`ws2812@0`** — child node with `compatible = "worldsemi,ws2812-i2s"`, binding it to the WS2812 I2S driver
 - **`color-mapping`** — GRB order (this LED is Green-Red-Blue, not the usual RGB)
@@ -208,6 +280,8 @@ For peripherals like I2S, UART, and SPI, the physical pin assignment is set in a
 ```
 
 `I2S0_O_SD_GPIO48` is a macro from the ESP32-S3 pinmux header that connects the I2S0 serial data output signal to GPIO48 — the pin the DevKitC's RGB LED is wired to.
+
+That one macro is the only line that differs between the two boards' overlays. On the EFZ-ESP32S3 it's `I2S0_O_SD_GPIO21`. The ESP32-S3's GPIO matrix can route I2S0's output to almost any pin, so the header has an `I2S0_O_SD_GPIOn` macro for each of them — porting to a new board is often just picking the right one.
 
 <br/>
 

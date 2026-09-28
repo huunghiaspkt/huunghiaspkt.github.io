@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11
+sidebar_position: 12
 description: Zephyr's wifi_mgmt API — connect, scan, handle events, get a DHCP lease. Examples run on the ESP32-S3 DevKitC.
 ---
 
@@ -218,4 +218,4 @@ Followed by `NET_EVENT_WIFI_DISCONNECT_RESULT` in your handler.
 - HTTP client → `CONFIG_HTTP_CLIENT=y`, then `socket()` + `http_client_req()`
 - MQTT to AWS / HiveMQ → `CONFIG_MQTT_LIB=y`, see `samples/net/mqtt_publisher`
 - mDNS / Bonjour service discovery → `CONFIG_MDNS_RESPONDER=y`
-- WiFi + BME280 → publish sensor readings; the [AIoT section](/docs/aiot/) covers this end-to-end
+- WiFi + the SHT30 → publish temperature and humidity readings; the [AIoT section](/docs/aiot/) covers this end-to-end

@@ -82,6 +82,10 @@ west build -b esp32s3_devkitc/esp32s3/procpu . -- -DCMAKE_VERBOSE_MAKEFILE=ON
 `--` separates `west build` arguments from CMake arguments. Everything after `--` is passed directly to CMake.
 :::
 
+:::tip[On the EFZ-ESP32S3]
+Swap the target for `efz_esp32s3/esp32s3/procpu` — everything else is the same. The overlay file is then `boards/efz_esp32s3_esp32s3_procpu.overlay`.
+:::
+
 <br/>
 
 ---
