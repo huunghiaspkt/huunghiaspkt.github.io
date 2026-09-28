@@ -75,11 +75,11 @@ $Failed = 0
 
 # "Close and reopen PowerShell": pick up PATH changes from installers,
 # keeping entries already on PATH (such as an activated .venv).
+# A new terminal gets Machine + User PATH, in that order; an activated venv goes in front.
 function Update-SessionPath {
-    $fresh = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
-             [Environment]::GetEnvironmentVariable('Path', 'User')
-    $env:Path = (($env:Path -split ';') + ($fresh -split ';') |
-                 Where-Object { $_ } | Select-Object -Unique) -join ';'
+    $env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
+                [Environment]::GetEnvironmentVariable('Path', 'User')
+    if ($env:VIRTUAL_ENV) { $env:Path = "$env:VIRTUAL_ENV\Scripts;$env:Path" }
 }
 
 function Skip-Block([string]$Label, [string]$Why) { $script:Results += "SKIP|$Label — $Why" }

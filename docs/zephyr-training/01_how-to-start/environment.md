@@ -116,7 +116,7 @@ Verify:
 
 ```powershell
 cmake --version
-python --version
+py --version
 dtc --version
 ```
 
@@ -169,10 +169,14 @@ pip install west
 New-Item -ItemType Directory -Force -Path D:\your\workspace\path
 cd D:\your\workspace\path
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-python -m venv .venv
+py -3.12 -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install west
 ```
+
+:::tip[Why `py`?]
+Windows ships a `python` shortcut that opens the Microsoft Store instead of running Python. The `py` launcher always finds the Python you installed. Once the virtual environment is active, `python` and `pip` work normally.
+:::
 
 </TabItem>
 </Tabs>
