@@ -1,5 +1,5 @@
 ---
-sidebar_position: 17
+sidebar_position: 18
 description: Ship firmware updates to fielded devices — MCUboot, image slots, and FOTA over BLE or WiFi.
 ---
 

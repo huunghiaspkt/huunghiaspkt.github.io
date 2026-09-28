@@ -1,0 +1,86 @@
+name: Test Environment Setup page
+
+# Runs the Environment Setup page's own commands, exactly as written, on a fresh
+# Linux, macOS and Windows machine. docs-test/extract.py pulls the steps each
+# OS reader would type out of environment.md, so the test always matches the
+# current page. Each job posts a PASS/FAIL table per step in the run summary.
+
+# Heavy (full west update + SDK download on three OSes), so it does not run on
+# pushes or pull requests: weekly, or by hand from the Actions tab (Run workflow).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1'   # Mondays 03:00 UTC: the Zephyr fork's main keeps moving
+
+jobs:
+  linux:
+    name: Linux (Ubuntu)
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+
+      # The workspace plus the full SDK needs ~18 GB; the runner starts with ~14 GB free.
+      - name: Free disk space (test harness)
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      # The page's "sudo apt upgrade" / "sudo apt install" wait for Y; a script can't answer.
+      - name: Let apt answer yes (test harness)
+        run: echo 'APT::Get::Assume-Yes "true";' | sudo tee /etc/apt/apt.conf.d/90assume-yes
+
+      # Test harness: west sdk install queries the GitHub API; shared CI IPs hit the anonymous
+      # rate limit. sdk.py honours ~/.netrc, so authenticate with the job token.
+      - name: Authenticate GitHub API calls (test harness)
+        run: printf 'machine api.github.com\nlogin x-access-token\npassword %s\n' "${{ github.token }}" > ~/.netrc && chmod 600 ~/.netrc
+
+      - name: Extract the Linux steps from the page
+        run: python3 docs-test/extract.py linux "$HOME/efz-ws" > "$RUNNER_TEMP/env-test.sh"
+
+      - name: Run the Linux steps
+        run: bash "$RUNNER_TEMP/env-test.sh"
+
+  macos:
+    name: macOS (Apple Silicon)
+    runs-on: macos-latest
+    timeout-minutes: 240
+    env:
+      NONINTERACTIVE: 1   # the Homebrew installer would otherwise wait for Enter
+    steps:
+      - uses: actions/checkout@v4
+
+      # Test harness: west sdk install queries the GitHub API; shared CI IPs hit the anonymous
+      # rate limit. sdk.py honours ~/.netrc, so authenticate with the job token.
+      - name: Authenticate GitHub API calls (test harness)
+        run: printf 'machine api.github.com\nlogin x-access-token\npassword %s\n' "${{ github.token }}" > ~/.netrc && chmod 600 ~/.netrc
+
+      - name: Extract the macOS steps from the page
+        run: python3 docs-test/extract.py macos "$HOME/efz-ws" > "$RUNNER_TEMP/env-test.sh"
+
+      - name: Run the macOS steps
+        run: bash "$RUNNER_TEMP/env-test.sh"
+
+  windows:
+    name: Windows
+    runs-on: windows-latest
+    timeout-minutes: 240
+    env:
+      PYTHONUTF8: 1   # step names contain non-ASCII characters
+    steps:
+      - uses: actions/checkout@v4
+
+      # Test harness: west sdk install queries the GitHub API; shared CI IPs hit the anonymous
+      # rate limit. sdk.py honours ~/_netrc, so authenticate with the job token.
+      - name: Authenticate GitHub API calls (test harness)
+        shell: bash
+        run: printf 'machine api.github.com\nlogin x-access-token\npassword %s\n' "${{ github.token }}" | tee ~/.netrc > ~/_netrc
+
+      - name: Extract the Windows steps from the page
+        shell: bash
+        run: python docs-test/extract.py windows 'D:\efz-ws' > "$RUNNER_TEMP/env-test.ps1"
+
+      # Windows PowerShell 5.1: what "Open PowerShell as Administrator" gives a student.
+      - name: Run the Windows steps
+        shell: powershell
+        run: '& "$env:RUNNER_TEMP\env-test.ps1"'

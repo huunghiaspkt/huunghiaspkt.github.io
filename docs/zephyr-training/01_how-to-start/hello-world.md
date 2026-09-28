@@ -26,10 +26,11 @@ Your Zephyr workspace can be anywhere on your machine. Throughout this guide we 
 
 Open your preferred terminal emulator — **GNOME Terminal**, **Konsole**, **Alacritty**, or any other.
 
-Activate your virtual environment:
+Go to your workspace and activate your virtual environment:
 
 ```bash
-source /your/workspace/path/.venv/bin/activate
+cd /your/workspace/path
+source .venv/bin/activate
 ```
 
 </TabItem>
@@ -37,10 +38,11 @@ source /your/workspace/path/.venv/bin/activate
 
 Open **Terminal** (`/Applications/Utilities/Terminal.app`) or **iTerm2** if you have it installed.
 
-Activate your virtual environment:
+Go to your workspace and activate your virtual environment:
 
 ```bash
-source /your/workspace/path/.venv/bin/activate
+cd /your/workspace/path
+source .venv/bin/activate
 ```
 
 </TabItem>
@@ -48,10 +50,11 @@ source /your/workspace/path/.venv/bin/activate
 
 Use **PowerShell** — not cmd.exe. Open it by pressing `Win + X` and selecting **Terminal** or **Windows PowerShell**.
 
-Activate your virtual environment:
+Go to your workspace and activate your virtual environment:
 
 ```powershell
-D:\your\workspace\path\.venv\Scripts\Activate.ps1
+cd D:\your\workspace\path
+.venv\Scripts\Activate.ps1
 ```
 
 </TabItem>
@@ -63,54 +66,36 @@ D:\your\workspace\path\.venv\Scripts\Activate.ps1
 
 ## Step 2 — Copy the sample
 
-Zephyr ships with a `samples/` folder full of ready-to-build examples. The Hello World sample lives at:
+Zephyr ships with a `samples/` folder full of ready-to-build examples. Inside your workspace, the Hello World sample lives at:
 
 ```
-/your/workspace/path/zephyr/samples/hello_world/
+zephyr/samples/hello_world/
 ```
 
-Copy it into a `devzone/` folder — this is where you'll keep all your personal projects, separate from the Zephyr source tree:
+From the workspace folder you're already in, copy it into a `devzone/` folder — this is where you'll keep all your personal projects, separate from the Zephyr source tree:
 
 <Tabs groupId="os">
 <TabItem value="linux" label="🐧 Linux" default>
 
 ```bash
-mkdir -p /your/workspace/path/devzone
-cp -r /your/workspace/path/zephyr/samples/hello_world /your/workspace/path/devzone/hello_world
-```
-
-**Example** (if your workspace is at `/home/john/zephyr_ws`):
-```bash
-mkdir -p /home/john/zephyr_ws/devzone
-cp -r /home/john/zephyr_ws/zephyr/samples/hello_world /home/john/zephyr_ws/devzone/hello_world
+mkdir -p devzone
+cp -r zephyr/samples/hello_world devzone/hello_world
 ```
 
 </TabItem>
 <TabItem value="macos" label="🍎 macOS">
 
 ```bash
-mkdir -p /your/workspace/path/devzone
-cp -r /your/workspace/path/zephyr/samples/hello_world /your/workspace/path/devzone/hello_world
-```
-
-**Example** (if your workspace is at `/Users/john/zephyr_ws`):
-```bash
-mkdir -p /Users/john/zephyr_ws/devzone
-cp -r /Users/john/zephyr_ws/zephyr/samples/hello_world /Users/john/zephyr_ws/devzone/hello_world
+mkdir -p devzone
+cp -r zephyr/samples/hello_world devzone/hello_world
 ```
 
 </TabItem>
 <TabItem value="windows" label="🪟 Windows">
 
 ```powershell
-New-Item -ItemType Directory -Force -Path "D:\your\workspace\path\devzone"
-Copy-Item -Recurse "D:\your\workspace\path\zephyr\samples\hello_world" "D:\your\workspace\path\devzone\hello_world"
-```
-
-**Example** (if your workspace is at `D:\projects\zephyr_ws`):
-```powershell
-New-Item -ItemType Directory -Force -Path "D:\projects\zephyr_ws\devzone"
-Copy-Item -Recurse "D:\projects\zephyr_ws\zephyr\samples\hello_world" "D:\projects\zephyr_ws\devzone\hello_world"
+New-Item -ItemType Directory -Force -Path devzone
+Copy-Item -Recurse zephyr\samples\hello_world devzone\hello_world
 ```
 
 </TabItem>
@@ -134,55 +119,34 @@ devzone/hello_world/
 
 ---
 
-## Step 3 — Look at the files
+## Step 3 — Build and flash
 
-### CMakeLists.txt
+From your workspace folder, go into your copied sample and build it. Replace `<your-board>` with your board target — pick your board:
 
-```cmake title="CMakeLists.txt"
-cmake_minimum_required(VERSION 3.20.0)
-find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
-project(hello_world)
+<BoardTabs>
+<BoardTab value="esp32s3_devkitc">
 
-target_sources(app PRIVATE src/main.c)
+```bash
+west build -b esp32s3_devkitc/esp32s3/procpu .
 ```
 
-The `find_package(Zephyr ...)` line connects your app to the Zephyr build system.
-West sets `ZEPHYR_BASE` automatically — you don't need to set it yourself.
+</BoardTab>
+<BoardTab value="efz_esp32s3">
 
-### prj.conf
-
-```kconfig title="prj.conf"
-# Nothing needed for Hello World
-# Add CONFIG_* symbols here to enable drivers and subsystems
+```bash
+west build -b efz_esp32s3/esp32s3/procpu .
 ```
 
-### src/main.c
+</BoardTab>
+</BoardTabs>
 
-```c title="src/main.c"
-#include <stdio.h>
-
-int main(void)
-{
-    printf("Hello World! %s\n", CONFIG_BOARD);
-    return 0;
-}
-```
-
-`CONFIG_BOARD` expands to the board name you pass with `-b` — so building for `esp32s3_devkitc` prints `Hello World! esp32s3_devkitc`.
-
-<br/>
-
----
-
-## Step 4 — Build and flash
-
-Navigate to your copied sample and build it. Replace `<your-board>` with your board ID (e.g. `esp32s3_devkitc/esp32s3/procpu`, `nrf52840dk/nrf52840`):
+[Supported chip families](/docs/zephyr-training/how-to-start#supported-chip-families)
 
 <Tabs groupId="os">
 <TabItem value="linux" label="🐧 Linux" default>
 
 ```bash
-cd /your/workspace/path/devzone/hello_world
+cd devzone/hello_world
 west build -b <your-board> .
 west flash
 ```
@@ -191,7 +155,7 @@ west flash
 <TabItem value="macos" label="🍎 macOS">
 
 ```bash
-cd /your/workspace/path/devzone/hello_world
+cd devzone/hello_world
 west build -b <your-board> .
 west flash
 ```
@@ -200,7 +164,7 @@ west flash
 <TabItem value="windows" label="🪟 Windows">
 
 ```powershell
-cd D:\your\workspace\path\devzone\hello_world
+cd devzone\hello_world
 west build -b <your-board> .
 west flash
 ```
@@ -210,31 +174,52 @@ west flash
 
 Expected output on the serial console:
 
+<BoardTabs>
+<BoardTab value="esp32s3_devkitc">
+
 ```
 *** Booting Zephyr OS build v4.4.0 ***
 Hello World! esp32s3_devkitc
 ```
+
+</BoardTab>
+<BoardTab value="efz_esp32s3">
+
+```
+*** Booting Zephyr OS build v4.4.0 ***
+Hello World! efz_esp32s3
+```
+
+</BoardTab>
+</BoardTabs>
 
 <br/>
 
 ---
 
-## Step 5 — Read the output with Serial Monitor
+## Step 4 — Read the output with Serial Monitor
 
 After flashing, open **Serial Monitor** in VS Code to see the output from your board:
 
 1. Go to `Terminal → New Terminal` in VS Code
 2. The **Serial Monitor** tab will appear at the bottom panel
-3. Select your board's port (e.g. `/dev/ttyUSB0` on Linux, `/dev/cu.usbserial-*` on macOS, `COM3` on Windows)
+3. Select your board's port:
+   <BoardTabs>
+   <BoardTab value="esp32s3_devkitc">
+
+   The DevKitC's USB-UART bridge: `/dev/ttyUSB0` on Linux, `/dev/cu.usbserial-*` on macOS, `COM3` on Windows.
+
+   </BoardTab>
+   <BoardTab value="efz_esp32s3">
+
+   The ESP32-S3's native USB: `/dev/ttyACM0` on Linux, `/dev/cu.usbmodem*` on macOS, `COMx` on Windows.
+
+   </BoardTab>
+   </BoardTabs>
 4. Set the baud rate to **115200**
 5. Click **Start Monitoring**
 
-You should see:
-
-```
-*** Booting Zephyr OS build v4.4.0 ***
-Hello World! esp32s3_devkitc
-```
+You should see the same `Hello World!` line as above.
 
 :::tip[Serial Monitor not set up yet?]
 Follow the [Serial Monitor setup guide](./environment#serial-console--vs-code-setup) in the Environment Setup page first.

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 14
 description: Drive LEDs, servos, and motors with Zephyr's PWM API — period, pulse width, and devicetree config.
 ---
 

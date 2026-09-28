@@ -1,0 +1,226 @@
+[
+  {
+    "type": "ADC",
+    "location": "on-chip",
+    "description": "ESP32 ADC",
+    "compatible": "espressif,esp32-adc",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/adc/espressif%2Cesp32-adc.html#std-dtcompatible-espressif-esp32-adc"
+  },
+  {
+    "type": "Bluetooth",
+    "location": "on-chip",
+    "description": "Bluetooth HCI for Espressif ESP32",
+    "compatible": "espressif,esp32-bt-hci",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/bluetooth/espressif%2Cesp32-bt-hci.html#std-dtcompatible-espressif-esp32-bt-hci"
+  },
+  {
+    "type": "CPU",
+    "location": "on-chip",
+    "description": "Espressif Xtensa LX7 CPU",
+    "compatible": "espressif,xtensa-lx7",
+    "count": 2,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/cpu/espressif%2Cxtensa-lx7.html#std-dtcompatible-espressif-xtensa-lx7"
+  },
+  {
+    "type": "Clock control",
+    "location": "on-chip",
+    "description": "ESP32 Clock (Power & Clock Controller Module) Module",
+    "compatible": "espressif,esp32-clock",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/clock/espressif%2Cesp32-clock.html#std-dtcompatible-espressif-esp32-clock"
+  },
+  {
+    "type": "Counter",
+    "location": "on-chip",
+    "description": "ESP32 general-purpose timers",
+    "compatible": "espressif,esp32-timer",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/counter/espressif%2Cesp32-timer.html#std-dtcompatible-espressif-esp32-timer"
+  },
+  {
+    "type": "Crypto",
+    "location": "on-chip",
+    "description": "Espressif ESP32 family AES Hardware Accelerator",
+    "compatible": "espressif,esp32-aes",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/crypto/espressif%2Cesp32-aes.html#std-dtcompatible-espressif-esp32-aes"
+  },
+  {
+    "type": "Crypto",
+    "location": "on-chip",
+    "description": "Espressif ESP32 SHA Hardware Accelerator",
+    "compatible": "espressif,esp32-sha",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/crypto/espressif%2Cesp32-sha.html#std-dtcompatible-espressif-esp32-sha"
+  },
+  {
+    "type": "DMA",
+    "location": "on-chip",
+    "description": "ESP32 GDMA (General Direct Memory Access)",
+    "compatible": "espressif,esp32-gdma",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/dma/espressif%2Cesp32-gdma.html#std-dtcompatible-espressif-esp32-gdma"
+  },
+  {
+    "type": "Entropy",
+    "location": "on-chip",
+    "description": "ESP32 TRNG (True Random Number Generator)",
+    "compatible": "espressif,esp32-trng",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/rng/espressif%2Cesp32-trng.html#std-dtcompatible-espressif-esp32-trng"
+  },
+  {
+    "type": "Flash",
+    "location": "on-chip",
+    "description": "Flash node",
+    "compatible": "soc-nv-flash",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/mtd/soc-nv-flash.html#std-dtcompatible-soc-nv-flash"
+  },
+  {
+    "type": "Flash controller",
+    "location": "on-chip",
+    "description": "ESP32 flash controller",
+    "compatible": "espressif,esp32-flash-controller",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/flash_controller/espressif%2Cesp32-flash-controller.html#std-dtcompatible-espressif-esp32-flash-controller"
+  },
+  {
+    "type": "GPIO",
+    "location": "on-chip",
+    "description": "ESP32 GPIO controller",
+    "compatible": "espressif,esp32-gpio",
+    "count": 2,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/gpio/espressif%2Cesp32-gpio.html#std-dtcompatible-espressif-esp32-gpio"
+  },
+  {
+    "type": "I2C",
+    "location": "on-chip",
+    "description": "ESP32 I2C",
+    "compatible": "espressif,esp32-i2c",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/i2c/espressif%2Cesp32-i2c.html#std-dtcompatible-espressif-esp32-i2c"
+  },
+  {
+    "type": "I2S",
+    "location": "on-chip",
+    "description": "ESP32 I2S",
+    "compatible": "espressif,esp32-i2s",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/i2s/espressif%2Cesp32-i2s.html#std-dtcompatible-espressif-esp32-i2s"
+  },
+  {
+    "type": "Input",
+    "location": "on-board",
+    "description": "Group of GPIO-bound input keys",
+    "compatible": "gpio-keys",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/input/gpio-keys.html#std-dtcompatible-gpio-keys"
+  },
+  {
+    "type": "Interrupt controller",
+    "location": "on-chip",
+    "description": "ESP32 Interrupt controller",
+    "compatible": "espressif,esp32-intc",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/interrupt-controller/espressif%2Cesp32-intc.html#std-dtcompatible-espressif-esp32-intc"
+  },
+  {
+    "type": "LED",
+    "location": "on-board",
+    "description": "Group of GPIO-controlled LEDs",
+    "compatible": "gpio-leds",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/led/gpio-leds.html#std-dtcompatible-gpio-leds"
+  },
+  {
+    "type": "Miscellaneous",
+    "location": "on-chip",
+    "description": "ESP32 LCD-CAM controller",
+    "compatible": "espressif,esp32-lcd-cam",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/misc/espressif%2Cesp32-lcd-cam.html#std-dtcompatible-espressif-esp32-lcd-cam"
+  },
+  {
+    "type": "Pin control",
+    "location": "on-chip",
+    "description": "ESP32 pin controller",
+    "compatible": "espressif,esp32-pinctrl",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/pinctrl/espressif%2Cesp32-pinctrl.html#std-dtcompatible-espressif-esp32-pinctrl"
+  },
+  {
+    "type": "SD",
+    "location": "on-board",
+    "description": "Zephyr SDMMC disk (microSD slot)",
+    "compatible": "zephyr,sdmmc-disk",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/sd/zephyr%2Csdmmc-disk.html#std-dtcompatible-zephyr-sdmmc-disk"
+  },
+  {
+    "type": "SD host controller",
+    "location": "on-chip",
+    "description": "ESP32 SDHC controller",
+    "compatible": "espressif,esp32-sdhc",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/sdhc/espressif%2Cesp32-sdhc.html#std-dtcompatible-espressif-esp32-sdhc"
+  },
+  {
+    "type": "SD host controller",
+    "location": "on-chip",
+    "description": "ESP32 SDHC controller slot",
+    "compatible": "espressif,esp32-sdhc-slot",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/sdhc/espressif%2Cesp32-sdhc-slot.html#std-dtcompatible-espressif-esp32-sdhc-slot"
+  },
+  {
+    "type": "Sensor",
+    "location": "on-board",
+    "description": "MPU-6000 motion tracking device (MPU-6500 on this board)",
+    "compatible": "invensense,mpu6050",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/sensor/invensense%2Cmpu6050.html#std-dtcompatible-invensense-mpu6050"
+  },
+  {
+    "type": "Sensor",
+    "location": "on-board",
+    "description": "Sensirion Humidity SHT3x-DIS humidity and temperature sensor (SHT30 on this board)",
+    "compatible": "sensirion,sht3xd",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/sensor/sensirion%2Csht3xd.html#std-dtcompatible-sensirion-sht3xd"
+  },
+  {
+    "type": "Serial controller",
+    "location": "on-chip",
+    "description": "ESP32 UART",
+    "compatible": "espressif,esp32-uart",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/serial/espressif%2Cesp32-uart.html#std-dtcompatible-espressif-esp32-uart"
+  },
+  {
+    "type": "Serial controller",
+    "location": "on-chip",
+    "description": "ESP32 UART (USB Serial/JTAG console)",
+    "compatible": "espressif,esp32-usb-serial",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/serial/espressif%2Cesp32-usb-serial.html#std-dtcompatible-espressif-esp32-usb-serial"
+  },
+  {
+    "type": "Watchdog",
+    "location": "on-chip",
+    "description": "ESP32 watchdog",
+    "compatible": "espressif,esp32-watchdog",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/watchdog/espressif%2Cesp32-watchdog.html#std-dtcompatible-espressif-esp32-watchdog"
+  },
+  {
+    "type": "Wi-Fi",
+    "location": "on-chip",
+    "description": "ESP32 SoC Wi-Fi",
+    "compatible": "espressif,esp32-wifi",
+    "count": 1,
+    "binding": "https://docs.zephyrproject.org/latest/build/dts/api/bindings/wifi/espressif%2Cesp32-wifi.html#std-dtcompatible-espressif-esp32-wifi"
+  }
+]

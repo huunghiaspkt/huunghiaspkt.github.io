@@ -61,7 +61,11 @@ In Zephyr, this board is identified as:
 west build -b esp32s3_devkitc/esp32s3/procpu .
 ```
 
-The qualifier `/esp32s3/procpu` selects the main application CPU (procpu). All examples in this training use this target.
+The qualifier `/esp32s3/procpu` selects the main application CPU (procpu). Every hands-on page has an **ESP32-S3-DevKitC** tab with the commands for this target.
+
+:::tip[Have the EFZ-ESP32S3 instead?]
+The training also supports the EmbeddedFun board — see [Meet the EFZ-ESP32S3](./efz-esp32s3-board) and pick its tab on any page.
+:::
 
 :::tip[How to find the right target for any board]
 On every Zephyr board page, scroll to the **Supported Features** section. At the bottom you will see a board target selector:

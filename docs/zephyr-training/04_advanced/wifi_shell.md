@@ -122,7 +122,7 @@ PING 8.8.8.8
 
 ## How it works — no app code
 
-This sample's [`main()`](https://github.com/huunghiaspkt/efzephyr-samples/tree/main/04_advanced/wifi_shell) just prints a hint; the `wifi` and `net` modules do everything else. You never write a line of networking or command-parsing code — that's the whole point of the built-in shells.
+This sample's [`main()`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/04_advanced/wifi_shell) just prints a hint; the `wifi` and `net` modules do everything else. You never write a line of networking or command-parsing code — that's the whole point of the built-in shells.
 
 :::info
 The built-in `wifi scan` is **asynchronous**: the command returns immediately with `Scan requested`, and results stream in afterwards as `net_mgmt` events (`NET_EVENT_WIFI_SCAN_RESULT`, then `NET_EVENT_WIFI_SCAN_DONE`) — which is why the table prints on its own lines a moment later. The same event model is covered on the [WiFi](/docs/zephyr-training/intermediate/wifi) page.

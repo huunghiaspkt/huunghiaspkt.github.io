@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 description: Share data safely between Zephyr threads — semaphores, mutexes, message queues, and work queues.
 ---
 

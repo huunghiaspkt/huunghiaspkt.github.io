@@ -21,6 +21,7 @@ This section is organized to mirror the [Nordic Developer Academy nRF Connect SD
 |---|---|
 | [How Zephyr Fits Together](./zephyr-layers) | How overlay, binding, Kconfig, and driver connect — the full picture |
 | [Devicetree](./devicetree) | Layer 1 — the three-layer DTS model, node references, how hardware gets described |
+| [Writing Overlays](./overlays) | Add and change hardware for your application — syntax, node references, pinmux, aliases |
 | [DTS Binding YAML](./binding-yaml) | Layer 2 — define what properties your DTS node accepts |
 | [Kconfig](./kconfig) | Layer 3 — enable/disable drivers and features, read `.config` |
 | [Sensors](./i2c-sensors) | Use the sensor API — `sensor_sample_fetch`, `sensor_channel_get`, `struct sensor_value` |

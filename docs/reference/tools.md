@@ -53,8 +53,8 @@ The tools I use for every project, with setup notes.
 pip3 install west
 
 # Initialize Zephyr workspace
-west init -m https://github.com/zephyrproject-rtos/zephyr \
-  --mr v3.7.0 ~/zephyrproject
+west init -m https://github.com/huunghiaspkt/zephyr \
+  --mr main ~/zephyrproject
 cd ~/zephyrproject
 west update
 

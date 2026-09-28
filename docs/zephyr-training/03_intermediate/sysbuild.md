@@ -1,5 +1,5 @@
 ---
-sidebar_position: 16
+sidebar_position: 17
 description: Build multiple firmware images together with Sysbuild — app, bootloader, and network core in one west build.
 ---
 

@@ -102,22 +102,10 @@ It installs and updates tools from the command line, similar to `apt` on Linux o
 Open **PowerShell as Administrator** and install all required tools in one command:
 
 ```powershell
-winget install --id Kitware.CMake --silent
-winget install --id Ninja-build.Ninja --silent
-winget install --id oss-winget.gperf --silent
-winget install --id Python.Python.3.12 --silent
-winget install --id Git.Git --silent
-winget install --id oss-winget.dtc --silent
-winget install --id wget.wget --silent
-winget install --id 7zip.7zip --silent
-```
-
-Or chain them all into a single call:
-
-```powershell
 winget install Kitware.CMake Ninja-build.Ninja `
   oss-winget.gperf Python.Python.3.12 `
-  Git.Git oss-winget.dtc wget.wget 7zip.7zip
+  Git.Git oss-winget.dtc wget 7zip.7zip `
+  --accept-source-agreements --accept-package-agreements
 ```
 
 :::tip[After installation]
@@ -128,7 +116,7 @@ Verify:
 
 ```powershell
 cmake --version
-python --version
+py --version
 dtc --version
 ```
 
@@ -148,12 +136,16 @@ West is the meta-tool that ships with Zephyr. It does two things:
 
 Install it inside a Python virtual environment to keep it isolated from your system Python.
 
+First create your workspace folder and move into it — the virtual environment lives inside it, as `.venv`:
+
 <Tabs groupId="os">
 <TabItem value="linux" label="🐧 Linux" default>
 
 ```bash
-python3 -m venv /your/workspace/path/.venv
-source /your/workspace/path/.venv/bin/activate
+mkdir -p /your/workspace/path
+cd /your/workspace/path
+python3 -m venv .venv
+source .venv/bin/activate
 pip install west
 ```
 
@@ -161,8 +153,10 @@ pip install west
 <TabItem value="macos" label="🍎 macOS">
 
 ```bash
-python3 -m venv /your/workspace/path/.venv
-source /your/workspace/path/.venv/bin/activate
+mkdir -p /your/workspace/path
+cd /your/workspace/path
+python3 -m venv .venv
+source .venv/bin/activate
 pip install west
 ```
 
@@ -172,11 +166,17 @@ pip install west
 **PowerShell:**
 
 ```powershell
+New-Item -ItemType Directory -Force -Path D:\your\workspace\path
+cd D:\your\workspace\path
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-python -m venv D:\your\workspace\path\.venv
-D:\your\workspace\path\.venv\Scripts\Activate.ps1
+py -3.12 -m venv .venv
+.venv\Scripts\Activate.ps1
 pip install west
 ```
+
+:::tip[Why `py`?]
+Windows ships a `python` shortcut that opens the Microsoft Store instead of running Python. The `py` launcher always finds the Python you installed. Once the virtual environment is active, `python` and `pip` work normally.
+:::
 
 </TabItem>
 </Tabs>
@@ -203,18 +203,21 @@ west --version
 
 ## Step 3 — Initialize the Zephyr workspace
 
-This step clones Zephyr v4.4.0 and all its dependencies (HALs, modules, bootloader).
+This step clones the [EmbeddedFun fork of Zephyr](https://github.com/huunghiaspkt/zephyr) and all its dependencies (HALs, modules, bootloader).
 **Expect 2–3 GB of downloads** — it only runs once per workspace.
 
 ```bash
-west init -m https://github.com/zephyrproject-rtos/zephyr --mr v4.4.0 /your/workspace/path
+west init -m https://github.com/huunghiaspkt/zephyr --mr main /your/workspace/path
 cd /your/workspace/path
 west update
-west zephyr-export
 ```
 
 :::note
-Always use `west init` instead of `git clone`. West registers the manifest so that `west update` always restores the exact dependency tree — your project will build correctly years from now.
+Always use `west init` instead of `git clone`. West registers the manifest so that `west update` always restores the dependency tree that manifest lists.
+:::
+
+:::info[Why a fork?]
+The fork is upstream Zephyr `main` plus one commit that adds the [EFZ-ESP32S3 board](https://github.com/huunghiaspkt/zephyr/tree/main/boards/embeddedfun/efz_esp32s3). That's why `-b efz_esp32s3/esp32s3/procpu` works without copying any files — and every upstream board, including the ESP32-S3-DevKitC, works exactly as before.
 :::
 
 Install the Python dependencies:
@@ -244,6 +247,13 @@ python -m pip install @((west packages pip) -split ' ')
 </TabItem>
 </Tabs>
 
+Register the workspace with CMake and fetch the Espressif binary blobs — the Wi-Fi, Bluetooth and RF libraries every ESP32 build needs. Both need the Python packages you just installed, so they come after them:
+
+```bash
+west zephyr-export
+west blobs fetch hal_espressif
+```
+
 <br/>
 
 ---
@@ -265,12 +275,23 @@ west sdk install
 
 ## Step 5 — Verify the installation
 
-Build the `blinky` sample for your board. Replace `<your-board>` with your actual board name (e.g. `esp32s3_devkitc/esp32s3/procpu`, `nrf52840dk/nrf52840`):
+Build the `blinky` sample for your board:
+
+<BoardTabs>
+<BoardTab value="esp32s3_devkitc" unsupported="Blinky needs a plain GPIO LED (the led0 alias), and the DevKitC's only user LED is the WS2812 RGB LED. You'll drive that one in the WS2812 page of the Basic section." />
+<BoardTab value="efz_esp32s3">
+
+Blinky blinks LED1 (GPIO45):
 
 ```bash
 cd /your/workspace/path/zephyr
-west build -p always -b <your-board> samples/basic/blinky
+west build -p always -b efz_esp32s3/esp32s3/procpu samples/basic/blinky
 ```
+
+</BoardTab>
+</BoardTabs>
+
+On any other Zephyr board, use its target instead (e.g. `nrf52840dk/nrf52840`).
 
 If the build completes without errors, your environment is ready.
 
@@ -281,6 +302,10 @@ If the build completes without errors, your environment is ready.
 ## Serial console — VS Code setup
 
 To read `printf` / `printk` output from your board over USB, install the **Serial Monitor** extension in VS Code and set up the USB serial driver for your platform.
+
+:::info[EFZ-ESP32S3 needs no driver]
+The EFZ-ESP32S3 has no USB-to-serial chip — its USB-C goes straight to the ESP32-S3's native USB, which every OS recognizes out of the box (`/dev/ttyACM0`, `/dev/cu.usbmodem*`, `COMx`). On Linux you still need the `dialout` group below; skip the driver tables.
+:::
 
 **Install the extension:**
 
