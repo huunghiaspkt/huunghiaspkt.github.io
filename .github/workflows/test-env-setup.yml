@@ -5,20 +5,12 @@ name: Test Environment Setup page
 # OS reader would type out of environment.md, so the test always matches the
 # current page. Each job posts a PASS/FAIL table per step in the run summary.
 
+# Heavy (full west update + SDK download on three OSes), so it does not run on
+# pushes or pull requests: weekly, or by hand from the Actions tab (Run workflow).
 on:
-  push:
-    paths:
-      - docs/zephyr-training/01_how-to-start/environment.md
-      - docs-test/**
-      - .github/workflows/test-env-setup.yml
-  pull_request:
-    paths:
-      - docs/zephyr-training/01_how-to-start/environment.md
-      - docs-test/**
-      - .github/workflows/test-env-setup.yml
   workflow_dispatch:
   schedule:
-    - cron: '0 3 * * 1'   # Mondays: the Zephyr fork's main keeps moving
+    - cron: '0 3 * * 1'   # Mondays 03:00 UTC: the Zephyr fork's main keeps moving
 
 jobs:
   linux:
