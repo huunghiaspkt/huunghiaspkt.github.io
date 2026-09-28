@@ -22,6 +22,8 @@ from pathlib import Path
 
 PAGE = Path(__file__).resolve().parent.parent / "docs/zephyr-training/01_how-to-start/environment.md"
 PLACEHOLDERS = ("/your/workspace/path", r"D:\your\workspace\path")
+# Sections a CI machine cannot pass: they need a USB board or a fresh login session.
+SKIP = {"Serial console — VS Code setup": "needs a board on USB / a new login session"}
 
 BASH_HEADER = r'''#!/usr/bin/env bash
 # Generated from environment.md by docs-test/extract.py - do not edit.
@@ -40,6 +42,7 @@ run_block() {                     # $1 = label, $2 = code
     trap - ERR
     if [ $rc -eq 0 ]; then RESULTS+=("PASS|$1"); else RESULTS+=("FAIL|$1"); FAILED=$((FAILED + 1)); fi
 }
+skip_block() { RESULTS+=("SKIP|$1 — $2"); }
 '''
 
 BASH_FOOTER = r'''
@@ -54,7 +57,7 @@ if [ -n "$GITHUB_STEP_SUMMARY" ]; then
         echo "| Result | Block |"
         echo "|---|---|"
         for r in "${RESULTS[@]}"; do
-            [ "${r%%|*}" = PASS ] && icon="✅ PASS" || icon="❌ FAIL"
+            case "${r%%|*}" in PASS) icon="✅ PASS" ;; SKIP) icon="⏭️ SKIP" ;; *) icon="❌ FAIL" ;; esac
             echo "| $icon | ${r#*|} |"
         done
         echo
@@ -78,6 +81,8 @@ function Update-SessionPath {
     $env:Path = (($env:Path -split ';') + ($fresh -split ';') |
                  Where-Object { $_ } | Select-Object -Unique) -join ';'
 }
+
+function Skip-Block([string]$Label, [string]$Why) { $script:Results += "SKIP|$Label — $Why" }
 
 function Invoke-Block([string]$Label, [string]$Code) {
     Write-Host ''
@@ -115,7 +120,7 @@ if ($env:GITHUB_STEP_SUMMARY) {
     $md = @("### Environment Setup — Windows", '', '| Result | Block |', '|---|---|')
     foreach ($r in $Results) {
         $p = $r -split '\|', 2
-        $icon = if ($p[0] -eq 'PASS') { '✅ PASS' } else { '❌ FAIL' }
+        $icon = switch ($p[0]) { 'PASS' { '✅ PASS' } 'SKIP' { '⏭️ SKIP' } default { '❌ FAIL' } }
         $md += "| $icon | $($p[1]) |"
     }
     $md += '', "**$Failed of $($Results.Count) blocks failed**"
@@ -172,6 +177,11 @@ def main():
     windows = os_name == "windows"
     out = ["\ufeff" + PS_HEADER if windows else BASH_HEADER]   # BOM: PowerShell 5.1 reads UTF-8
     for label, code in blocks(os_name):
+        why = next((w for sec, w in SKIP.items() if label.startswith(sec)), None)
+        if why:
+            out.append(f"Skip-Block {ps_quote(label)} {ps_quote(why)}\n" if windows else
+                       f"skip_block {bash_quote(label)} {bash_quote(why)}\n")
+            continue
         for placeholder in PLACEHOLDERS:
             code = code.replace(placeholder, ws)
         if windows:
