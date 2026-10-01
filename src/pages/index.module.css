@@ -311,3 +311,44 @@
   line-height: 1.6;
   margin: 0;
 }
+
+/* ── Homepage: Meet the board ── */
+.boardIntro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+@media (max-width: 860px) {
+  .boardIntro {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+.boardEyebrow {
+  display: inline-block;
+  font-family: var(--ef-font-heading);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ifm-color-primary);
+  margin-bottom: 0.5rem;
+}
+.boardBlurb {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--ifm-color-emphasis-800);
+  margin: 0.5rem 0 1.5rem;
+}
+.boardImageWrap {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+.boardImage {
+  display: block;
+  width: 100%;
+  height: auto;
+}

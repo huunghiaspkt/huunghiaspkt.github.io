@@ -155,6 +155,50 @@ export default function Home(): ReactNode {
       </div>
 
       <main>
+        {/* ── MEET THE BOARD ── */}
+        <section className={styles.section}>
+          <div className="container">
+            <div className={styles.boardIntro}>
+              <div className={styles.boardText}>
+                <span className={styles.boardEyebrow}>
+                  <Translate id="homepage.board.eyebrow">New hardware</Translate>
+                </span>
+                <Heading as="h2" className={styles.sectionTitle}>
+                  <Translate id="homepage.board.title">Meet the EFZ-ESP32S3</Translate>
+                </Heading>
+                <p className={styles.boardBlurb}>
+                  <Translate id="homepage.board.blurb">
+                    The board this course runs on — a bare ESP32-S3 with every peripheral a
+                    lesson touches already on it: an SHT30 sensor, a 6-axis IMU, an RGB LED,
+                    a microphone, a speaker amp, a microSD slot, a display, and your own
+                    headers. Powered, flashed and debugged over a single USB-C cable, with
+                    upstream-style Zephyr board support. Every example on this site is
+                    verified on it.
+                  </Translate>
+                </p>
+                <div className={styles.heroCtas}>
+                  <Link className="button button--primary" to="/blog/introducing-efz-esp32s3">
+                    <Translate id="homepage.board.cta.announce">Read the announcement →</Translate>
+                  </Link>
+                  <Link
+                    className="button button--secondary"
+                    to="/docs/zephyr-training/basic/efz-esp32s3-board">
+                    <Translate id="homepage.board.cta.specs">See the specs</Translate>
+                  </Link>
+                </div>
+              </div>
+              <div className={styles.boardImageWrap}>
+                <img
+                  src="/img/efz/efz-front-back.jpg"
+                  alt="EFZ-ESP32S3 board, front and back"
+                  className={styles.boardImage}
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── TOPICS GRID ── */}
         <section id="topics" className={styles.section}>
           <div className="container">

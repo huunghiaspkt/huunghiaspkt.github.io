@@ -46,6 +46,16 @@ That's the whole point of EmbeddedFun: *real code, real hardware, real results.*
 - **Teachers and workshops** who need a kit where every student's hardware is identical.
 - **Tinkerers** who want a capable ESP32-S3 board with sensors, audio, storage, and a screen, ready to hack on.
 
+## Board resources
+
+Everything you need to build on it, or build your own board from it:
+
+- 📐 **Schematic & board files** — in the [Hardware](/docs/hardware) section (and the GitHub repo). The full schematic and design files for the EFZ-ESP32S3 live there.
+- 🧩 **Zephyr board support** — the devicetree, pinctrl and Kconfig for the board: [`boards/embeddedfun/efz_esp32s3`](https://github.com/huunghiaspkt/zephyr/tree/main/boards/embeddedfun/efz_esp32s3) (hardware model v2, `-b efz_esp32s3/esp32s3/procpu`).
+- 📋 **Full spec, pin map & errata** — [Meet the EFZ-ESP32S3](/docs/zephyr-training/basic/efz-esp32s3-board): every peripheral, its pins, the strapping pins and the gotchas.
+- 💻 **Code & samples** — the course's verified samples live in [`samples/efz_samples`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples); every one runs on this board.
+- 🐙 **GitHub** — [huunghiaspkt](https://github.com/huunghiaspkt).
+
 ## It's coming — stay tuned
 
 The design is done and it has been through every lesson on this site. We're getting it ready for the community now.
