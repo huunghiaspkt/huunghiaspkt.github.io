@@ -50,7 +50,7 @@ That's the whole point of EmbeddedFun: *real code, real hardware, real results.*
 
 Everything you need to build on it, or build your own board from it:
 
-- 📐 **Schematic & board files** — in the [Hardware](/docs/hardware) section (and the GitHub repo). The full schematic and design files for the EFZ-ESP32S3 live there.
+- 📐 **Schematic (PDF)** — [download the full EFZ-ESP32S3 schematic](/schematics/EFZ-ESP32S3-V1-schematic.pdf) (9 sheets). Also linked from the [Hardware](/docs/hardware) section.
 - 🧩 **Zephyr board support** — the devicetree, pinctrl and Kconfig for the board: [`boards/embeddedfun/efz_esp32s3`](https://github.com/huunghiaspkt/zephyr/tree/main/boards/embeddedfun/efz_esp32s3) (hardware model v2, `-b efz_esp32s3/esp32s3/procpu`).
 - 📋 **Full spec, pin map & errata** — [Meet the EFZ-ESP32S3](/docs/zephyr-training/basic/efz-esp32s3-board): every peripheral, its pins, the strapping pins and the gotchas.
 - 💻 **Code & samples** — the course's verified samples live in [`samples/efz_samples`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples); every one runs on this board.
