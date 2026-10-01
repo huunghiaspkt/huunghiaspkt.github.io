@@ -68,6 +68,14 @@ const config: Config = {
   ],
 
   themeConfig: {
+    announcementBar: {
+      id: 'efz-esp32s3-launch',
+      content:
+        '📦 New: the <strong>EFZ-ESP32S3</strong> community board is coming — <a href="/blog/introducing-efz-esp32s3"><strong>read the announcement →</strong></a>',
+      backgroundColor: '#2563eb',
+      textColor: '#ffffff',
+      isCloseable: true,
+    },
     image: 'img/docusaurus-social-card.jpg',
     metadata: [
       {name: 'description', content: 'EmbeddedFun — Zephyr RTOS training, PCB design, and embedded firmware documentation.'},
