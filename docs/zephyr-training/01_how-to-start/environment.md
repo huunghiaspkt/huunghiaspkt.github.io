@@ -281,7 +281,7 @@ Build the `blinky` sample for your board:
 <BoardTab value="esp32s3_devkitc" unsupported="Blinky needs a plain GPIO LED (the led0 alias), and the DevKitC's only user LED is the WS2812 RGB LED. You'll drive that one in the WS2812 page of the Basic section." />
 <BoardTab value="efz_esp32s3">
 
-Blinky blinks LED1 (GPIO45):
+Blinky blinks LED1 (GPIO46):
 
 ```bash
 cd /your/workspace/path/zephyr
