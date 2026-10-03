@@ -98,7 +98,7 @@ The **back** holds the display and labels every connector — handy when you're 
 | | MPU-6500 @ `0x69` | same bus, INT → GPIO48 | |
 | ADC | NTC 10 kΩ B3950 (header P7) | GPIO1 (ADC1_CH0) | 10 kΩ pull-up to 3V3 |
 | RGB LED | WS2812B | GPIO21 | |
-| LEDs | LED1, LED2 (red) | GPIO45, GPIO46 | active-high |
+| LEDs | LED1, LED2 (red) | GPIO46, GPIO45 | active-high |
 | Buttons | BOOT, RESET | GPIO0, CHIP_PU | BOOT is usable as a button |
 | microSD | 4-bit SDIO | CLK 9, CMD 10, D0 8, D1 7, D2 12, D3 11, CD 6 | |
 | Microphone | INMP441 (left channel) | BCLK 2, WS 4, DOUT 3, EN 5 | |
@@ -119,12 +119,12 @@ The ESP32-S3 samples four pins at reset and latches them until power-off; after 
 | Pin | Controls | Chip default | On this board | Result |
 |---|---|---|---|---|
 | GPIO0 | boot mode | weak pull-up → 1 | BOOT button + 10 kΩ pull-up | runs from flash; hold BOOT for download mode |
-| GPIO46 | boot mode, ROM log | weak pull-down → 0 | LED2 + 1 kΩ to GND | 0, as download mode requires |
-| GPIO45 | VDD_SPI voltage | weak pull-down → 0 | LED1 + 1 kΩ to GND | 0 → **3.3 V**, which the EN25QH64A flash needs |
+| GPIO46 | boot mode, ROM log | weak pull-down → 0 | LED1 + 1 kΩ to GND | 0, as download mode requires |
+| GPIO45 | VDD_SPI voltage | weak pull-down → 0 | LED2 + 1 kΩ to GND | 0 → **3.3 V**, which the EN25QH64A flash needs |
 | GPIO3 | JTAG source | floating | INMP441 data out | ignored unless the `STRAP_JTAG_SEL` eFuse is burned (it isn't by default) |
 
 :::danger[Never pull GPIO45 high at reset]
-GPIO45 = 1 at reset switches VDD_SPI to **1.8 V**. The 3.3 V flash then can't be read and the board won't boot. If you hang anything on LED1's pin, keep it low (or high-impedance) during reset.
+GPIO45 = 1 at reset switches VDD_SPI to **1.8 V**. The 3.3 V flash then can't be read and the board won't boot. If you hang anything on LED2's pin, keep it low (or high-impedance) during reset.
 :::
 
 Source: [ESP32-S3 datasheet](https://documentation.espressif.com/esp32-s3_datasheet_en.pdf), §3, Tables 3-1 to 3-5.
