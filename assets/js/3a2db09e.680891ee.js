@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkbranding_scaffold=self.webpackChunkbranding_scaffold||[]).push([["3186"],{8070(a){a.exports=JSON.parse('{"tags":[{"label":"hardware","permalink":"/blog/tags/hardware","count":1},{"label":"zephyr","permalink":"/blog/tags/zephyr","count":1},{"label":"announcement","permalink":"/blog/tags/announcement","count":1}]}')}}]);

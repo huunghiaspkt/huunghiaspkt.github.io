@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkbranding_scaffold=self.webpackChunkbranding_scaffold||[]).push([["1833"],{5513(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Introducing the EFZ-ESP32S3","permalink":"/blog/introducing-efz-esp32s3","unlisted":false,"date":"2026-10-01T00:00:00.000Z"}]}')}}]);
