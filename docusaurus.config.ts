@@ -13,7 +13,7 @@ const config: Config = {
     mermaid: true,
   },
 
-  url: 'https://huunghiaspkt.github.io',
+  url: 'https://embeddedfun.org',
   baseUrl: '/',
 
   organizationName: 'huunghiaspkt',
