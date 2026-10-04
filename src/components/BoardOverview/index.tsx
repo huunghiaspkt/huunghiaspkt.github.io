@@ -10,6 +10,8 @@ type Props = {
   architecture: string;
   soc: string;
   sourcesUrl: string;
+  /** Optional link to the board schematic (PDF), shown as a download button. */
+  schematicUrl?: string;
 };
 
 /** Floating "Board Overview" card, modelled on the Zephyr board pages. */
@@ -39,6 +41,11 @@ export default function BoardOverview(props: Props): React.JSX.Element {
       <a className={styles.button} href={props.sourcesUrl} target="_blank" rel="noopener noreferrer">
         Browse board sources
       </a>
+      {props.schematicUrl && (
+        <a className={styles.button} href={props.schematicUrl} download>
+          Download schematic (PDF)
+        </a>
+      )}
     </aside>
   );
 }

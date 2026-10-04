@@ -1,0 +1,42 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  overflow: hidden;
+  color: inherit;
+  background: var(--ifm-background-surface-color);
+}
+.card:hover {
+  border-color: var(--ifm-color-primary);
+  text-decoration: none;
+  color: inherit;
+}
+.image {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: #fff;
+}
+.body {
+  padding: 0.9rem 1rem 1rem;
+}
+.title {
+  margin: 0 0 0.35rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.summary {
+  margin: 0 0 0.6rem;
+  font-size: 0.92rem;
+  color: var(--ifm-color-emphasis-700);
+}
+.target {
+  font-size: 0.8rem;
+}
