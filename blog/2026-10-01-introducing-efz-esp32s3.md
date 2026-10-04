@@ -7,7 +7,7 @@ date: 2026-10-01
 image: /img/efz/efz-front-back.jpg
 ---
 
-**A board is coming.** We built the one this course always needed — an ESP32-S3 with every peripheral a Zephyr lesson touches already on it, flashed and debugged over a single USB-C cable. Meet the **EFZ-ESP32S3**.
+**The board is here.** We built the one this course always needed — an ESP32-S3 with every peripheral a Zephyr lesson touches already on it, flashed and debugged over a single USB-C cable. Meet the **EFZ-ESP32S3**.
 
 {/* truncate */}
 
@@ -50,16 +50,16 @@ That's the whole point of EmbeddedFun: *real code, real hardware, real results.*
 
 Everything you need to build on it, or build your own board from it:
 
-- 📐 **Schematic (PDF)** — [download the full EFZ-ESP32S3 schematic](/schematics/EFZ-ESP32S3-V1-schematic.pdf) (9 sheets). Also linked from the [Hardware](/docs/hardware) section.
+- 📐 **Schematic (PDF)** — [download the full EFZ-ESP32S3 schematic](pathname:///schematics/EFZ-ESP32S3-V1-schematic.pdf) (9 sheets). Also linked from the [Boards](/docs/boards) section.
 - 🧩 **Zephyr board support** — the devicetree, pinctrl and Kconfig for the board: [`boards/embeddedfun/efz_esp32s3`](https://github.com/huunghiaspkt/zephyr/tree/main/boards/embeddedfun/efz_esp32s3) (hardware model v2, `-b efz_esp32s3/esp32s3/procpu`).
-- 📋 **Full spec, pin map & errata** — [Meet the EFZ-ESP32S3](/docs/zephyr-training/basic/efz-esp32s3-board): every peripheral, its pins, the strapping pins and the gotchas.
+- 📋 **Full spec, pin map & errata** — [Meet the EFZ-ESP32S3](/docs/boards/efz-esp32s3): every peripheral, its pins, the strapping pins and the gotchas.
 - 💻 **Code & samples** — the course's verified samples live in [`samples/efz_samples`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples); every one runs on this board.
 - 🐙 **GitHub** — [huunghiaspkt](https://github.com/huunghiaspkt).
 
-## It's coming — stay tuned
+## It's here
 
-The design is done and it has been through every lesson on this site. We're getting it ready for the community now.
+The boards have arrived, and every lesson on this site has been run on one.
 
-Want one when it lands? **Watch the [GitHub repo](https://github.com/huunghiaspkt)** and keep an eye on the [Build Diary](/blog) — details on how to get your hands on an EFZ-ESP32S3 are coming here first.
+Want one? **Watch the [GitHub repo](https://github.com/huunghiaspkt)** and keep an eye on the [Build Diary](/blog) — details on how to get your hands on an EFZ-ESP32S3 will be posted here first.
 
 In the meantime, everything the board does, you can read end to end in [Zephyr Training](/docs/zephyr-training/how-to-start/what-is-zephyr) — and it all runs, verified, on the board you see above.

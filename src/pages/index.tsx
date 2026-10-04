@@ -182,9 +182,12 @@ export default function Home(): ReactNode {
                   </Link>
                   <Link
                     className="button button--secondary"
-                    to="/docs/zephyr-training/basic/efz-esp32s3-board">
+                    to="/docs/boards/efz-esp32s3">
                     <Translate id="homepage.board.cta.specs">See the specs</Translate>
                   </Link>
+                  <a className="button button--secondary" href="/schematics/EFZ-ESP32S3-V1-schematic.pdf" download>
+                    <Translate id="homepage.board.cta.schematic">Download the schematic</Translate>
+                  </a>
                 </div>
               </div>
               <div className={styles.boardImageWrap}>

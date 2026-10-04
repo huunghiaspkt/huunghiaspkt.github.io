@@ -29,6 +29,12 @@ const config: Config = {
 
   plugins: [
     ['@docusaurus/plugin-ideal-image', {disableInDev: false}],
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [{from: '/docs/hardware', to: '/docs/boards'}],
+      },
+    ],
   ],
 
   themes: [
@@ -71,7 +77,7 @@ const config: Config = {
     announcementBar: {
       id: 'efz-esp32s3-launch',
       content:
-        '📦 New: the <strong>EFZ-ESP32S3</strong> community board is coming — <a href="/blog/introducing-efz-esp32s3"><strong>read the announcement →</strong></a>',
+        '📦 New: the <strong>EFZ-ESP32S3</strong> community board is here — <a href="/blog/introducing-efz-esp32s3"><strong>read the announcement →</strong></a>',
       backgroundColor: '#2563eb',
       textColor: '#ffffff',
       isCloseable: true,
@@ -123,6 +129,12 @@ const config: Config = {
         },
         {
           type: 'docSidebar',
+          sidebarId: 'boardsSidebar',
+          position: 'left',
+          label: 'Boards',
+        },
+        {
+          type: 'docSidebar',
           sidebarId: 'referenceSidebar',
           position: 'left',
           label: 'Reference',
@@ -142,7 +154,7 @@ const config: Config = {
           title: 'Docs',
           items: [
             {label: 'Zephyr RTOS', to: '/docs/zephyr/devicetree-primer'},
-            {label: 'Hardware', to: '/docs/hardware'},
+            {label: 'Boards', to: '/docs/boards'},
             {label: 'Reference', to: '/docs/reference/tools'},
           ],
         },

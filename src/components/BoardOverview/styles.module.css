@@ -60,6 +60,9 @@
   font-weight: 600;
 }
 
+.button + .button {
+  margin-top: 0.5rem;
+}
 .button:hover {
   background: var(--ifm-color-primary-dark);
   color: var(--ifm-color-white);

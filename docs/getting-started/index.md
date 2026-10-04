@@ -19,7 +19,7 @@ This site is my public knowledge base. Everything here is written the way I wish
 | Section | What you'll find |
 |---|---|
 | [Zephyr RTOS](/docs/zephyr/devicetree-primer) | Devicetree overlays, driver development, Kconfig patterns — the parts that take the most time to figure out |
-| [Hardware](/docs/hardware) | PCB design and Altium workflows — coming soon |
+| [Boards](/docs/boards) | The boards EmbeddedFun designs: spec, pin map, errata and schematics |
 | [Reference](/docs/reference/tools) | Quick-reference tables, tool lists, command cheat sheets |
 
 ---
