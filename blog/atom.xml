@@ -12,8 +12,8 @@
         <id>https://embeddedfun.org/blog/introducing-efz-esp32s3</id>
         <link href="https://embeddedfun.org/blog/introducing-efz-esp32s3"/>
         <updated>2026-10-01T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[A board is coming. We built the one this course always needed — an ESP32-S3 with every peripheral a Zephyr lesson touches already on it, flashed and debugged over a single USB-C cable. Meet the EFZ-ESP32S3.]]></summary>
-        <content type="html"><![CDATA[<p><strong>A board is coming.</strong> We built the one this course always needed — an ESP32-S3 with every peripheral a Zephyr lesson touches already on it, flashed and debugged over a single USB-C cable. Meet the <strong>EFZ-ESP32S3</strong>.</p>
+        <summary type="html"><![CDATA[The board is here. We built the one this course always needed — an ESP32-S3 with every peripheral a Zephyr lesson touches already on it, flashed and debugged over a single USB-C cable. Meet the EFZ-ESP32S3.]]></summary>
+        <content type="html"><![CDATA[<p><strong>The board is here.</strong> We built the one this course always needed — an ESP32-S3 with every peripheral a Zephyr lesson touches already on it, flashed and debugged over a single USB-C cable. Meet the <strong>EFZ-ESP32S3</strong>.</p>
 <!-- -->
 <p><img decoding="async" loading="lazy" alt="EFZ-ESP32S3 — front and back" src="https://embeddedfun.org/assets/images/efz-front-back-7f6ec280868dfa6875261a9701bd92b5.jpg" width="1400" height="932" class="img_ev3q"></p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-we-built-our-own-board">Why we built our own board<a href="https://embeddedfun.org/blog/introducing-efz-esp32s3#why-we-built-our-own-board" class="hash-link" aria-label="Direct link to Why we built our own board" title="Direct link to Why we built our own board" translate="no">​</a></h2>
@@ -44,15 +44,15 @@
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="board-resources">Board resources<a href="https://embeddedfun.org/blog/introducing-efz-esp32s3#board-resources" class="hash-link" aria-label="Direct link to Board resources" title="Direct link to Board resources" translate="no">​</a></h2>
 <p>Everything you need to build on it, or build your own board from it:</p>
 <ul>
-<li class="">📐 <strong>Schematic (PDF)</strong> — <a href="https://embeddedfun.org/assets/files/EFZ-ESP32S3-V1-schematic-3bacf0b9d77b12c78dc1e5b7b25efce8.pdf" target="_blank" class="">download the full EFZ-ESP32S3 schematic</a> (9 sheets). Also linked from the <a class="" href="https://embeddedfun.org/docs/hardware">Hardware</a> section.</li>
+<li class="">📐 <strong>Schematic (PDF)</strong> — <a href="https://embeddedfun.org/schematics/EFZ-ESP32S3-V1-schematic.pdf" target="_blank" rel="noopener noreferrer" class="">download the full EFZ-ESP32S3 schematic</a> (9 sheets). Also linked from the <a class="" href="https://embeddedfun.org/docs/boards">Boards</a> section.</li>
 <li class="">🧩 <strong>Zephyr board support</strong> — the devicetree, pinctrl and Kconfig for the board: <a href="https://github.com/huunghiaspkt/zephyr/tree/main/boards/embeddedfun/efz_esp32s3" target="_blank" rel="noopener noreferrer" class=""><code>boards/embeddedfun/efz_esp32s3</code></a> (hardware model v2, <code>-b efz_esp32s3/esp32s3/procpu</code>).</li>
-<li class="">📋 <strong>Full spec, pin map &amp; errata</strong> — <a class="" href="https://embeddedfun.org/docs/zephyr-training/basic/efz-esp32s3-board">Meet the EFZ-ESP32S3</a>: every peripheral, its pins, the strapping pins and the gotchas.</li>
+<li class="">📋 <strong>Full spec, pin map &amp; errata</strong> — <a class="" href="https://embeddedfun.org/docs/boards/efz-esp32s3">Meet the EFZ-ESP32S3</a>: every peripheral, its pins, the strapping pins and the gotchas.</li>
 <li class="">💻 <strong>Code &amp; samples</strong> — the course's verified samples live in <a href="https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples" target="_blank" rel="noopener noreferrer" class=""><code>samples/efz_samples</code></a>; every one runs on this board.</li>
 <li class="">🐙 <strong>GitHub</strong> — <a href="https://github.com/huunghiaspkt" target="_blank" rel="noopener noreferrer" class="">huunghiaspkt</a>.</li>
 </ul>
-<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="its-coming--stay-tuned">It's coming — stay tuned<a href="https://embeddedfun.org/blog/introducing-efz-esp32s3#its-coming--stay-tuned" class="hash-link" aria-label="Direct link to It's coming — stay tuned" title="Direct link to It's coming — stay tuned" translate="no">​</a></h2>
-<p>The design is done and it has been through every lesson on this site. We're getting it ready for the community now.</p>
-<p>Want one when it lands? <strong>Watch the <a href="https://github.com/huunghiaspkt" target="_blank" rel="noopener noreferrer" class="">GitHub repo</a></strong> and keep an eye on the <a class="" href="https://embeddedfun.org/blog">Build Diary</a> — details on how to get your hands on an EFZ-ESP32S3 are coming here first.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="its-here">It's here<a href="https://embeddedfun.org/blog/introducing-efz-esp32s3#its-here" class="hash-link" aria-label="Direct link to It's here" title="Direct link to It's here" translate="no">​</a></h2>
+<p>The boards have arrived, and every lesson on this site has been run on one.</p>
+<p>Want one? <strong>Watch the <a href="https://github.com/huunghiaspkt" target="_blank" rel="noopener noreferrer" class="">GitHub repo</a></strong> and keep an eye on the <a class="" href="https://embeddedfun.org/blog">Build Diary</a> — details on how to get your hands on an EFZ-ESP32S3 will be posted here first.</p>
 <p>In the meantime, everything the board does, you can read end to end in <a class="" href="https://embeddedfun.org/docs/zephyr-training/how-to-start/what-is-zephyr">Zephyr Training</a> — and it all runs, verified, on the board you see above.</p>]]></content>
         <author>
             <name>Huu Nghia</name>
