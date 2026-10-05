@@ -32,7 +32,10 @@ const config: Config = {
     [
       '@docusaurus/plugin-client-redirects',
       {
-        redirects: [{from: '/docs/hardware', to: '/docs/boards'}],
+        redirects: [
+          {from: '/docs/hardware', to: '/docs/boards'},
+          {from: '/docs/zephyr-training/how-to-start/hello-world', to: '/docs/zephyr-training/how-to-start/environment'},
+        ],
       },
     ],
   ],

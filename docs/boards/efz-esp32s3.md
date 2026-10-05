@@ -49,7 +49,7 @@ The whole [Zephyr RTOS course](/docs/zephyr-training/how-to-start/what-is-zephyr
 
 | Lesson | On this board |
 |---|---|
-| [Environment Setup & West](/docs/zephyr-training/how-to-start/environment) · [Hello World](/docs/zephyr-training/how-to-start/hello-world) | Install the tools, build, flash over USB-C and read the console |
+| [Environment Setup & West](/docs/zephyr-training/how-to-start/environment) | Install the tools, build, flash over USB-C and read the console |
 | [WS2812 RGB LED](/docs/zephyr-training/basic/ws2812) | The on-board RGB LED on GPIO21, added with an overlay |
 | [Sensors](/docs/zephyr-training/intermediate/i2c-sensors) | The on-board SHT30 temperature and humidity sensor on I2C |
 | [WiFi](/docs/zephyr-training/intermediate/wifi) · [WiFi Shell](/docs/zephyr-training/advanced/wifi_shell) | The ESP32-S3 radio: connect and scan |

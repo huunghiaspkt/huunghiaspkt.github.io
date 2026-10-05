@@ -24,6 +24,7 @@ PAGE = Path(__file__).resolve().parent.parent / "docs/zephyr-training/01_how-to-
 PLACEHOLDERS = ("/your/workspace/path", r"D:\your\workspace\path")
 # Sections a CI machine cannot pass: they need a USB board or a fresh login session.
 SKIP = {"Serial console — VS Code setup": "needs a board on USB / a new login session"}
+NEEDS_BOARD = re.compile(r"^\s*west (flash|espressif monitor)\b", re.M)
 
 BASH_HEADER = r'''#!/usr/bin/env bash
 # Generated from environment.md by docs-test/extract.py - do not edit.
@@ -184,6 +185,8 @@ def main():
     out = ["\ufeff" + PS_HEADER if windows else BASH_HEADER]   # BOM: PowerShell 5.1 reads UTF-8
     for label, code, unsupported in blocks(os_name):
         why = unsupported or next((w for sec, w in SKIP.items() if label.startswith(sec)), None)
+        if not why and code and NEEDS_BOARD.search(code):
+            why = "needs a board on USB"
         if why:
             out.append(f"Skip-Block {ps_quote(label)} {ps_quote(why)}\n" if windows else
                        f"skip_block {bash_quote(label)} {bash_quote(why)}\n")

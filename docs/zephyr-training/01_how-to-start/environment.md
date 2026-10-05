@@ -123,6 +123,8 @@ dtc --version
 </TabItem>
 </Tabs>
 
+You need at least **CMake 3.20.5**, **Python 3.12** and **dtc 1.4.6**. Newer versions are fine.
+
 <br/>
 
 ---
@@ -136,7 +138,8 @@ West is the meta-tool that ships with Zephyr. It does two things:
 
 Install it inside a Python virtual environment to keep it isolated from your system Python.
 
-First create your workspace folder and move into it — the virtual environment lives inside it, as `.venv`:
+First create your workspace folder and move into it — the virtual environment lives inside it, as `.venv`.
+Pick any folder you like; the course video uses `~/efz-ws`.
 
 <Tabs groupId="os">
 <TabItem value="linux" label="🐧 Linux" default>
@@ -254,6 +257,10 @@ west zephyr-export
 west blobs fetch hal_espressif
 ```
 
+:::tip[`FATAL ERROR: 1 blobs failed to be fetched`?]
+A download dropped on the way. Run `west blobs fetch hal_espressif` again: it only fetches the files that are still missing.
+:::
+
 <br/>
 
 ---
@@ -273,27 +280,68 @@ west sdk install
 
 ---
 
-## Step 5 — Verify the installation
+## Step 5 — Verify
 
-Build the `blinky` sample for your board:
+Prove the whole toolchain works: build the course's Hello World sample, flash it to your board, and read what it prints.
+The sample is `samples/efz_samples/01_how-to-start/hello_world` in the fork, and it runs on every board.
+
+Build it for your board:
 
 <BoardTabs>
-<BoardTab value="esp32s3_devkitc" unsupported="Blinky needs a plain GPIO LED (the led0 alias), and the DevKitC's only user LED is the WS2812 RGB LED. You'll drive that one in the WS2812 page of the Basic section." />
-<BoardTab value="efz_esp32s3">
-
-Blinky blinks LED1 (GPIO46):
+<BoardTab value="esp32s3_devkitc">
 
 ```bash
 cd /your/workspace/path/zephyr
-west build -p always -b efz_esp32s3/esp32s3/procpu samples/basic/blinky
+west build -p always -b esp32s3_devkitc/esp32s3/procpu samples/efz_samples/01_how-to-start/hello_world
+```
+
+</BoardTab>
+<BoardTab value="efz_esp32s3">
+
+```bash
+cd /your/workspace/path/zephyr
+west build -p always -b efz_esp32s3/esp32s3/procpu samples/efz_samples/01_how-to-start/hello_world
 ```
 
 </BoardTab>
 </BoardTabs>
 
-On any other Zephyr board, use its target instead (e.g. `nrf52840dk/nrf52840`).
+`-b` picks the board target and `-p always` starts from a clean build folder. On any other Zephyr board, use its target instead ([supported chip families](/docs/zephyr-training/how-to-start#supported-chip-families)).
+The image lands in `build/zephyr/zephyr.bin`.
 
-If the build completes without errors, your environment is ready.
+Plug the board in over USB and flash it, then open the serial monitor:
+
+```bash
+west flash
+west espressif monitor
+```
+
+First the ESP32-S3 bootloader prints a few lines. A `Calculated: … Expected: … Attempting to boot anyway...` message is normal there, because Zephyr's simple boot doesn't append that checksum. Then Zephyr boots and prints your board's name:
+
+<BoardTabs>
+<BoardTab value="esp32s3_devkitc">
+
+```
+*** Booting Zephyr OS build ... ***
+Hello World! esp32s3_devkitc/esp32s3/procpu
+```
+
+</BoardTab>
+<BoardTab value="efz_esp32s3">
+
+```
+*** Booting Zephyr OS build ... ***
+Hello World! efz_esp32s3/esp32s3/procpu
+```
+
+</BoardTab>
+</BoardTabs>
+
+Press `Ctrl+]` to quit the monitor. If you see the `Hello World!` line, your environment is ready.
+
+:::tip[More than one board plugged in?]
+`west flash` picks the first ESP32 port it finds. Name the port to be sure: `west flash --esp-device /dev/cu.usbmodem101` (Linux: `/dev/ttyACM0`, Windows: `COM5`).
+:::
 
 <br/>
 
