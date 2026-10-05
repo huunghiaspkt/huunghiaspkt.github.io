@@ -49,8 +49,7 @@ For the full list, see **[docs.zephyrproject.org/latest/boards](https://docs.zep
 | Page | What you'll do |
 |---|---|
 | [What is Zephyr?](./what-is-zephyr) | Short intro — what it is, why it exists, who uses it |
-| [Environment Setup & West](./environment) | Install west, the Zephyr SDK, and learn the daily commands |
-| [Hello World](./hello-world) | Build and flash your first Zephyr application |
+| [Environment Setup & West](./environment) | Install west and the Zephyr SDK, then build, flash and run Hello World to verify it all works |
 | [Build System](./build-system) | What happens inside `west build` and how to read errors |
 
 <br/>
