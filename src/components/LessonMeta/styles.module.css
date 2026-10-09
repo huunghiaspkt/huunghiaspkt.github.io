@@ -1,0 +1,59 @@
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.25rem 0 1.75rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  color: var(--ifm-color-emphasis-800);
+  background: var(--ifm-color-emphasis-100);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  white-space: nowrap;
+}
+
+.pill svg {
+  width: 15px;
+  height: 15px;
+  opacity: 0.65;
+  flex-shrink: 0;
+}
+
+.before {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ifm-color-primary);
+}
+
+.before svg {
+  width: 15px;
+  height: 15px;
+}
+
+.before:hover {
+  text-decoration: none;
+  color: var(--ifm-color-primary-dark);
+}
+
+.before strong {
+  font-weight: 600;
+}
+
+@media (max-width: 500px) {
+  .before {
+    margin-left: 0;
+  }
+}

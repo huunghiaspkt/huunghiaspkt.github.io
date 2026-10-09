@@ -19,6 +19,7 @@ You can build and flash a Hello World. Now learn the three systems that underpin
 | [How to Find the API You Need](./finding-apis) | Quick lookup: GPIO, I2C, SPI, UART, ADC, PWM, threads, timers, semaphores |
 | [Meet the ESP32-S3-DevKitC](./esp32s3-board) | Espressif's dev kit — specs and board target |
 | [Meet the EFZ-ESP32S3](./efz-esp32s3-board) | The EmbeddedFun training board and its build target |
+| [Buttons & LEDs](./buttons-leds) | Find LEDs and buttons in the devicetree, blink LED1, read every button |
 | [WS2812 RGB LED](./ws2812) | Drive the built-in RGB LED using the Zephyr LED strip API |
 | [Threads](./threads) | Run Hello World and WS2812 concurrently — your first multi-threaded firmware |
 
