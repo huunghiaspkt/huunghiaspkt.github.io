@@ -292,4 +292,4 @@ Three things to read in it:
 
 ## What's next
 
-[WS2812 RGB LED](./ws2812) drives the board's RGB LED through the LED strip API, with an overlay of your own.
+[Console & Logging](./console-logging): print with `printk`, then switch to Zephyr's logger.
