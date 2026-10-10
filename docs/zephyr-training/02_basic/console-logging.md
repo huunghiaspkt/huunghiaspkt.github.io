@@ -192,6 +192,8 @@ void counter_show(int count)
 
 **`LOG_MODULE_DECLARE`** says "use the module registered somewhere else". Register a module **once**, in one file, and declare it in every other file that uses it. Registering it twice doesn't build: the linker stops with `multiple definition of 'log_const_app'`.
 
+`LOG_MODULE_DECLARE` can take a level too. Without one, that file logs at the default level, info.
+
 <br/>
 
 ### Step 4 — Levels
@@ -236,7 +238,7 @@ Unlike `printk`, a log call doesn't print right away. It copies the message into
 In `main.c`, change `LOG_LEVEL_INF` to `LOG_LEVEL_DBG`, then build and flash again. Now the debug line shows up too. Zephyr adds the function's name to debug lines:
 
 ```text
-<dbg> app: main: This is a debug message
+[00:00:00.000,000] <dbg> app.main: This is a debug message
 ```
 
 Set it back to `LOG_LEVEL_INF`, and the debug call is compiled out again.
@@ -248,8 +250,18 @@ Set it back to `LOG_LEVEL_INF`, and the debug call is compiled out again.
 ## Check your work
 
 1. **You should see:** the error, warning and info lines once, then a count line every second.
-2. **Change it:** set the level to `LOG_LEVEL_WRN` in `main.c`, then build and flash.
-3. **It works when:** only the error and warning lines print, and the counter goes quiet: `counter.c` uses the same module, so it has the same level.
+2. **Change it:** set the level to `LOG_LEVEL_WRN` in `main.c`, then build and flash. The information line is gone, but the counter still prints: the level applies to each file, and `counter.c` logs at the default level. Now give its declare a level too:
+
+   ```c title="zephyr/samples/efz_samples/02_basic/basic_logger/src/counter.c"
+   LOG_MODULE_DECLARE(app, LOG_LEVEL_WRN);
+   ```
+
+3. **It works when:** only the error and warning lines print, and the counter goes quiet:
+
+   ```text
+   [00:00:00.000,000] <err> app: This is an error
+   [00:00:00.000,000] <wrn> app: This is a warning
+   ```
 
 <details>
 <summary>Stuck?</summary>
