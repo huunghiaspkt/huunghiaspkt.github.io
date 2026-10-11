@@ -62,12 +62,12 @@ The whole [Zephyr RTOS course](/docs/zephyr-training/how-to-start/what-is-zephyr
 Ready-to-build samples for this board live in [`samples/efz_samples`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples) of the Zephyr fork. Build any of them from your workspace folder:
 
 ```bash
-west build -b efz_esp32s3/esp32s3/procpu zephyr/samples/efz_samples/02_basic/ws2812 -p
+west build -b efz_esp32s3/esp32s3/procpu zephyr/samples/efz_samples/02_basic/led_strip -p
 west flash
 ```
 
 - [`01_how-to-start/hello_world`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/01_how-to-start/hello_world) — Hello World on the USB console
-- [`02_basic/ws2812`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/02_basic/ws2812) — The on-board WS2812 RGB LED
+- [`02_basic/led_strip`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/02_basic/led_strip) — The on-board WS2812 RGB LED
 - [`02_basic/threads_basic`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/02_basic/threads_basic) — Two threads running side by side
 - [`03_intermediate/i2c_sensor`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/03_intermediate/i2c_sensor) — The SHT30 temperature and humidity sensor
 - [`03_intermediate/devicetree_tour`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/03_intermediate/devicetree_tour) — Reading the board's devicetree from C
