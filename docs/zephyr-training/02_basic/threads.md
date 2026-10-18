@@ -1,257 +1,192 @@
 ---
 sidebar_position: 6
-description: Create Zephyr threads two ways — K_THREAD_DEFINE and k_thread_create — and run Hello EmbeddedFun alongside WS2812 concurrently.
+title: "Threads"
+description: "Run three threads at once with Zephyr's threads sample: two blink LED1 and LED2 at their own speed, a third prints what they report through a FIFO."
+outcomes: [LO4]
+module: W4
+verified: "fork main · efz_samples/02_basic/threads (from samples/basic/threads) · board efz_esp32s3 rev 1 · 2026-10-12"
 ---
 
 # Threads
 
-So far, your firmware does one thing at a time. The LED blinks — nothing else runs. The console prints — the LED waits.
+So far, the firmware did one thing at a time, inside `main()`. A **thread** (a *task* in other RTOSes like FreeRTOS) is how your firmware does several things at once. Each thread is its own loop with its own stack, and the kernel switches between them, so they seem to run at the same time.
 
-Remember Hello World? That `printf` is still sitting there, replaced by WS2812 code. One or the other. Never both.
+In this lesson you run three: two blink LED1 and LED2 at their own speed, and a third prints what they report.
 
-Real products don't work like that. They do ten things at once.
+## By the end of this lesson you can
 
-This is where the **RTOS** earns its name. Zephyr lets you run multiple **threads** — each one an independent loop, each one with its own stack. The kernel schedules them. They run concurrently. You stop thinking in "one loop" and start thinking in "jobs."
+- Create threads at build time with `K_THREAD_DEFINE`, and say what its stack size and priority mean.
+- Pass data from one thread to another through a FIFO.
+- Predict from the code what the console and the LEDs do, and check it on the board.
 
-Here you will run Hello World and WS2812 — **at the same time**.
+<LessonMeta time="about 20 minutes" need="the EFZ and its USB cable" before="WS2812 RGB LED" beforeHref="/docs/zephyr-training/basic/ws2812" />
+
+<br/>
 
 ---
 
-## Practical example: Hello EmbeddedFun + WS2812
+## The sample
 
-The previous [WS2812](./ws2812) page ran everything in `main()`. Now split it into two independent threads, each created a different way:
+**Code:** `zephyr/samples/efz_samples/02_basic/threads`, a copy of Zephyr's `samples/basic/threads`.
 
-| Thread | Method | Reason |
-|---|---|---|
-| `hello_thread` | `K_THREAD_DEFINE` | Always runs, no runtime data needed |
-| `ws2812_thread` | `k_thread_create` | Started from `main()` after device setup |
+```
+threads/
+├── CMakeLists.txt
+├── prj.conf
+└── src/
+    └── main.c
+```
 
-```c title="src/main.c"
-// SPDX-License-Identifier: Apache-2.0
+There's no overlay: the EFZ board file already has LED1 and LED2 as the aliases `led0` and `led1`.
 
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
+<br/>
 
-#define LOG_LEVEL 4
-#include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(main);
+### Step 1 — Three threads, no `main()`
 
-#include <zephyr/kernel.h>
-#include <zephyr/drivers/led_strip.h>
-#include <zephyr/device.h>
-#include <zephyr/drivers/spi.h>
-#include <zephyr/sys/util.h>
+Start at the bottom of `main.c`:
 
-/* ── WS2812 setup ── */
-#define STRIP_NODE DT_ALIAS(led_strip)
+```c title="zephyr/samples/efz_samples/02_basic/threads/src/main.c"
+K_THREAD_DEFINE(blink0_id, STACKSIZE, blink0, NULL, NULL, NULL,
+		PRIORITY, 0, 0);
+K_THREAD_DEFINE(blink1_id, STACKSIZE, blink1, NULL, NULL, NULL,
+		PRIORITY, 0, 0);
+K_THREAD_DEFINE(uart_out_id, STACKSIZE, uart_out, NULL, NULL, NULL,
+		PRIORITY, 0, 0);
+```
 
-#if DT_NODE_HAS_PROP(DT_ALIAS(led_strip), chain_length)
-#define STRIP_NUM_PIXELS DT_PROP(DT_ALIAS(led_strip), chain_length)
-#else
-#error Unable to determine length of LED strip
-#endif
+Three lines, three threads, and the file has no `main()` at all. `K_THREAD_DEFINE` builds each thread when the firmware is compiled, and the kernel starts it when the board boots. The arguments are the thread's name, its stack size, the function it runs, three arguments for that function, its priority, its options, and a start delay (0 = start right away).
 
-#define DELAY_TIME K_MSEC(CONFIG_SAMPLE_LED_UPDATE_DELAY)
+<br/>
 
-#define RGB(_r, _g, _b) { .r = (_r), .g = (_g), .b = (_b) }
+### Step 2 — Stack size and priority
 
-static const struct led_rgb colors[] = {
-	RGB(CONFIG_SAMPLE_LED_BRIGHTNESS, 0x00, 0x00), /* red   */
-	RGB(0x00, CONFIG_SAMPLE_LED_BRIGHTNESS, 0x00), /* green */
-	RGB(0x00, 0x00, CONFIG_SAMPLE_LED_BRIGHTNESS), /* blue  */
-};
+```c title="zephyr/samples/efz_samples/02_basic/threads/src/main.c"
+/* size of stack area used by each thread */
+#define STACKSIZE 1024
 
-static struct led_rgb pixels[STRIP_NUM_PIXELS];
-static const struct device *const strip = DEVICE_DT_GET(STRIP_NODE);
+/* scheduling priority used by each thread */
+#define PRIORITY 7
+```
 
-#define STACK_SIZE      1024
-#define HELLO_PRIORITY  5
-#define WS2812_PRIORITY 5
+Every thread gets its own stack, 1024 bytes here, and a priority, 7. Same values for all three.
 
-/* ── Thread 1: Hello EmbeddedFun (K_THREAD_DEFINE) ── */
-void hello_thread_fn(void *a, void *b, void *c)
+<br/>
+
+### Step 3 — Two threads, one function
+
+```c title="zephyr/samples/efz_samples/02_basic/threads/src/main.c"
+void blink0(void)
 {
-	int count = 0;
+	blink(&led0, 100, 0);
+}
 
+void blink1(void)
+{
+	blink(&led1, 1000, 1);
+}
+```
+
+Two of the threads run the same function, `blink()`. `blink0` flips LED1 every 100 ms, `blink1` flips LED2 every 1000 ms.
+
+The loop inside `blink()`:
+
+```c title="zephyr/samples/efz_samples/02_basic/threads/src/main.c (blink)"
 	while (1) {
-		printf("Hello EmbeddedFun from %s count=%d\n", CONFIG_BOARD, count++);
-		k_sleep(K_SECONDS(1));
+		gpio_pin_set(spec->port, spec->pin, cnt % 2);
+
+		struct printk_data_t tx_data = { .led = id, .cnt = cnt };
+
+		size_t size = sizeof(struct printk_data_t);
+		char *mem_ptr = k_malloc(size);
+		__ASSERT_NO_MSG(mem_ptr != 0);
+
+		memcpy(mem_ptr, &tx_data, size);
+
+		k_fifo_put(&printk_fifo, mem_ptr);
+
+		k_msleep(sleep_ms);
+		cnt++;
 	}
-}
+```
 
-K_THREAD_DEFINE(hello_tid, STACK_SIZE, hello_thread_fn,
-		NULL, NULL, NULL, HELLO_PRIORITY, 0, 0);
+It sets the pin, puts a small message (which LED, and its counter) into a FIFO, and sleeps. While it sleeps, the other threads get the CPU.
 
-/* ── Thread 2: WS2812 LED (k_thread_create) ── */
-K_THREAD_STACK_DEFINE(ws2812_stack, STACK_SIZE);
-static struct k_thread ws2812_thread_data;
+<br/>
 
-void ws2812_thread_fn(void *a, void *b, void *c)
+### Step 4 — The third thread prints
+
+```c title="zephyr/samples/efz_samples/02_basic/threads/src/main.c"
+void uart_out(void)
 {
-	size_t color = 0;
-	int rc;
-
-	if (device_is_ready(strip)) {
-		LOG_INF("Found LED strip device %s", strip->name);
-	} else {
-		LOG_ERR("LED strip device %s is not ready", strip->name);
-		return;
-	}
-
-	LOG_INF("Displaying pattern on strip");
 	while (1) {
-		for (size_t cursor = 0; cursor < ARRAY_SIZE(pixels); cursor++) {
-			memset(&pixels, 0x00, sizeof(pixels));
-			memcpy(&pixels[cursor], &colors[color], sizeof(struct led_rgb));
-
-			rc = led_strip_update_rgb(strip, pixels, STRIP_NUM_PIXELS);
-			if (rc) {
-				LOG_ERR("couldn't update strip: %d", rc);
-			}
-
-			k_sleep(DELAY_TIME);
-		}
-
-		color = (color + 1) % ARRAY_SIZE(colors);
+		struct printk_data_t *rx_data = k_fifo_get(&printk_fifo,
+							   K_FOREVER);
+		printk("Toggled led%d; counter=%d\n",
+		       rx_data->led, rx_data->cnt);
+		k_free(rx_data);
 	}
 }
-
-/* ── main: spawn ws2812_thread, hello_thread already running ── */
-int main(void)
-{
-	k_thread_create(&ws2812_thread_data, ws2812_stack,
-			K_THREAD_STACK_SIZEOF(ws2812_stack),
-			ws2812_thread_fn, NULL, NULL, NULL,
-			WS2812_PRIORITY, 0, K_NO_WAIT);
-
-	return 0;
-}
 ```
 
----
+The blink threads never print. `uart_out` waits on the FIFO (`K_FOREVER`: as long as it takes). Each time a message arrives, it wakes up, prints the line, and frees the memory.
 
-## How does each method work?
+<br/>
 
-### Way 1 — `k_thread_create`
+### Step 5 — How priorities work
 
-Look at `ws2812_thread` in the example above. Three things are allocated explicitly:
+A **lower** priority number means a **more important** thread, and the scheduler always runs the most important thread that's ready. These three spend most of their time asleep or waiting, so they share the CPU without trouble.
 
-```c
-K_THREAD_STACK_DEFINE(ws2812_stack, STACK_SIZE);  /* stack buffer */
-static struct k_thread ws2812_thread_data;         /* control block */
-```
+<br/>
 
-Then the thread is started from `main()` with `k_thread_create`. The thread begins **at the moment you call it** — giving you full control over when it starts.
-
-### Way 2 — `K_THREAD_DEFINE`
-
-Look at `hello_thread` in the example above. There is no `K_THREAD_STACK_DEFINE`, no `struct k_thread`, and no `k_thread_create` call in `main()`. A single macro replaces all three:
-
-```c
-K_THREAD_DEFINE(hello_tid, STACK_SIZE, hello_thread_fn,
-		NULL, NULL, NULL, HELLO_PRIORITY, 0, 0);
-```
-
-The macro allocates the stack, allocates the control block, and registers the thread with the kernel — all at **compile time**. The last argument (`0`) is the delay in milliseconds before the thread starts. `0` means it starts as soon as the kernel is ready, **before `main()` runs**.
-
-That is why `count=0` appears in the serial output before the WS2812 log lines — `hello_thread` was already running by the time `main()` created `ws2812_thread`.
-
-### When to use which?
-
-| | `K_THREAD_DEFINE` | `k_thread_create` |
-|---|---|---|
-| **Setup** | One macro | Stack + struct + create call |
-| **Thread starts** | Before `main()` | When you call `k_thread_create` |
-| **Arguments** | Fixed at compile time | Can be set at runtime |
-| **Best for** | Simple threads that always run | Threads that start conditionally, need runtime data, or must start in a specific order |
-
-**Rule of thumb:** reach for `K_THREAD_DEFINE` first. Switch to `k_thread_create` when you need to pass runtime data, delay startup, or start the thread based on a condition.
-
----
-
-## Thread priorities
-
-Lower number = higher priority. Priority `0` is the highest. Equal-priority threads are round-robin scheduled.
-
-Both threads here use priority `5`. That is fine — they spend most of their time sleeping, so they never compete meaningfully.
-
-:::warning[Stack overflow]
-The most common threading bug in Zephyr. If your board resets or behaves strangely after adding a thread, increase `STACK_SIZE`. Enable `CONFIG_THREAD_ANALYZER=y` to measure actual stack usage.
-:::
-
----
-
-## prj.conf
-
-Same as the [WS2812 page](./ws2812) — no extra config needed for threads.
-
-```kconfig title="prj.conf"
-CONFIG_LOG=y
-CONFIG_LED_STRIP=y
-CONFIG_LED_STRIP_LOG_LEVEL_DBG=y
-```
-
-## Build and flash
+### Step 6 — Build, flash, and watch
 
 <BoardTabs>
-<BoardTab value="esp32s3_devkitc">
+<BoardTab value="efz_esp32s3">
 
 ```bash
-west build -b esp32s3_devkitc/esp32s3/procpu .
+west build -b efz_esp32s3/esp32s3/procpu zephyr/samples/efz_samples/02_basic/threads -p
 west flash
 ```
 
 </BoardTab>
-<BoardTab value="efz_esp32s3">
-
-```bash
-west build -b efz_esp32s3/esp32s3/procpu .
-west flash
-```
-
-</BoardTab>
+<BoardTab value="esp32s3_devkitc" unsupported="the sample needs two plain LEDs (the led0 and led1 aliases); the DevKitC's only user LED is the WS2812" />
 </BoardTabs>
 
-## Expected output
-
-<BoardTabs>
-<BoardTab value="esp32s3_devkitc">
-
-```
-*** Booting Zephyr OS build v4.4.0 ***
-Hello EmbeddedFun from esp32s3_devkitc/esp32s3/procpu count=0
-[00:00:00.312] <inf> main: Found LED strip device ws2812@0
-[00:00:00.312] <inf> main: Displaying pattern on strip
-Hello EmbeddedFun from esp32s3_devkitc/esp32s3/procpu count=1
-Hello EmbeddedFun from esp32s3_devkitc/esp32s3/procpu count=2
+```text title="Serial console (EFZ)"
+Toggled led0; counter=0
+Toggled led1; counter=0
+Toggled led0; counter=1
+Toggled led0; counter=2
 ...
+Toggled led0; counter=9
+Toggled led1; counter=1
+Toggled led0; counter=10
 ```
 
-</BoardTab>
-<BoardTab value="efz_esp32s3">
+`led0` shows up ten times for every `led1` line. On the board, LED1 flickers fast while LED2 stays on for a second, then off for a second, each at its own pace.
 
-```
-*** Booting Zephyr OS build v4.4.0 ***
-Hello EmbeddedFun from efz_esp32s3/esp32s3/procpu count=0
-[00:00:00.312] <inf> main: Found LED strip device ws2812@0
-[00:00:00.312] <inf> main: Displaying pattern on strip
-Hello EmbeddedFun from efz_esp32s3/esp32s3/procpu count=1
-Hello EmbeddedFun from efz_esp32s3/esp32s3/procpu count=2
-...
-```
+<br/>
 
-</BoardTab>
-</BoardTabs>
+---
 
-`hello_thread` starts before `main()` so `count=0` appears first. The LED log lines appear once `main()` creates `ws2812_thread`. After that, both run in parallel indefinitely — the board name printed alongside the count confirms which board the firmware is running on.
+## Check your work
+
+1. **You should see:** ten `Toggled led0` lines for every `Toggled led1` line, LED1 flickering and LED2 switching once a second.
+2. **Change it:** in `blink1()`, change `1000` to `500`, then build and flash again.
+3. **It works when:** LED2 switches every half second, and a `led1` line shows up after every fifth `led0` line.
+
+<details>
+<summary>Stuck?</summary>
+
+- **`#error "Unsupported board: led0 devicetree alias is not defined"`** → you built for a board without plain LEDs → build for `efz_esp32s3/esp32s3/procpu`.
+- **Nothing prints, the LEDs stay dark** → the flash didn't finish or the board didn't reset → press RESET, or run `west flash` again.
+
+</details>
+
+<br/>
 
 ---
 
 ## What's next
 
-Threads running in parallel eventually need to **share data**. The [Thread Synchronization](../intermediate/threads) page in Intermediate covers semaphores, mutexes, message queues, and work queues — the tools that keep shared state safe.
-
-:::info[Official reference]
-[Zephyr Kernel — Threads](https://docs.zephyrproject.org/latest/kernel/services/threads/index.html)
-:::
+This is the last Basic lesson. The [Intermediate](/docs/zephyr-training/intermediate/) section picks up from here.
