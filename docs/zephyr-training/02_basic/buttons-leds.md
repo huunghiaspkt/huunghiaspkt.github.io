@@ -17,7 +17,7 @@ A button and an LED are the smallest piece of hardware you can control, and they
 - Blink an LED through the GPIO API.
 - Read buttons through Zephyr's input subsystem, and tell them apart by their key codes.
 
-<LessonMeta time="about 40 minutes" need="the EFZ: LED1, LED2, BN1, BN2, BOOT" before="Meet the EFZ-ESP32S3" beforeHref="./efz-esp32s3-board" />
+<LessonMeta time="about 40 minutes" need="the EFZ: LED1, LED2, BN1, BN2, BOOT" before="Meet the EFZ-ESP32S3" beforeHref="/docs/zephyr-training/basic/efz-esp32s3-board" />
 
 <br/>
 

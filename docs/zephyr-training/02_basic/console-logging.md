@@ -18,7 +18,7 @@ When your firmware misbehaves, the first thing you do is print something. Zephyr
 - Read a log line: time, level, module, message.
 - Pick a log level, and know what it costs.
 
-<LessonMeta time="about 30 minutes" need="the EFZ and its USB cable (the DevKitC runs it too)" before="Buttons & LEDs" beforeHref="./buttons-leds" />
+<LessonMeta time="about 30 minutes" need="the EFZ and its USB cable (the DevKitC runs it too)" before="Buttons & LEDs" beforeHref="/docs/zephyr-training/basic/buttons-leds" />
 
 <br/>
 
