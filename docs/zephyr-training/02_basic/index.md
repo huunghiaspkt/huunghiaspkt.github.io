@@ -22,7 +22,7 @@ You can build and flash a Hello World. Now learn the three systems that underpin
 | [Buttons & LEDs](./buttons-leds) | Find LEDs and buttons in the devicetree, blink LED1, read every button |
 | [Console & Logging](./console-logging) | Print with printk, then log with modules and levels |
 | [WS2812 RGB LED](./ws2812) | Drive the built-in RGB LED using the Zephyr LED strip API |
-| [Threads](./threads) | Run Hello World and WS2812 concurrently — your first multi-threaded firmware |
+| [Threads](./threads) | Run three threads at once: two blink the LEDs, a third prints what they report |
 
 ## Core mental model
 
