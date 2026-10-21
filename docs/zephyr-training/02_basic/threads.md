@@ -27,7 +27,7 @@ In this lesson you run three: two blink LED1 and LED2 at their own speed, and a 
 
 ## The sample
 
-**Code:** `zephyr/samples/efz_samples/02_basic/threads`, a copy of Zephyr's `samples/basic/threads`.
+**Code:** [`zephyr/samples/efz_samples/02_basic/threads`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/02_basic/threads), a copy of Zephyr's `samples/basic/threads`.
 
 ```
 threads/
@@ -37,7 +37,7 @@ threads/
     └── main.c
 ```
 
-There's no overlay: the EFZ board file already has LED1 and LED2 as the aliases `led0` and `led1`.
+There's no overlay: the EFZ board file already has LED1 and LED2 as the aliases `led0` and `led1`. So when the console says `led0`, it means LED1 on the board.
 
 <br/>
 
@@ -54,7 +54,7 @@ K_THREAD_DEFINE(uart_out_id, STACKSIZE, uart_out, NULL, NULL, NULL,
 		PRIORITY, 0, 0);
 ```
 
-Three lines, three threads, and the file has no `main()` at all. `K_THREAD_DEFINE` builds each thread when the firmware is compiled, and the kernel starts it when the board boots. The arguments are the thread's name, its stack size, the function it runs, three arguments for that function, its priority, its options, and a start delay (0 = start right away).
+Three lines, three threads, and the file has no `main()` at all. `K_THREAD_DEFINE` builds each thread when the firmware is compiled, and the kernel starts it when the board boots. The arguments are the thread's name, its stack size, the function it runs, three arguments for that function, its priority, its options, and a start delay in milliseconds (0 = start right away). `blink0` takes no arguments, so all three are `NULL`.
 
 <br/>
 
@@ -68,7 +68,7 @@ Three lines, three threads, and the file has no `main()` at all. `K_THREAD_DEFIN
 #define PRIORITY 7
 ```
 
-Every thread gets its own stack, 1024 bytes here, and a priority, 7. Same values for all three.
+Every thread gets its own stack, 1024 bytes here. The stack holds the thread's local variables and its function calls. If it's too small, the thread can crash. Every thread also gets a priority, 7 here. All three threads use the same values.
 
 <br/>
 
@@ -109,7 +109,7 @@ The loop inside `blink()`:
 	}
 ```
 
-It sets the pin, puts a small message (which LED, and its counter) into a FIFO, and sleeps. While it sleeps, the other threads get the CPU.
+It sets the pin, puts a small message (which LED, and its counter) into a FIFO, and sleeps. A FIFO is a queue: messages come out in the order they went in. Each message lives in memory taken with `k_malloc()` from a small heap (`CONFIG_HEAP_MEM_POOL_SIZE=256` in `prj.conf`). While a blink thread sleeps, the other threads get the CPU.
 
 <br/>
 
@@ -146,7 +146,10 @@ A **lower** priority number means a **more important** thread, and the scheduler
 ```bash
 west build -b efz_esp32s3/esp32s3/procpu zephyr/samples/efz_samples/02_basic/threads -p
 west flash
+west espressif monitor
 ```
+
+Press `Ctrl+]` to quit the monitor.
 
 </BoardTab>
 <BoardTab value="esp32s3_devkitc" unsupported="the sample needs two plain LEDs (the led0 and led1 aliases); the DevKitC's only user LED is the WS2812" />
@@ -163,7 +166,7 @@ Toggled led1; counter=1
 Toggled led0; counter=10
 ```
 
-`led0` shows up ten times for every `led1` line. On the board, LED1 flickers fast while LED2 stays on for a second, then off for a second, each at its own pace.
+`led0` shows up ten times for every `led1` line. On the board, LED1 blinks fast while LED2 stays on for a second, then off for a second.
 
 <br/>
 
@@ -171,7 +174,7 @@ Toggled led0; counter=10
 
 ## Check your work
 
-1. **You should see:** ten `Toggled led0` lines for every `Toggled led1` line, LED1 flickering and LED2 switching once a second.
+1. **You should see:** ten `Toggled led0` lines for every `Toggled led1` line, LED1 blinking fast and LED2 switching once a second.
 2. **Change it:** in `blink1()`, change `1000` to `500`, then build and flash again.
 3. **It works when:** LED2 switches every half second, and a `led1` line shows up after every fifth `led0` line.
 
@@ -180,6 +183,100 @@ Toggled led0; counter=10
 
 - **`#error "Unsupported board: led0 devicetree alias is not defined"`** → you built for a board without plain LEDs → build for `efz_esp32s3/esp32s3/procpu`.
 - **Nothing prints, the LEDs stay dark** → the flash didn't finish or the board didn't reset → press RESET, or run `west flash` again.
+
+</details>
+
+<br/>
+
+---
+
+## Bonus: another way to create a thread
+
+`K_THREAD_DEFINE` sets a thread up when the firmware is compiled. `k_thread_create()` creates one while the firmware runs, so your code decides when, for example only after a button press. Try it on `blink0`, in `threads/src/main.c`:
+
+1. Give `blink0` three arguments. A thread function made with `k_thread_create()` needs them, even if it doesn't use them:
+
+   ```c
+   void blink0(void *p1, void *p2, void *p3)
+   ```
+
+2. Delete the `K_THREAD_DEFINE(blink0_id, ...)` statement. It's two lines long and ends with `PRIORITY, 0, 0);`. In its place, make the two things `K_THREAD_DEFINE` makes for you, a stack and a thread object:
+
+   ```c
+   K_THREAD_STACK_DEFINE(blink0_stack, STACKSIZE);
+   static struct k_thread blink0_thread;
+   ```
+
+3. Add a `main()` at the bottom of the file that creates the thread:
+
+   ```c
+   int main(void)
+   {
+   	k_thread_create(&blink0_thread, blink0_stack, STACKSIZE, blink0,
+   			NULL, NULL, NULL, PRIORITY, 0, K_NO_WAIT);
+   	return 0;
+   }
+   ```
+
+Keep the other two `K_THREAD_DEFINE` lines as they are. Build and flash: the console and the LEDs look the same as in Step 6. `main()` returns right away, but the thread it created keeps running.
+
+In `k_thread_create()`, you fill in five things: the thread object, its stack, the stack size, the function and the priority. The rest can stay as shown:
+
+- `NULL, NULL, NULL` are the three values handed to the function. `blink0` doesn't use them.
+- `0` means no special options.
+- `K_NO_WAIT` means start right away. It's the same as the `0` delay in `K_THREAD_DEFINE`.
+
+**Your turn:** do the same for `blink1` and `uart_out`, so all three threads come from `main()`. Each one needs its own stack, its own thread object and its own `k_thread_create()` call. It works when the console and the LEDs look exactly like Step 6.
+
+Got `passing argument 4 of 'k_thread_create' from incompatible pointer type`? A thread function still has `(void)` instead of `(void *p1, void *p2, void *p3)`.
+
+<details>
+<summary>Show our solution</summary>
+
+Our version is [`zephyr/samples/efz_samples/02_basic/thread_create`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/02_basic/thread_create). What changed:
+
+```c title="zephyr/samples/efz_samples/02_basic/thread_create/src/main.c (the changed part)"
+void blink0(void *p1, void *p2, void *p3)
+{
+	blink(&led0, 100, 0);
+}
+
+void blink1(void *p1, void *p2, void *p3)
+{
+	blink(&led1, 1000, 1);
+}
+
+void uart_out(void *p1, void *p2, void *p3)
+{
+	/* unchanged */
+}
+
+K_THREAD_STACK_DEFINE(blink0_stack, STACKSIZE);
+K_THREAD_STACK_DEFINE(blink1_stack, STACKSIZE);
+K_THREAD_STACK_DEFINE(uart_out_stack, STACKSIZE);
+
+static struct k_thread blink0_thread;
+static struct k_thread blink1_thread;
+static struct k_thread uart_out_thread;
+
+int main(void)
+{
+	k_thread_create(&blink0_thread, blink0_stack, STACKSIZE, blink0,
+			NULL, NULL, NULL, PRIORITY, 0, K_NO_WAIT);
+	k_thread_create(&blink1_thread, blink1_stack, STACKSIZE, blink1,
+			NULL, NULL, NULL, PRIORITY, 0, K_NO_WAIT);
+	k_thread_create(&uart_out_thread, uart_out_stack, STACKSIZE, uart_out,
+			NULL, NULL, NULL, PRIORITY, 0, K_NO_WAIT);
+	return 0;
+}
+```
+
+To run it:
+
+```bash
+west build -b efz_esp32s3/esp32s3/procpu zephyr/samples/efz_samples/02_basic/thread_create -p
+west flash
+```
 
 </details>
 
