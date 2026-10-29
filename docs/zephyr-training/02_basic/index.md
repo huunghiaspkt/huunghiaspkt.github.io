@@ -23,6 +23,7 @@ You can build and flash a Hello World. Now learn the three systems that underpin
 | [Console & Logging](./console-logging) | Print with printk, then log with modules and levels |
 | [WS2812 RGB LED](./ws2812) | Drive the built-in RGB LED using the Zephyr LED strip API |
 | [Threads](./threads) | Run three threads at once: two blink the LEDs, a third prints what they report |
+| [Work Queues](./work-queues) | Hand short jobs to the system work queue: handle a button press, blink with no thread, move a slow job to its own queue |
 
 ## Core mental model
 
