@@ -286,4 +286,4 @@ west flash
 
 ## What's next
 
-This is the last Basic lesson. The [Intermediate](/docs/zephyr-training/intermediate/) section picks up from here.
+Not every job needs a thread of its own. In [Work Queues](/docs/zephyr-training/basic/work-queues) you hand short jobs to a thread Zephyr already runs.
