@@ -5,13 +5,12 @@ description: Write a Zephyr driver — using an existing API (sensor), adding po
 
 # Writing Drivers
 
-You've spent five pages on the **consumer** side of the SHT30:
+You've spent four pages on the **consumer** side of the SHT30:
 
 - The [devicetree](./devicetree) described it.
 - The [binding YAML](./binding-yaml) validated it.
 - The [Kconfig](./kconfig) compiled it in.
 - The [sensor API](./i2c-sensors) read measurements from it.
-- The [power management](./power-management) page found out it can't be suspended.
 
 Every step ran through the in-tree `sensirion,sht3xd` driver. This page flips the perspective — you build that driver yourself.
 
@@ -310,7 +309,7 @@ The application code from the [sensor API page](./i2c-sensors) doesn't change at
 
 ## Exercise 2 — Add power management
 
-The [power management page](./power-management) ended on a gap: the in-tree `sht3xd` driver has **no PM support**, so `pm_device_action_run()` has nothing to call. Your driver can fill that gap.
+The in-tree `sht3xd` driver has **no PM support**: call `pm_device_action_run()` on it and you get `-ENOSYS`. Your driver can fill that gap.
 
 What should "suspend" mean for an SHT30? In single-shot mode the chip already drops to idle after every measurement. But if anything left it in **periodic** mode (measuring on its own, several times a second), it keeps drawing current until it receives the *Break* command, `0x3093`. So our suspend sends Break — the sensor is guaranteed idle, whatever state it was in. On a board where the sensor's supply goes through a load switch, this callback is also where you'd switch the power off.
 

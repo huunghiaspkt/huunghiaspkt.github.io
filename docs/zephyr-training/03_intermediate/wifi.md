@@ -207,7 +207,6 @@ Followed by `NET_EVENT_WIFI_DISCONNECT_RESULT` in your handler.
 | Board hangs at boot when `CONFIG_WIFI=y` | Out of RAM. The WiFi stack typically needs tens of KB — drop log levels or reduce `CONFIG_NET_BUF_*_COUNT`. |
 | `wifi connect` succeeds but no IP | DHCP timed out. Check `CONFIG_NET_DHCPV4=y` and that the AP responds (try a phone hotspot to rule out router config). |
 | Driver isn't enabled even with `CONFIG_WIFI=y` | You also need the part-specific driver symbol — `CONFIG_WIFI_ESP32`, `CONFIG_WIFI_NRF70`, etc. |
-| Random I2C/SPI failures while WiFi is busy | Some SoCs share clocks between radio and peripherals. On ESP32-S3 this is the same root cause as the BLE conflict — see [Power Management](./power-management). |
 
 <br/>
 

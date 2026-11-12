@@ -180,6 +180,6 @@ The power of this design: the MPU-6500 on the EFZ-ESP32S3 sits on the same I2C b
 
 ---
 
-## Next: power the sensor only when you need it
+## Next: write the driver yourself
 
-The sample reads the SHT30 once every 10 seconds — yet by default the driver runs it in *periodic* mode, measuring once a second whether anyone asks or not. The next page — [Power Management](./power-management) — looks at what it takes to let the sensor sleep between the reads you actually use.
+Every step on this page ran through Zephyr's in-tree `sht3xd` driver. The next page, [Writing Drivers](./writing-drivers), has you build that driver yourself.
