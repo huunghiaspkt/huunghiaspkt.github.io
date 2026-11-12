@@ -25,7 +25,6 @@ This section is organized to mirror the [Nordic Developer Academy nRF Connect SD
 | [DTS Binding YAML](./binding-yaml) | Layer 2 — define what properties your DTS node accepts |
 | [Kconfig](./kconfig) | Layer 3 — enable/disable drivers and features, read `.config` |
 | [Sensors](./i2c-sensors) | Use the sensor API — `sensor_sample_fetch`, `sensor_channel_get`, `struct sensor_value` |
-| [Power Management](./power-management) | Suspend the sensor between readings to cut idle current |
 | [Writing Drivers](./writing-drivers) | Build the driver under all of the above — out-of-tree module, PM, custom APIs |
 | [Thread Synchronization](./threads) | Semaphores, mutexes, message queues, and work queues |
 | [BLE Basics](./ble-basics) | Advertise, connect, and expose data as a GATT characteristic |
@@ -40,7 +39,3 @@ This section is organized to mirror the [Nordic Developer Academy nRF Connect SD
 ## The shift at this level
 
 Basic is about understanding Zephyr's building blocks. Intermediate is about **composing** them: a thread that wakes on a timer, fetches an I2C sensor, updates a BLE characteristic, then suspends the sensor and sleeps. Real firmware does all of that at once.
-
-:::info
-The I2C + BLE interaction on ESP32 has a known conflict — the radio and I2C share the clock tree. The [Power Management](./power-management) page documents the workaround from a real build.
-:::
