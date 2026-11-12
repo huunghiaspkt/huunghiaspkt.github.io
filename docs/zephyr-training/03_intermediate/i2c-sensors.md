@@ -17,6 +17,31 @@ Zephyr's sensor API provides a uniform interface for every sensor, regardless of
 
 ---
 
+## Wire the LCD
+
+This lesson runs in the [Hands-on Workspace (T2)](./hands-on-workspace): set it up first if you haven't. From this lesson on, the readings also show on a 1.8″ ST7735 LCD (128x160). Connect it to the board with eight jumper wires:
+
+![Wiring the 1.8″ ST7735 LCD to the EFZ-ESP32S3: eight jumper wires from the board's two 7-pin headers to the LCD's pin row](/img/efz/efz-lcd-wiring.svg)
+
+| LCD pin | Board header | GPIO | Job |
+|---|---|---|---|
+| GND | top (P3) | GND | Ground |
+| VCC | top (P3) | 3V3 | 3.3 V supply |
+| SCL | top (P3) | GPIO15 | SPI clock |
+| SDA | top (P3) | GPIO14 | SPI data |
+| RES | top (P3) | GPIO13 | Reset |
+| DC | bottom (P4) | GPIO40 | Data or command |
+| CS | bottom (P4) | GPIO39 | Chip select |
+| BL | bottom (P4) | GPIO38 | Backlight, high = on |
+
+:::warning[Rev 1 boards]
+The labels printed next to the top header (P3) are one pin off. They read 3V3, 16, 15, 14, 13, 12, GND, but the real pins are 3V3, GPIO26, 16, 15, 14, 13, GND. Count the pins from 3V3 instead of trusting the printed numbers: SCL goes on the 4th pin (printed "14"), SDA on the 5th (printed "13"), RES on the 6th (printed "12"). The bottom header (P4) is labelled correctly.
+:::
+
+<br/>
+
+---
+
 ## The sensor API — reading the SHT30
 
 This is the course sample [`03_intermediate/i2c_sensor`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/03_intermediate/i2c_sensor):
