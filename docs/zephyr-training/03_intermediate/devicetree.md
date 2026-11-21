@@ -23,19 +23,9 @@ Zephyr has 1000+ board definitions. Each one ships with a `.dts` file. Your appl
 
 ## The three-layer model
 
-Three DTS files are merged at build time:
+Three DTS files are merged at build time. Here they are for the SHT30 on the EFZ-ESP32S3, from a real build:
 
-```
-SoC DTS                  Board DTS                     Your overlay
-esp32s3.dtsi       +     <board>.dts             +     myapp.overlay
-(chip peripherals)       (board pin assignments,       (app-specific config)
-                          on-board parts)
-      |                         |                             |
-      +-------------------------+-----------------------------+
-                                |
-                     build/zephyr/zephyr.dts
-                     (the final merged tree)
-```
+![The three layers for the SHT30: esp32s3_common.dtsi defines i2c0 with status disabled; the EFZ board DTS sets it okay and adds the sht30 node; your overlay adds nothing here; build/zephyr/zephyr.dts holds the merged i2c0 node, every line noting the file it came from](/img/devicetree/three-layers.png)
 
 **SoC DTS** — defines every peripheral in the chip (`i2c0`, `spi2`, `uart0`). You never edit this.
 
@@ -106,7 +96,11 @@ Either way, the merged `zephyr.dts` contains the same `sht30` node — which is 
 
 ## Anatomy of a DTS file
 
-Map the parts of the SHT30 node back to the DTS grammar:
+Map the parts of the SHT30 node back to the DTS grammar. Here it is in the EFZ board file:
+
+![The SHT30 node in efz_esp32s3_procpu.dts with its grammar labelled: &i2c0 re-opens a node by its label, status = "okay" is a property, sht30: sht3xd@44 is label: name@unit-address, and children nest inside their parent](/img/devicetree/anatomy.png)
+
+The same grammar, with comments:
 
 ```dts
 &i2c0 {                                /* re-open existing node by label    */

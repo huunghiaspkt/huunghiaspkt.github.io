@@ -49,7 +49,7 @@ CONFIG_GPIO=y
 | `gpio_init_callback(&cb, handler, pin_mask)` | Wire up interrupt callback |
 | `gpio_add_callback(dev, &cb)` | Register callback with the driver |
 
-See [GPIO](./gpio) for a full working example.
+See [Buttons & LEDs](./buttons-leds) for a full working example.
 
 ---
 

@@ -74,7 +74,6 @@ west flash
 - [`03_intermediate/kconfig_demo`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/03_intermediate/kconfig_demo) — Kconfig options in an application
 - [`03_intermediate/binding_yaml`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/03_intermediate/binding_yaml) — A devicetree binding of your own
 - [`03_intermediate/custom_driver`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/03_intermediate/custom_driver) — An out-of-tree driver
-- [`03_intermediate/power_management`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/03_intermediate/power_management) — Device power management
 - [`03_intermediate/threads_sync`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/03_intermediate/threads_sync) — Thread synchronisation
 - [`03_intermediate/ble_basics`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/03_intermediate/ble_basics) — Bluetooth LE
 - [`04_advanced/wifi_shell`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/04_advanced/wifi_shell) — Wi-Fi from the Zephyr shell

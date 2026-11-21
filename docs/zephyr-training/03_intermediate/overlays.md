@@ -1,13 +1,13 @@
 ---
 sidebar_position: 4
-description: How to write devicetree overlays — syntax, node references, properties, and child devices.
+description: How to write devicetree overlays — syntax, node references, properties, and child devices, on the SHT30 example.
 ---
 
 # Writing Overlays
 
 When you flash Hello World, the board's hardware is already partially described — every board ships with a `.dts` file (upstream Zephyr for the ESP32-S3-DevKitC, the [EmbeddedFun fork](/docs/zephyr-training/how-to-start/environment) for the EFZ-ESP32S3). It defines the chip peripherals, the pins, the clocks.
 
-But it does not know about **your application**. It does not know that you want I2S0 to drive an LED strip, or that you need I2C0 at a specific frequency with a sensor at address 0x44. An overlay is your answer to that gap — a file where you describe exactly what your application needs on top of the board's base hardware. Without it, Zephyr has no way to know which peripherals to enable or which drivers to instantiate.
+But it does not know about **your application**. It does not know that you wired an SHT30 to I2C0 at address `0x44`, or that the sample you want to run looks for its sensor under a particular name. An overlay is your answer to that gap — a file where you describe exactly what your application needs on top of the board's base hardware.
 
 **You write the overlay. Zephyr reads it at build time and wires everything up.**
 
@@ -17,162 +17,108 @@ But it does not know about **your application**. It does not know that you want 
 
 ## Where does the overlay file live?
 
-Your devicetree overlay file lives in `boards/`, named after your board:
-
-<BoardTabs>
-<BoardTab value="esp32s3_devkitc">
+Your devicetree overlay lives in the application's `boards/` folder, named after your board. Our example on this page is Zephyr's own `samples/sensor/thermometer`, which prints the temperature of whatever sensor the devicetree points it at. You give it one overlay per board:
 
 ```
-devzone/hello_world/
+thermometer/
 ├── boards/
-│   └── esp32s3_devkitc_esp32s3_procpu.overlay
+│   ├── efz_esp32s3_procpu.overlay
+│   └── esp32s3_devkitc_procpu.overlay
 ├── CMakeLists.txt
 ├── prj.conf
 └── src/
     └── main.c
 ```
 
-</BoardTab>
-<BoardTab value="efz_esp32s3">
+The filename is the board name plus its qualifiers, with `/` replaced by `_`. Zephyr accepts two spellings for a board with a single SoC: the full one (`esp32s3_devkitc_esp32s3_procpu.overlay`) and a short one without the SoC part (`esp32s3_devkitc_procpu.overlay`). The course samples and Zephyr's own samples use the short one.
+
+A project can hold overlays for several boards side by side — West only picks the one matching the `-b` you build for, and says so in the build output:
 
 ```
-devzone/hello_world/
-├── boards/
-│   └── efz_esp32s3_esp32s3_procpu.overlay
-├── CMakeLists.txt
-├── prj.conf
-└── src/
-    └── main.c
+-- Found devicetree overlay: .../thermometer/boards/efz_esp32s3_procpu.overlay
 ```
-
-</BoardTab>
-</BoardTabs>
-
-The filename combines the board name and qualifiers, with `/` replaced by `_`. For `esp32s3_devkitc/esp32s3/procpu`, the overlay is `boards/esp32s3_devkitc_esp32s3_procpu.overlay`; for `efz_esp32s3/esp32s3/procpu`, it's `boards/efz_esp32s3_esp32s3_procpu.overlay`.
-
-A project can hold overlays for several boards side by side — West only picks the one matching the `-b` you build for.
 
 :::tip
 West finds the overlay automatically by matching the board name. You don't need to pass `-DDTC_OVERLAY_FILE=` unless you want a non-standard name.
 :::
 
-## Real board example — WS2812 RGB LED
+<br/>
 
-Both boards have one addressable WS2812 RGB LED, driven via I2S — on GPIO48 on the DevKitC, GPIO21 on the EFZ-ESP32S3. The overlays are identical except for that one pin:
+---
+
+## The SHT30 overlay
+
+The thermometer sample gets its sensor with `DEVICE_DT_GET(DT_ALIAS(ambient_temp0))`. It doesn't care which chip that is; the overlay's job is to make `ambient-temp0` point at the SHT30.
 
 <BoardTabs>
 <BoardTab value="esp32s3_devkitc">
 
-This is the overlay from the official Zephyr LED strip sample:
+The DevKitC has no sensor on board. You wire an SHT30 module to I2C0 (SDA GPIO1, SCL GPIO2), so the overlay describes the sensor **and** names it:
 
-```dts title="boards/esp32s3_devkitc_esp32s3_procpu.overlay"
-/*
- * Copyright (c) 2024-2025 Espressif Systems (Shanghai) Co., Ltd.
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
-#include <zephyr/dt-bindings/led/led.h>
-
+```dts title="boards/esp32s3_devkitc_procpu.overlay"
 / {
-	aliases {
-		led-strip = &led_strip;
-	};
+    aliases {
+        ambient-temp0 = &sht30;
+    };
 };
 
-&i2s0_default {
-	group1 {
-		pinmux = <I2S0_O_SD_GPIO48>;
-	};
-};
+&i2c0 {
+    status = "okay";
+    clock-frequency = <I2C_BITRATE_STANDARD>;
 
-i2s_led: &i2s0 {
-	status = "okay";
-
-	dmas = <&dma 3>;
-	dma-names = "tx";
-
-	led_strip: ws2812@0 {
-		compatible = "worldsemi,ws2812-i2s";
-
-		reg = <0>;
-		chain-length = <1>;
-		color-mapping = <LED_COLOR_ID_GREEN
-				 LED_COLOR_ID_RED
-				 LED_COLOR_ID_BLUE>;
-		reset-delay = <500>;
-	};
-};
-
-&dma {
-	status = "okay";
+    sht30: sht3xd@44 {
+        compatible = "sensirion,sht3xd";
+        reg = <0x44>;
+    };
 };
 ```
 
 </BoardTab>
 <BoardTab value="efz_esp32s3">
 
-The same overlay, with the data line moved to GPIO21 where the EFZ-ESP32S3's WS2812B sits:
+The SHT30 is soldered on the EFZ-ESP32S3, and its board DTS already describes it with the label `sht30`. The overlay only has to give the sample the name it looks for:
 
-```dts title="boards/efz_esp32s3_esp32s3_procpu.overlay"
-#include <zephyr/dt-bindings/led/led.h>
-
+```dts title="boards/efz_esp32s3_procpu.overlay"
 / {
-	aliases {
-		led-strip = &led_strip;
-	};
+    aliases {
+        ambient-temp0 = &sht30;
+    };
 };
+```
 
-&i2s0_default {
-	group1 {
-		pinmux = <I2S0_O_SD_GPIO21>;
-	};
-};
+That's the whole file. Most overlays on a board with a lot of hardware on it look like this: a few lines pointing at what's already there.
 
-i2s_led: &i2s0 {
-	status = "okay";
+</BoardTab>
+</BoardTabs>
 
-	dmas = <&dma 3>;
-	dma-names = "tx";
+To try it, copy the sample out of the Zephyr tree first, so your overlay doesn't end up inside Zephyr's own folder. From your workspace:
 
-	led_strip: ws2812@0 {
-		compatible = "worldsemi,ws2812-i2s";
+```bash
+cp -r zephyr/samples/sensor/thermometer thermometer
+```
 
-		reg = <0>;
-		chain-length = <1>;
-		color-mapping = <LED_COLOR_ID_GREEN
-				 LED_COLOR_ID_RED
-				 LED_COLOR_ID_BLUE>;
-		reset-delay = <500>;
-	};
-};
+Save the overlay for your board in `thermometer/boards/`, then build:
 
-&dma {
-	status = "okay";
-};
+<BoardTabs>
+<BoardTab value="esp32s3_devkitc">
+
+```bash
+west build -p -b esp32s3_devkitc/esp32s3/procpu thermometer
+```
+
+</BoardTab>
+<BoardTab value="efz_esp32s3">
+
+```bash
+west build -p -b efz_esp32s3/esp32s3/procpu thermometer
 ```
 
 </BoardTab>
 </BoardTabs>
 
----
+Here is the DevKitC overlay in VS Code, in the copied sample. Each number is one idea; the rest of this page takes them apart one by one:
 
-```kconfig title="prj.conf"
-CONFIG_LOG=y
-CONFIG_LED_STRIP=y
-CONFIG_LED_STRIP_LOG_LEVEL_DBG=y
-```
-
-What this overlay demonstrates:
-- **`&i2s0_default`** — sets the pinmux so I2S0's output maps to the LED's pin (GPIO48 on the DevKitC, GPIO21 on the EFZ-ESP32S3)
-- **`i2s_led: &i2s0`** — opens the existing I2S0 node and assigns it the label `i2s_led`
-- **`ws2812@0`** — child node with `compatible = "worldsemi,ws2812-i2s"`, binding it to the WS2812 I2S driver
-- **`color-mapping`** — GRB order (this LED is Green-Red-Blue, not the usual RGB)
-- **`aliases`** — exposes the strip as `led-strip` so application code can find it with `DT_ALIAS(led_strip)`
-
-:::info[Official source]
-Overlay from [zephyrproject-rtos/zephyr — samples/drivers/led/led_strip/boards/esp32s3_devkitc_procpu.overlay](https://github.com/zephyrproject-rtos/zephyr/blob/main/samples/drivers/led/led_strip/boards/esp32s3_devkitc_procpu.overlay)
-:::
+![The thermometer sample in VS Code: boards/ holds one overlay per board; the DevKitC overlay adds the alias ambient-temp0, re-opens i2c0, sets status okay, and adds the sht30 node with its compatible and I2C address 0x44](/img/overlays/sht30-overlay.png)
 
 <br/>
 
@@ -180,26 +126,19 @@ Overlay from [zephyrproject-rtos/zephyr — samples/drivers/led/led_strip/boards
 
 ## Node references with `&`
 
-The `&` syntax references a node defined elsewhere in the SoC or board DTS and lets you modify it. The WS2812 overlay uses this in three places:
+The `&` syntax references a node defined elsewhere in the SoC or board DTS and lets you modify it. The DevKitC overlay opens I2C0, which the SoC file `esp32s3_common.dtsi` defines with the label `i2c0`:
 
 ```dts
-/* Open the existing I2S0 node and configure it */
-i2s_led: &i2s0 {
+&i2c0 {
     status = "okay";
-    dmas = <&dma 3>;
-    dma-names = "tx";
+    clock-frequency = <I2C_BITRATE_STANDARD>;
     ...
-};
-
-/* Open the DMA node to enable it */
-&dma {
-    status = "okay";
 };
 ```
 
-`&i2s0` and `&dma` do not create new nodes — they open the existing ones for modification. Without `&`, you'd get a duplicate node and a build error.
+`&i2c0` does not create a new node — it opens the existing one for modification. Everything you write inside is added to it, and any property it already had with the same name is replaced.
 
-The `i2s_led:` prefix on `&i2s0` assigns an additional label to the node so application code can reference it by that name.
+`&sht30` in the alias works the same way: it refers to the node labelled `sht30`, wherever that node was written. On the DevKitC that's a few lines further down in your overlay; on the EFZ-ESP32S3 it's in the board DTS.
 
 <br/>
 
@@ -210,15 +149,15 @@ The `i2s_led:` prefix on `&i2s0` assigns an additional label to the node so appl
 **This is the most important property. It is a string that binds a DTS node to a specific C driver:**
 
 ```dts
-led_strip: ws2812@0 {
-    compatible = "worldsemi,ws2812-i2s";
+sht30: sht3xd@44 {
+    compatible = "sensirion,sht3xd";
     ...
 };
 ```
 
-Zephyr looks up `dts/bindings/led_strip/worldsemi,ws2812-i2s.yaml` to validate the node and generate the driver glue code. If the binding YAML doesn't exist, you get a build error.
+Zephyr looks up `dts/bindings/sensor/sensirion,sht3xd.yaml` to validate the node and generate the driver glue code. If no binding has that `compatible`, the node is never matched to a driver and the device never appears.
 
-The format is always `"vendor,device"`. The vendor prefix follows the DTS bindings naming convention — `worldsemi` is the manufacturer of the WS2812 chip family.
+The format is always `"vendor,device"`. The vendor prefix follows the DTS bindings naming convention — `sensirion` is the manufacturer of the SHT3x family.
 
 <br/>
 
@@ -226,20 +165,19 @@ The format is always `"vendor,device"`. The vendor prefix follows the DTS bindin
 
 ## The `reg` property
 
-`reg` identifies a device's position on its parent bus. For the WS2812 node, which lives on an I2S bus, `reg = <0>` means instance 0 on that bus:
+`reg` identifies a device's position on its parent bus. For a child of an I2C controller, it is the device's 7-bit I2C address:
 
 ```dts
-led_strip: ws2812@0 {
-    compatible = "worldsemi,ws2812-i2s";
-    reg = <0>;
-    ...
+sht30: sht3xd@44 {
+    compatible = "sensirion,sht3xd";
+    reg = <0x44>;
 };
 ```
 
-The `@0` in the node name is the unit address — it must always match `reg`. This is a DTS convention across all bus types.
+The SHT30 answers on `0x44` when its ADDR pin is low and `0x45` when it's high. The `@44` in the node name is the unit address — it must always match `reg`. This is a DTS convention across all bus types.
 
 :::note
-For I2C devices, `reg` is the 7-bit address (e.g. `reg = <0x44>`). For I2S or SPI devices, it is the bus instance index. The meaning depends on the parent bus, but the `@address` convention is always the same.
+The meaning of `reg` depends on the parent bus. On I2C it's the address; on SPI it's the chip-select index; for a memory-mapped peripheral it's `<base size>`. The `@address` convention is always the same.
 :::
 
 <br/>
@@ -248,20 +186,18 @@ For I2C devices, `reg` is the 7-bit address (e.g. `reg = <0x44>`). For I2S or SP
 
 ## Status
 
-Every peripheral node defaults to `disabled`. Set `status = "okay"` to enable it. The WS2812 overlay enables both I2S0 and DMA:
+Every peripheral node in the SoC DTS starts out `disabled`. Set `status = "okay"` to enable it. The DevKitC overlay enables I2C0:
 
 ```dts
-i2s_led: &i2s0 {
-    status = "okay";   /* Enable I2S0 — without this the peripheral never initializes */
+&i2c0 {
+    status = "okay";   /* without this the I2C controller never initializes */
     ...
-};
-
-&dma {
-    status = "okay";   /* Enable DMA — required for I2S TX transfers */
 };
 ```
 
-If you omit `status = "okay"` on either node, the build succeeds but the driver silently does nothing at runtime.
+On the EFZ-ESP32S3 the board DTS already does this, because the SHT30 is soldered on — that's why its overlay doesn't need the line.
+
+If you leave the controller disabled, the build still succeeds, but the SHT30 under it never gets a working device: `device_is_ready()` returns false at runtime.
 
 <br/>
 
@@ -269,19 +205,32 @@ If you omit `status = "okay"` on either node, the build succeeds but the driver 
 
 ## Pin routing with pinmux
 
-For peripherals like I2S, UART, and SPI, the physical pin assignment is set in a pinmux group node. The WS2812 overlay maps I2S0's data output to GPIO48:
+For peripherals like I2C, UART and SPI, the physical pins are set in a pinmux group node that the board defines. The DevKitC's I2C0 pins come from its board files:
 
-```dts
-&i2s0_default {
+```dts title="boards/espressif/esp32s3_devkitc/esp32s3_devkitc-pinctrl.dtsi (excerpt)"
+i2c0_default: i2c0_default {
     group1 {
-        pinmux = <I2S0_O_SD_GPIO48>;
+        pinmux = <I2C0_SDA_GPIO1>,
+                 <I2C0_SCL_GPIO2>;
+        bias-pull-up;
+        drive-open-drain;
+        output-high;
     };
 };
 ```
 
-`I2S0_O_SD_GPIO48` is a macro from the ESP32-S3 pinmux header that connects the I2S0 serial data output signal to GPIO48 — the pin the DevKitC's RGB LED is wired to.
+`I2C0_SDA_GPIO1` is a macro from the ESP32-S3 pinmux header that connects the I2C0 data signal to GPIO1. If you wire your SHT30 module to other pins, your overlay can re-open that group and change only the pins:
 
-That one macro is the only line that differs between the two boards' overlays. On the EFZ-ESP32S3 it's `I2S0_O_SD_GPIO21`. The ESP32-S3's GPIO matrix can route I2S0's output to almost any pin, so the header has an `I2S0_O_SD_GPIOn` macro for each of them — porting to a new board is often just picking the right one.
+```dts
+&i2c0_default {
+    group1 {
+        pinmux = <I2C0_SDA_GPIO8>,
+                 <I2C0_SCL_GPIO9>;
+    };
+};
+```
+
+`bias-pull-up` and the other properties stay as the board set them; only `pinmux` changes. The ESP32-S3's GPIO matrix can route I2C0 to almost any pin, so the header has an `I2C0_SDA_GPIOn` / `I2C0_SCL_GPIOn` macro for each of them — porting to a new board is often just picking the right ones.
 
 <br/>
 
@@ -294,26 +243,27 @@ Aliases let application code find a device by a stable name regardless of where 
 ```dts
 / {
     aliases {
-        led-strip = &led_strip;   /* &led_strip is the node label on ws2812@0 */
+        ambient-temp0 = &sht30;   /* &sht30 is the node label on sht3xd@44 */
     };
 };
 ```
 
-In C, retrieve the device using the alias:
+This is the line from the thermometer sample's `src/main.c` that uses it:
 
 ```c
-#define STRIP_NODE DT_ALIAS(led_strip)
-const struct device *strip = DEVICE_DT_GET(STRIP_NODE);
+const struct device *const dev = DEVICE_DT_GET(DT_ALIAS(ambient_temp0));
 ```
 
-Or by node label directly:
+Or, if you write your own app for this one board, by node label directly:
 
 ```c
-const struct device *strip = DEVICE_DT_GET(DT_NODELABEL(led_strip));
+const struct device *const dev = DEVICE_DT_GET(DT_NODELABEL(sht30));
 ```
+
+The alias is what makes a sample portable: the same `main.c` runs on any board whose devicetree says which sensor `ambient-temp0` is.
 
 :::note
-DTS uses hyphens (`led-strip`), C macros use underscores (`led_strip`). Zephyr converts automatically.
+DTS uses hyphens (`ambient-temp0`), C macros use underscores (`ambient_temp0`). Zephyr converts automatically.
 :::
 
 <br/>
@@ -322,25 +272,28 @@ DTS uses hyphens (`led-strip`), C macros use underscores (`led_strip`). Zephyr c
 
 ## 😅 Don't panic — this is normal
 
-If you are looking at this overlay and thinking *"what is all of this?"* — that reaction is completely expected.
+If you look at the DevKitC overlay and think *"that's a lot of ceremony for one sensor"* — that reaction is completely expected.
 
 ```dts
-i2s_led: &i2s0 {
+&i2c0 {
     status = "okay";
-    dmas = <&dma 3>;
-    dma-names = "tx";
-    ...
+    clock-frequency = <I2C_BITRATE_STANDARD>;
+
+    sht30: sht3xd@44 {
+        compatible = "sensirion,sht3xd";
+        reg = <0x44>;
+    };
 };
 ```
 
-Between the `compatible` strings, the `status = "okay"` that seemingly does nothing visible, the DMA bindings, and the pinmux macros — Zephyr can feel like it demands a lot of configuration before anything lights up.
+Between the `&` references, the `status = "okay"` that seemingly does nothing visible, and the `compatible` string — Zephyr can feel like it demands a lot of configuration before you read a single temperature.
 
 That is because it **is** doing a lot:
 
 - 🔌 Describing the hardware that exists on the board
 - 🎯 Selecting the exact driver that handles it
-- 📡 Routing signals to the correct physical pins
-- ⚡ Allocating DMA resources — all at **compile time**, before a single line of your application runs
+- 📡 Putting the sensor on the right bus, at the right address
+- ⚡ Creating the device for your code — all at **compile time**, before a single line of your application runs
 
 This is the design. It is also what makes Zephyr portable and production-grade.
 

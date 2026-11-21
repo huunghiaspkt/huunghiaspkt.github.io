@@ -5,36 +5,7 @@ description: How overlay, binding, driver, and Kconfig connect — the complete 
 
 # How Zephyr Fits Together
 
-In Basic, you turned on a WS2812 LED. Three text fragments did all the work:
-
-```dts title="overlay"
-compatible = "worldsemi,ws2812-i2s";
-```
-<br/>
-
-```kconfig title="prj.conf"
-CONFIG_LED_STRIP=y
-```
-
-<br/>
-
-```c title="src/main.c"
-led_strip_update_rgb(strip, pixels, STRIP_NUM_PIXELS);
-```
-
-It worked. But **why** did it work? How does a string in a text file end up calling the right C function on the right hardware pin? Those three lines touched four separate Zephyr subsystems, but you didn't have to think about how they connected.
-
-This page answers that question.
-
-The mechanism is the same for every Zephyr driver — WS2812, button GPIO, USB CDC, anything. To walk through it in detail we'll switch examples to the **Sensirion SHT30**, a small I2C temperature / humidity sensor. It's soldered on the EFZ-ESP32S3, and a cheap breakout module works on the DevKitC. The shape is identical to the WS2812 chain you already built; the SHT30 just gives us a real sensor driver to dissect.
-
-<br/>
-
----
-
-## The same chain, on SHT30
-
-An SHT30 on I2C needs a devicetree node, one line of config and zero hand-written driver code — exactly like WS2812:
+The EFZ-ESP32S3 has a **Sensirion SHT30** temperature and humidity sensor on its I2C bus (on the DevKitC, a cheap breakout module does the same job). Reading it takes three short pieces of text and no driver code of your own:
 
 ```dts title="devicetree"
 &i2c0 {
@@ -45,7 +16,9 @@ An SHT30 on I2C needs a devicetree node, one line of config and zero hand-writte
     };
 };
 ```
+
 <br/>
+
 ```kconfig title="prj.conf"
 CONFIG_SENSOR=y
 ```
@@ -57,7 +30,10 @@ const struct device *sht30 = DEVICE_DT_GET(DT_NODELABEL(sht30));
 sensor_sample_fetch(sht30);
 ```
 
-Now: how does `"sensirion,sht3xd"` end up calling the right I2C transfers on the SHT30 chip?
+It works. But **why** does it work? How does a string in a text file end up calling the right C function, talking to the right chip, at the right address on the right bus? Those few lines touch four separate parts of Zephyr, and you never had to say how they connect.
+
+This page answers that question. The mechanism is the same for every Zephyr driver, so once you can follow it for the SHT30 you can follow it for any device.
+
 
 <br/>
 
@@ -67,40 +43,9 @@ Now: how does `"sensirion,sht3xd"` end up calling the right I2C transfers on the
 
 Zephyr uses four layers that work together at build time and runtime:
 
-```mermaid
-graph TD
-    A["📄 Devicetree (SoC + board + overlay)
-    ─────────────────────
-    compatible = sensirion,sht3xd
-    reg = 0x44, status = okay"]
+![The SHT30 through the four layers: the compatible "sensirion,sht3xd" in the devicetree, the binding with the same name, the Kconfig symbol DT_HAS_SENSIRION_SHT3XD_ENABLED, and DT_DRV_COMPAT sensirion_sht3xd in the driver, ending at sensor_sample_fetch(sht30) in your app](/img/zephyr-layers/overview.png)
 
-    B["📋 Binding YAML
-    ─────────────────────
-    sensirion,sht3xd.yaml
-    validates properties, links to driver"]
-
-    C["⚙️ Kconfig
-    ─────────────────────
-    CONFIG_SHT3XD=y (auto)
-    compiles the driver into firmware"]
-
-    D["🔧 Driver
-    ─────────────────────
-    sht3xd.c
-    actual I2C commands and reads"]
-
-    E["💻 Your Application
-    ─────────────────────
-    sensor_sample_fetch()
-    sensor_channel_get()"]
-
-    A --> B
-    B --> D
-    C --> D
-    D --> E
-```
-
-Each layer has one job. Together they form an unbroken chain from hardware description to function call.
+These are the real files, as you'll see them in VS Code. Follow the cyan box: one name, `sensirion,sht3xd`, links all four. Each layer has one job, and together they form an unbroken chain from hardware description to function call.
 
 <br/>
 
@@ -134,19 +79,7 @@ The DevKitC has no sensor on board. You wire an SHT30 module to I2C0 (SDA GPIO1,
 
 The SHT30 is **soldered on the board**, so the board's own devicetree already describes it — you write **no overlay at all**. This is the node in [`efz_esp32s3_procpu.dts`](https://github.com/huunghiaspkt/zephyr/blob/main/boards/embeddedfun/efz_esp32s3/efz_esp32s3_procpu.dts):
 
-```dts title="boards/embeddedfun/efz_esp32s3/efz_esp32s3_procpu.dts"
-&i2c0 {
-    status = "okay";
-    clock-frequency = <I2C_BITRATE_FAST>;
-    pinctrl-0 = <&i2c0_default>;
-    pinctrl-names = "default";
-
-    sht30: sht3xd@44 {
-        compatible = "sensirion,sht3xd";
-        reg = <0x44>;
-    };
-};
-```
+![The SHT30 node in efz_esp32s3_procpu.dts, open in VS Code: &i2c0 is the bus, compatible names the chip, reg is its I2C address, 0x44](/img/zephyr-layers/layer1-devicetree.png)
 
 </BoardTab>
 </BoardTabs>
@@ -175,23 +108,7 @@ zephyr/dts/bindings/sensor/sensirion,sht3xd.yaml
 
 The actual file is tiny:
 
-```yaml title="sensirion,sht3xd.yaml"
-description: Sensirion Humidity SHT3x-DIS humidity and temperature sensor
-
-compatible: "sensirion,sht3xd"
-
-include: [sensor-device.yaml, i2c-device.yaml]
-
-properties:
-  alert-gpios:
-    type: phandle-array
-    description: |
-      ALERT pin.
-
-      This pin signals active high when produced by the sensor.  The
-      property value should ensure the flags properly describe the
-      signal that is presented to the driver.
-```
+![sensirion,sht3xd.yaml open in VS Code: the compatible matches the devicetree, include pulls in sensor-device.yaml and i2c-device.yaml, and alert-gpios is its one own property](/img/zephyr-layers/layer2-binding.png)
 
 It declares just one custom property — the optional `alert-gpios`. Everything else comes from the two `include:` files:
 - `i2c-device.yaml` provides `reg` (the I2C address) and validates the unit address.
@@ -209,14 +126,7 @@ If your devicetree misspells `reg` or omits a required field, the binding catche
 
 The driver only exists in firmware if Kconfig says so. The SHT3x driver auto-enables itself the moment a matching DTS node appears:
 
-```kconfig title="drivers/sensor/sensirion/sht3xd/Kconfig"
-menuconfig SHT3XD
-	bool "SHT3xD Temperature and Humidity Sensor"
-	default y
-	depends on DT_HAS_SENSIRION_SHT3XD_ENABLED
-	select I2C
-	select CRC
-```
+![The SHT3xD driver's Kconfig in VS Code: depends on DT_HAS_SENSIRION_SHT3XD_ENABLED, default y, select I2C and CRC](/img/zephyr-layers/layer3-kconfig.png)
 
 Three things to notice:
 - **`depends on DT_HAS_SENSIRION_SHT3XD_ENABLED`** — this symbol is auto-generated when Zephyr sees an enabled node with `compatible = "sensirion,sht3xd"` in the merged tree. **The devicetree triggers the Kconfig.**
@@ -239,11 +149,13 @@ The driver answers: **how do you talk to this hardware?**
 
 This is where the `compatible` string actually selects the driver. At the top of `sht3xd.c`:
 
-```c
-#define DT_DRV_COMPAT sensirion_sht3xd
-```
+![The top of sht3xd.c in VS Code: #define DT_DRV_COMPAT sensirion_sht3xd](/img/zephyr-layers/layer4-driver-compat.png)
 
 This one line tells Zephyr: "this driver handles all DTS nodes with `compatible = "sensirion,sht3xd"`." The comma becomes an underscore, hyphens become underscores — that is the only translation.
+
+At the bottom of the same file, the driver asks Zephyr to make one device for every matching node:
+
+![The bottom of sht3xd.c in VS Code: DT_INST_FOREACH_STATUS_OKAY runs SHT3XD_DEFINE for each enabled node, SENSOR_DEVICE_DT_INST_DEFINE creates the device, I2C_DT_SPEC_INST_GET reads the bus and address, sht3xd_driver_api holds the functions the sensor API calls](/img/zephyr-layers/layer4-driver-define.png)
 
 At build time, Zephyr uses this to:
 
