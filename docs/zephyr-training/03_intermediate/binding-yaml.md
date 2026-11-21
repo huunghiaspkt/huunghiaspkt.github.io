@@ -15,23 +15,7 @@ The binding YAML file defines what properties a DTS node with your `compatible` 
 
 The previous page showed the SHT30 node — in the EFZ-ESP32S3 board devicetree, or in a DevKitC overlay. This is the binding it's validated against — the real file from the Zephyr tree:
 
-```yaml title="dts/bindings/sensor/sensirion,sht3xd.yaml"
-description: Sensirion Humidity SHT3x-DIS humidity and temperature sensor
-
-compatible: "sensirion,sht3xd"
-
-include: [sensor-device.yaml, i2c-device.yaml]
-
-properties:
-  alert-gpios:
-    type: phandle-array
-    description: |
-      ALERT pin.
-
-      This pin signals active high when produced by the sensor.  The
-      property value should ensure the flags properly describe the
-      signal that is presented to the driver.
-```
+![sensirion,sht3xd.yaml open in VS Code: the compatible matches the devicetree, include pulls in sensor-device.yaml and i2c-device.yaml, alert-gpios is its one own property, and the file name is the compatible](/img/binding/sht30-binding.png)
 
 Almost everything you need to validate the SHT30 node comes from the two `include:` files:
 - `i2c-device.yaml` provides `reg` (the I2C address) and the unit-address rules.
@@ -584,13 +568,21 @@ DTS uses hyphens in property names (`clock-frequency`). The C macros use undersc
 
 ## Validating your binding
 
-```bash
-# Build your project — DTS validation runs at build time
-west build -b esp32s3_devkitc/esp32s3/procpu .
+Validation runs on every build, before anything is compiled. To see it work, break the SHT30 node on purpose: leave out `reg`.
 
-# Check for binding validation errors in the build output
-# They look like: "dt-validation: property 'reg' is missing"
+```dts title="boards/efz_esp32s3_procpu.overlay (wrong on purpose)"
+&i2c0 {
+    sht30_b: sht3xd@45 {
+        compatible = "sensirion,sht3xd";
+    };
+};
 ```
+
+The build stops at the devicetree step with one line that tells you everything:
+
+![The broken overlay in VS Code and the build error below it: devicetree error: 'reg' is marked as required in 'properties:' in sensirion,sht3xd.yaml, but does not appear in the node in boards/efz_esp32s3_procpu.overlay line 2](/img/binding/missing-reg-error.png)
+
+Read it in three parts: **what is wrong** (`'reg' is marked as required`), **which binding says so** (`sensirion,sht3xd.yaml`, the one your `compatible` picked), and **where to fix it** (the overlay file, and `:2`, its line number). The full build output adds CMake call stacks underneath; the `devicetree error:` line is the one to look for.
 
 :::info
 Reference: [Devicetree bindings syntax](https://docs.zephyrproject.org/latest/build/dts/bindings-syntax.html) and [DTS intro & syntax](https://docs.zephyrproject.org/latest/build/dts/intro-syntax-structure.html) in the Zephyr docs.

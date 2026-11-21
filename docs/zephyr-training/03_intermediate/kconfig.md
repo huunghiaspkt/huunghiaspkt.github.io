@@ -88,6 +88,12 @@ CONFIG_CRC=y
 
 Every `SHT3XD_*` line there is a default you never typed.
 
+You can ask the build itself why a symbol is on. Run `west build -t menuconfig`, press `/`, type `^SHT3XD$`, Enter, then `?` for the symbol's information. On a real EFZ-ESP32S3 build:
+
+![menuconfig's symbol information for SHT3XD: Value y; direct dependencies DT_HAS_SENSIRION_SHT3XD_ENABLED and SENSOR, both y; default y; select I2C and CRC; defined in drivers/sensor/sensirion/sht3xd/Kconfig line 6](/img/kconfig/symbol-info.png)
+
+This one screen holds the whole story of this section: the devicetree turned `DT_HAS_SENSIRION_SHT3XD_ENABLED` on, your `prj.conf` turned `SENSOR` on, and `default y` did the rest.
+
 <br/>
 
 ---
@@ -278,6 +284,12 @@ west build -t guiconfig
 ```
 
 Both show the full tree of available symbols with their current values and help text.
+
+This is menuconfig on the same build, at Device Drivers → Sensor drivers. `[*]` means on: both sensors on the EFZ-ESP32S3 are on, though `prj.conf` names neither.
+
+![menuconfig at Device Drivers, Sensor drivers: SHT3xD Temperature and Humidity Sensor and MPU6050 Six-Axis Motion Tracking Device, both marked on, with the key help at the bottom](/img/kconfig/menuconfig-sensors.png)
+
+Changes you make here only live in this build folder; a pristine build (`-p`) throws them away. Copy the ones you want to keep into `prj.conf`.
 
 <br/>
 

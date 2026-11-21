@@ -385,7 +385,7 @@ Most ESP32 and nRF boards use one of these USB-to-serial chips. Install the driv
 
 | Chip | Common boards | Driver |
 |---|---|---|
-| CP210x (Silicon Labs) | ESP32-DevKitC, many Espressif boards | [silabs.com/developers/usb-to-uart-bridge-vcp-drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers) |
+| CP210x (Silicon Labs) | ESP32-DevKitC, many Espressif boards | [silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers](https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers) |
 | CH340 / CH341 | Cheaper ESP32 clones | [wch-ic.com](http://www.wch-ic.com/downloads/CH341SER_MAC_ZIP.html) |
 
 After installing, plug in your board and verify the port appears:
@@ -402,7 +402,7 @@ Windows requires a USB-to-serial driver. Install the one that matches your board
 
 | Chip | Common boards | Driver |
 |---|---|---|
-| CP210x (Silicon Labs) | ESP32-DevKitC, many Espressif boards | [silabs.com/developers/usb-to-uart-bridge-vcp-drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers) |
+| CP210x (Silicon Labs) | ESP32-DevKitC, many Espressif boards | [silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers](https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers) |
 | CH340 / CH341 | Cheaper ESP32 clones | [wch-ic.com](http://www.wch-ic.com/downloads/CH341SER_ZIP.html) |
 | FTDI | Older and industrial boards | [ftdichip.com/drivers/vcp-drivers](https://ftdichip.com/drivers/vcp-drivers/) |
 
