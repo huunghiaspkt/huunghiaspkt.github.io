@@ -45,43 +45,55 @@ This is what makes the same `sensor_sample_fetch()` call work on hundreds of dif
 
 ---
 
-## The working tree
+## Start from Zephyr's own driver
 
-Two sibling directories: a Zephyr **application** that will consume the driver, and a **module** that will host it.
+Before writing anything, look at how the SHT30 is read today. The board file gives the sensor a `compatible`:
 
-```
-custom_sht30/
-├── app/
-│   ├── boards/
-│   ├── src/
-│   │   └── main.c
-│   ├── prj.conf
-│   └── CMakeLists.txt
-│
-└── custom_driver_module/
-    ├── dts/
-    │   └── bindings/
-    │       └── sensor/
-    │           └── zephyr,custom-sht30.yaml
-    └── drivers/
-        └── sensor/
-            └── custom_sht30/
-                └── custom_sht30.c
+```dts title="efz-handson/boards/embeddedfun/efz_esp32s3/efz_esp32s3_procpu.dts (excerpt)"
+sht30: sht3xd@44 {
+    compatible = "sensirion,sht3xd";
+    reg = <0x44>;
+};
 ```
 
-The `app/` side is ordinary — same shape as every Zephyr app you've built. The `custom_driver_module/` side holds the binding and the driver source.
+That one string decides which driver runs the chip. It points at Zephyr's own driver, `zephyr/drivers/sensor/sensirion/sht3xd/sht3xd.c`, whose first line names the same compatible with underscores:
 
-:::info
-The CMake / Kconfig / `module.yml` glue that turns this folder into a real Zephyr module is a topic on its own — covered later in **Production Zephyr**. For this lesson, focus on the driver code itself.
-:::
+```c title="zephyr/drivers/sensor/sensirion/sht3xd/sht3xd.c"
+#define DT_DRV_COMPAT sensirion_sht3xd
+```
+
+Scroll through it and you find the **three key parts every Zephyr driver has**:
+
+1. **The API table**, `DEVICE_API(sensor, sht3xd_driver_api)`: the driver's functions (`sample_fetch`, `channel_get`, ...) under the names the sensor API expects. When the app calls `sensor_sample_fetch()`, the call lands here.
+2. **A define macro**, `#define SHT3XD_DEFINE(inst)`: creates one device (its config, its data, its init) for one devicetree node.
+3. **The for-each**, `DT_INST_FOREACH_STATUS_OKAY(SHT3XD_DEFINE)`: runs that macro once for every okay node with the driver's compatible.
+
+Zephyr's driver also has a periodic mode, three repeatability levels and alert thresholds. Ours does one thing, a single measurement, so every line is easy to follow, and the steps are the same for a chip Zephyr doesn't support at all. The plan: write the driver in our own repository with our own compatible, then change that one string in the devicetree.
 
 <br/>
 
 ---
 
-## Exercise 1 — Custom SHT30 using the sensor API
+## Exercise 1 — Your own SHT30 driver on the sensor API
 
-**Goal:** write a driver that talks I2C to an SHT30 and exposes it through Zephyr's standard sensor API. The application then uses `sensor_sample_fetch` / `sensor_channel_get` exactly as it would for the in-tree `sht3xd` driver.
+**Goal:** a driver in the [EFZ hands-on workspace](./hands-on-workspace) that talks I2C to the SHT30 and exposes it through Zephyr's sensor API. The app from the [Sensors](./i2c-sensors) page keeps calling `sensor_sample_fetch()` / `sensor_channel_get()` exactly as before.
+
+The code is in [efz-handson](https://github.com/huunghiaspkt/efz-handson) (`git pull` in `efz-handson-ws/efz-handson` if your workspace is older than this page):
+
+```
+efz-handson/
+├── zephyr/module.yml                         # makes the repository a Zephyr module
+├── dts/bindings/sensor/embeddedfun,sht30.yaml
+├── drivers/
+│   ├── Kconfig, CMakeLists.txt               # rsource / add_subdirectory down to sht30/
+│   └── sensor/sht30/
+│       ├── Kconfig
+│       ├── CMakeLists.txt
+│       └── sht30.c
+└── app/boards/efz_esp32s3_procpu.overlay     # switches the board to our driver
+```
+
+The driver doesn't go inside Zephyr. `zephyr/module.yml` already tells Zephyr to read this repository's `Kconfig`, `CMakeLists.txt` and `dts/bindings/`, so the driver only needs those four new pieces: a binding, a Kconfig switch, a CMake file, and the C file.
 
 The SHT30 is a friendly first driver: no calibration registers, no compensation formulas. You send a 16-bit command, wait, and read back six bytes:
 
@@ -91,24 +103,48 @@ The SHT30 is a friendly first driver: no calibration registers, no compensation 
 
 ### Step 1 — Binding
 
-Define a `compatible` string for *your* version of the driver. We use `zephyr,custom-sht30` to distinguish it from the in-tree `sensirion,sht3xd`:
+Give the driver its own `compatible`. `embeddedfun` is our vendor prefix, already listed in the repository's `dts/bindings/vendor-prefixes.txt`:
 
-```yaml title="dts/bindings/sensor/zephyr,custom-sht30.yaml"
-description: SHT30 temperature and humidity sensor (custom driver)
+```yaml title="dts/bindings/sensor/embeddedfun,sht30.yaml"
+# SPDX-License-Identifier: Apache-2.0
 
-compatible: "zephyr,custom-sht30"
+description: Sensirion SHT30 temperature and humidity sensor (efz-handson driver)
+
+compatible: "embeddedfun,sht30"
 
 include: [sensor-device.yaml, i2c-device.yaml]
 ```
 
-No custom properties — `i2c-device.yaml` and `sensor-device.yaml` provide everything (the I2C bus, the `reg` address, plus the sensor marker). The SHT30 only speaks I2C, so there's no SPI variant to worry about.
+`i2c-device.yaml` says the node sits on an I2C bus, so it needs a `reg` address, and the build checks for it. `sensor-device.yaml` marks it as a sensor.
 
-### Step 2 — `DT_DRV_COMPAT` and DTS guard
+### Step 2 — Kconfig and CMake
 
-At the top of the driver:
+```kconfig title="drivers/sensor/sht30/Kconfig"
+# SPDX-License-Identifier: Apache-2.0
 
-```c title="drivers/sensor/custom_sht30/custom_sht30.c"
-#define DT_DRV_COMPAT zephyr_custom_sht30
+config EFZ_SHT30
+    bool "SHT30 driver (efz-handson)"
+    default y
+    depends on DT_HAS_EMBEDDEDFUN_SHT30_ENABLED
+    select I2C
+    select CRC
+```
+
+The switch turns itself on when the devicetree has an okay node with our compatible, and pulls in I2C and the CRC library. CMake only compiles the driver when the switch is on:
+
+```cmake title="drivers/sensor/sht30/CMakeLists.txt"
+# SPDX-License-Identifier: Apache-2.0
+
+zephyr_library()
+zephyr_library_sources(sht30.c)
+```
+
+`drivers/CMakeLists.txt` and `drivers/sensor/CMakeLists.txt` lead down to it with `add_subdirectory_ifdef()`, and the two Kconfig files with `rsource`. It's the same pattern Zephyr uses for its own drivers.
+
+### Step 3 — The top of `sht30.c`
+
+```c title="drivers/sensor/sht30/sht30.c"
+#define DT_DRV_COMPAT embeddedfun_sht30
 
 #include <zephyr/device.h>
 #include <zephyr/drivers/i2c.h>
@@ -117,65 +153,42 @@ At the top of the driver:
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/crc.h>
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(custom_sht30, CONFIG_SENSOR_LOG_LEVEL);
 
-#if !DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
-#warning "zephyr,custom-sht30 driver enabled without any devices"
-#endif
-```
+LOG_MODULE_REGISTER(efz_sht30, CONFIG_SENSOR_LOG_LEVEL);
 
-`DT_DRV_COMPAT` is what binds the C file to the binding's `compatible` string (commas/hyphens → underscores). The `DT_HAS_COMPAT_STATUS_OKAY` guard catches the "Kconfig is on but the overlay forgot to add a node" case at build time.
+#define SHT30_CMD_MEASURE_HIGH 0x2400    /* single shot, high repeatability */
+#define SHT30_MEASURE_WAIT_MS  15
 
-### Step 3 — Data, config, and API structs
-
-```c
-#define SHT30_CMD_MEASURE_HIGH  0x2400  /* single shot, high repeatability */
-#define SHT30_MEASURE_WAIT_MS   15
-
-struct custom_sht30_data {
-    uint16_t t_raw;     /* last raw temperature word */
-    uint16_t rh_raw;    /* last raw humidity word */
+struct sht30_data {
+    uint16_t t_raw;
+    uint16_t rh_raw;
 };
 
-struct custom_sht30_config {
+struct sht30_config {
     struct i2c_dt_spec i2c;
 };
-
-static DEVICE_API(sensor, custom_sht30_api) = {
-    .sample_fetch = custom_sht30_sample_fetch,
-    .channel_get  = custom_sht30_channel_get,
-};
 ```
 
-The `sensor_driver_api` struct is the **vtable** — `DEVICE_API(sensor, ...)` declares one and puts it where Zephyr can check that a device really implements the sensor API. The kernel never calls `custom_sht30_sample_fetch` directly — it calls `sensor_sample_fetch(dev)`, which dereferences `dev->api->sample_fetch(dev, chan)`. (In the actual file, the API struct sits *below* the two functions it points to.)
+`DT_DRV_COMPAT` connects the C file to the binding: the same compatible, with the comma and the dash turned into underscores. Every `DT_INST_...` macro further down uses it to find the nodes that belong to this driver. `0x2400` asks for one measurement at high repeatability, which takes at most 15 ms (SHT3x datasheet).
 
-`config` holds what never changes (which bus, which address — straight from devicetree). `data` holds what does (the latest sample).
+Every Zephyr driver keeps two structs per device. `config` holds what the devicetree says (the I2C bus and address); it's constant, so it stays in flash. `data` holds what changes at run time (the last raw reading), so it lives in RAM.
 
 ### Step 4 — `sample_fetch` and `channel_get`
 
 `sample_fetch` does the I2C work; `channel_get` only converts what's already stored:
 
 ```c
-static int sht30_write_cmd(const struct device *dev, uint16_t cmd)
-{
-    const struct custom_sht30_config *cfg = dev->config;
-    uint8_t buf[2];
-
-    sys_put_be16(cmd, buf);          /* commands are big-endian */
-    return i2c_write_dt(&cfg->i2c, buf, sizeof(buf));
-}
-
 /* Each 16-bit word is followed by a CRC-8 (poly 0x31, init 0xFF). */
 static bool sht30_crc_ok(const uint8_t *word)
 {
     return crc8(word, 2, 0x31, 0xFF, false) == word[2];
 }
 
-static int custom_sht30_sample_fetch(const struct device *dev,
-                                     enum sensor_channel chan)
+static int sht30_sample_fetch(const struct device *dev, enum sensor_channel chan)
 {
-    const struct custom_sht30_config *cfg = dev->config;
-    struct custom_sht30_data *data = dev->data;
+    const struct sht30_config *cfg = dev->config;
+    struct sht30_data *data = dev->data;
+    uint8_t cmd[2];
     uint8_t rx[6];
     int ret;
 
@@ -183,12 +196,13 @@ static int custom_sht30_sample_fetch(const struct device *dev,
         return -ENOTSUP;
     }
 
-    ret = sht30_write_cmd(dev, SHT30_CMD_MEASURE_HIGH);
+    sys_put_be16(SHT30_CMD_MEASURE_HIGH, cmd);
+    ret = i2c_write_dt(&cfg->i2c, cmd, sizeof(cmd));
     if (ret < 0) {
         return ret;
     }
 
-    k_sleep(K_MSEC(SHT30_MEASURE_WAIT_MS));   /* measurement in progress */
+    k_msleep(SHT30_MEASURE_WAIT_MS);
 
     ret = i2c_read_dt(&cfg->i2c, rx, sizeof(rx));
     if (ret < 0) {
@@ -199,16 +213,15 @@ static int custom_sht30_sample_fetch(const struct device *dev,
         return -EIO;
     }
 
-    data->t_raw  = sys_get_be16(&rx[0]);
+    data->t_raw = sys_get_be16(&rx[0]);
     data->rh_raw = sys_get_be16(&rx[3]);
     return 0;
 }
 
-static int custom_sht30_channel_get(const struct device *dev,
-                                    enum sensor_channel chan,
-                                    struct sensor_value *val)
+static int sht30_channel_get(const struct device *dev, enum sensor_channel chan,
+                 struct sensor_value *val)
 {
-    const struct custom_sht30_data *data = dev->data;
+    const struct sht30_data *data = dev->data;
 
     switch (chan) {
     case SENSOR_CHAN_AMBIENT_TEMP:
@@ -225,20 +238,21 @@ static int custom_sht30_channel_get(const struct device *dev,
 }
 ```
 
-That's the whole protocol. The two conversion formulas and the CRC parameters come straight from the SHT3x datasheet ("Conversion of Signal Output" and "Checksum Calculation"). `sensor_value_from_micro()` splits a micro-unit number into the integer + fractional parts of a `struct sensor_value`, so you don't do that arithmetic by hand.
+- **Fetch:** the SHT30 measures temperature and humidity together, so only `SENSOR_CHAN_ALL` is accepted. The command goes out high byte first (`sys_put_be16`), `i2c_write_dt` takes the bus and address from the config, and the driver sleeps 15 ms while the chip measures (other threads keep running).
+- **CRC:** each 16-bit word is followed by a CRC-8 (polynomial `0x31`, start `0xFF`, SHT3x datasheet). If either check fails, the bytes were damaged on the bus, and fetch returns `-EIO` instead of a wrong temperature.
+- **Get:** a switch on the channel, never touching the bus, so the app can get as many channels as it wants after one fetch. The datasheet formulas run in millionths, so there's no float in the driver; the numbers are too big for 32 bits, hence `int64_t`. `sensor_value_from_micro()` fills the two whole numbers of a `struct sensor_value`.
 
-:::tip[Compare with the real one]
-Open `zephyr/drivers/sensor/sensirion/sht3xd/sht3xd.c` next to yours. Its single-shot path is the same three moves — write command, `k_sleep`, `i2c_read_dt` six bytes, check both CRCs. The in-tree driver adds a periodic mode and an ALERT-pin trigger on top.
-:::
-
-### Step 5 — Per-instance device macros
-
-This is the magic that turns "one driver source file" into "N `struct device` instances, one per matching DTS node":
+### Step 5 — The API table and init
 
 ```c
-static int custom_sht30_init(const struct device *dev)
+static DEVICE_API(sensor, sht30_api) = {
+    .sample_fetch = sht30_sample_fetch,
+    .channel_get = sht30_channel_get,
+};
+
+static int sht30_init(const struct device *dev)
 {
-    const struct custom_sht30_config *cfg = dev->config;
+    const struct sht30_config *cfg = dev->config;
 
     if (!i2c_is_ready_dt(&cfg->i2c)) {
         LOG_ERR("I2C bus not ready");
@@ -246,68 +260,113 @@ static int custom_sht30_init(const struct device *dev)
     }
     return 0;
 }
-
-#define CUSTOM_SHT30_DEFINE(inst)                                        \
-    static struct custom_sht30_data custom_sht30_data_##inst;            \
-    static const struct custom_sht30_config custom_sht30_config_##inst = { \
-        .i2c = I2C_DT_SPEC_INST_GET(inst),                               \
-    };                                                                   \
-    SENSOR_DEVICE_DT_INST_DEFINE(inst,                                   \
-        custom_sht30_init, NULL,                                         \
-        &custom_sht30_data_##inst,                                       \
-        &custom_sht30_config_##inst,                                     \
-        POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY,                        \
-        &custom_sht30_api);
-
-DT_INST_FOREACH_STATUS_OKAY(CUSTOM_SHT30_DEFINE)
 ```
 
-`DT_INST_FOREACH_STATUS_OKAY` walks every DTS node whose `compatible` matches `DT_DRV_COMPAT` and whose `status` is `"okay"`, expanding the `CUSTOM_SHT30_DEFINE(inst)` macro for each one. If your board has two SHT30s (one at `0x44`, one at `0x45`), you get two `struct device`s automatically.
+The API table is **key part 1**: it lists our two functions under the names the sensor API expects. `sensor_sample_fetch(dev)` looks in `dev`'s table and calls `sht30_sample_fetch()`. Init runs once at boot; if it returns an error, Zephyr marks the device not ready, and the app's `device_is_ready()` check is false.
 
-`I2C_DT_SPEC_INST_GET(inst)` pulls the bus and the `reg` address out of the devicetree node — the driver never hardcodes `0x44`.
+### Step 6 — One device per devicetree node
 
-### Step 6 — Point a devicetree node at your driver
+So far nothing has created a device. These last lines do:
 
-The driver only runs if a node carries its `compatible`:
+```c
+#define SHT30_DEFINE(inst)                                                \
+    static struct sht30_data sht30_data_##inst;                       \
+    static const struct sht30_config sht30_config_##inst = {          \
+        .i2c = I2C_DT_SPEC_INST_GET(inst),                        \
+    };                                                                \
+    SENSOR_DEVICE_DT_INST_DEFINE(inst, sht30_init, NULL,              \
+                     &sht30_data_##inst, &sht30_config_##inst, \
+                     POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, \
+                     &sht30_api);
+
+DT_INST_FOREACH_STATUS_OKAY(SHT30_DEFINE)
+```
+
+Read them from the bottom up:
+
+- **Key part 2, the for-each:** `DT_INST_FOREACH_STATUS_OKAY` finds every okay node with our compatible and calls `SHT30_DEFINE()` once for each, numbered from 0. The EFZ-ESP32S3 has one SHT30, so it runs once, as `SHT30_DEFINE(0)`.
+- **Key part 3, the define macro:** `##inst` glues the number onto the names, giving `sht30_data_0` and `sht30_config_0`, one pair per sensor. `I2C_DT_SPEC_INST_GET()` reads the node's bus and its `reg` address (`0x44`), so the driver never hardcodes them.
+- `SENSOR_DEVICE_DT_INST_DEFINE()` creates the device: which node, the init function, `NULL` for power management (this driver has none), the data, the config, when init runs, and the API table.
+- **Boot order:** the ESP32 I2C driver also starts at `POST_KERNEL`, with priority 50 (`CONFIG_I2C_INIT_PRIORITY`); sensors start at 90 (`CONFIG_SENSOR_INIT_PRIORITY`). Lower starts first, so the bus is always ready before our init checks it.
+
+Together: the for-each finds the node, the define macro makes the device, and the device points at our API table, so the app's `sensor_sample_fetch()` lands in `sht30_sample_fetch()`.
+
+### Step 7 — Switch the board to your driver
 
 <BoardTabs>
-<BoardTab value="esp32s3_devkitc">
-
-Add the SHT30 module on I2C0 (SDA GPIO1, SCL GPIO2) with *your* compatible:
-
-```dts title="app/boards/esp32s3_devkitc_procpu.overlay"
-&i2c0 {
-	status = "okay";
-	clock-frequency = <I2C_BITRATE_STANDARD>;
-
-	sht30: sht30@44 {
-		compatible = "zephyr,custom-sht30";
-		reg = <0x44>;
-	};
-};
-```
-
-</BoardTab>
+<BoardTab value="esp32s3_devkitc" unsupported="the EFZ hands-on workspace (app, LCD, board files) is built for the EFZ-ESP32S3. The course sample zephyr/samples/efz_samples/03_intermediate/custom_driver has the same driver for both boards." />
 <BoardTab value="efz_esp32s3">
 
-The board already has the SHT30 node (label `sht30`, `sensirion,sht3xd`). Overwrite just its `compatible`, and the in-tree driver steps aside for yours:
+The SHT30 is already in the board file, so the overlay only replaces its `compatible`. Zephyr's `sht3xd` driver isn't built any more, and ours is:
 
 ```dts title="app/boards/efz_esp32s3_procpu.overlay"
+/* Read the SHT30 with our own driver instead of Zephyr's sht3xd. */
 &sht30 {
-	compatible = "zephyr,custom-sht30";
+    compatible = "embeddedfun,sht30";
 };
 ```
+
+Zephyr picks this file up by itself (board overlay), next to the LCD overlay the app already loads.
 
 </BoardTab>
 </BoardTabs>
 
-The application code from the [sensor API page](./i2c-sensors) doesn't change at all — it still asks for `DT_NODELABEL(sht30)` and calls `sensor_sample_fetch()`. That's the payoff of the driver model: you swapped the entire driver underneath and the app never noticed.
+One line changed in the app. In episode 7 it asked for the first `sensirion,sht3xd` device; now it asks for the node labeled `sht30`, whatever its compatible is, so it works with either driver:
+
+```c title="app/src/modules/env/env.c"
+static const struct device *const sht30 = DEVICE_DT_GET(DT_NODELABEL(sht30));
+```
+
+(and `app/src/modules/env/Kconfig` depends on `$(dt_nodelabel_enabled,sht30)` instead of `DT_HAS_SENSIRION_SHT3XD_ENABLED`).
+
+### Step 8 — Build, check, run
+
+From `efz-handson-ws`:
+
+```bash
+west build -p -b efz_esp32s3/esp32s3/procpu efz-handson/app
+west flash
+```
+
+The build says `Found devicetree overlay: .../app/boards/efz_esp32s3_procpu.overlay` and compiles `drivers/sensor/sht30/sht30.c`. To see what the macro made, look at the build's own files:
+
+- `build/zephyr/zephyr.dts`: the `sht30: sht3xd@44` node now has `compatible = "embeddedfun,sht30"`, with a comment saying it came from your overlay.
+- `build/zephyr/include/generated/zephyr/devicetree_generated.h`: `#define DT_FOREACH_OKAY_INST_embeddedfun_sht30(fn) fn(0)`, the for-each expanded to exactly one call.
+- The firmware itself:
+
+  ```bash
+  grep -E "sht30_(data|config)_0|__device_dts_ord_107$" build/zephyr/zephyr.map
+  ```
+
+  shows `.bss.sht30_data_0` (RAM), `.rodata.sht30_config_0` (flash) and the device `__device_dts_ord_107`, named after the node's number in the devicetree. `DEVICE_DT_GET()` in the app is a pointer to that object, fixed at compile time.
+
+Then open the monitor:
+
+```bash
+west espressif monitor
+```
+
+```
+<inf> env: SHT30 ready
+<inf> env: 35.7 C, 54.3 %
+<inf> env: 35.6 C, 54.3 %
+```
+
+One reading a second, as before. Flashed one after the other on the same board, Zephyr's driver and ours read within a few tenths of a degree.
+
+:::tip[Your turn]
+Rename `app/boards/efz_esp32s3_procpu.overlay` (for example to `.off`) and build again with `-p`. `build/zephyr/.config` now has `CONFIG_SHT3XD=y` and no `CONFIG_EFZ_SHT30`, and the monitor still prints readings: Zephyr's driver is back, and `env.c` didn't change.
+:::
 
 <br/>
 
 ---
 
 ## Exercise 2 — Add power management
+
+:::info
+Exercises 2 and 3 use the course sample [`custom_driver`](https://github.com/huunghiaspkt/zephyr/tree/main/samples/efz_samples/03_intermediate/custom_driver) in the Zephyr fork. Its driver is Exercise 1's under other names: `custom_sht30_*` and the compatible `zephyr,custom-sht30`.
+:::
 
 The in-tree `sht3xd` driver has **no PM support**: call `pm_device_action_run()` on it and you get `-ENOSYS`. Your driver can fill that gap.
 
